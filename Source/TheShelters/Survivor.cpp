@@ -3,9 +3,12 @@
 
 #include "Survivor.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Controller.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
+
 
 // Sets default values
 ASurvivor::ASurvivor()
@@ -32,7 +35,6 @@ ASurvivor::ASurvivor()
 void ASurvivor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ASurvivor::TurnView() {

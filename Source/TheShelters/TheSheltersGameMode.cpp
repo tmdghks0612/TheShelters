@@ -12,6 +12,10 @@ ATheSheltersGameMode::ATheSheltersGameMode()
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/SurvivorInst/MySurvivor"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
-	// use our custom HUD class
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassFinder(TEXT("/Game/SurvivorInst/MouseController"));
+	PlayerControllerClass = PlayerControllerClassFinder.Class;
+	
 	HUDClass = ATheSheltersHUD::StaticClass();
+
+
 }
