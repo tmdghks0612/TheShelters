@@ -13,6 +13,7 @@ class ATheSheltersGameMode : public AGameModeBase
 
 public:
 	ATheSheltersGameMode();
+
 };
 
 

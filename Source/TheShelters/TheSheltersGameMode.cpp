@@ -16,6 +16,5 @@ ATheSheltersGameMode::ATheSheltersGameMode()
 	PlayerControllerClass = PlayerControllerClassFinder.Class;
 	
 	HUDClass = ATheSheltersHUD::StaticClass();
-
-
+	
 }
