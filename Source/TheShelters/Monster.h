@@ -19,9 +19,11 @@ class THESHELTERS_API UMonster : public UObject
 public:
 	// Sets default values for this actor's properties
 	UMonster();
-	UMonster(MonsterType t, int id);
+	void InitMonster(MonsterType t, int id);
 	int GetMonsterId();
 	MonsterType GetType();
+
+	bool IsRadioactive();
 
 protected:
 

@@ -54,18 +54,18 @@ private:
 
 public:
 	URoom();
-	URoom(const int no);
+	void InitRoom(const int no);
 	int GetRoomNo();
 	void SetLocation(const unsigned int x, const unsigned int y);
 	Location GetLocation();
 	bool IsConnectedToPanicRoom();
 
-	const Door* GetDoor(const Direction d);
+	Door* GetDoor(const Direction d);
 	void SetDoor(const Direction d, URoom* room, DoorStatus s);
 	void OpenDoor(const Direction d);
 	void CloseDoor(const Direction d);
 
-	const UMonster* GetMonster();
+	UMonster* GetMonster();
 	void InsertMonster(UMonster* newMonster);
 	UMonster* DeleteMonster();
 };

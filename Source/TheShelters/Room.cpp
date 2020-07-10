@@ -9,15 +9,17 @@ URoom::URoom() {
 }
 
 // Constructor
-URoom::URoom(int no)
-	: monster(0),
-	roomType(Empty),
-	roomNo(no),
-	cctv(false),
-	storage(0),
-	roomStatus(Peaceful),
-	panicRoomConnection(false)
+void URoom::InitRoom(int no)
 {
+	monster = 0;
+	roomType = Empty;
+	roomNo = no;
+	cctv = false;
+	storage = 0;
+	roomStatus = Peaceful;
+	panicRoomConnection = false;
+
+	doors = std::map<Direction, Door>();
 	doors[Left] = { 0, Open };
 	doors[Right] = { 0, Open };
 	doors[Up] = { 0, Open };
@@ -42,11 +44,16 @@ bool URoom::IsConnectedToPanicRoom() {
 	return panicRoomConnection;
 }
 
-const Door* URoom::GetDoor(const Direction d) {
-	return &doors.at(d);
+Door* URoom::GetDoor(const Direction d) {
+	UE_LOG(LogTemp, Warning, TEXT("Door Status : %d"), d);
+	//UE_LOG(LogTemp, Warning, TEXT("Door Status : %d"), doors[d].Status);
+	//return &doors.at(d);
+	
+	//return &doors[d];
+	return nullptr;
 }
 
-void URoom::SetDoor(const Direction d, URoom* room, DoorStatus s = Open) {
+void URoom::SetDoor(const Direction d, URoom* room, DoorStatus s) {
 	doors[d].ConnectedRoom = room;
 	doors[d].Status = s;
 }
@@ -59,7 +66,7 @@ void URoom::CloseDoor(const Direction d) {
 	doors[d].Status = Close;
 }
 
-const UMonster* URoom::GetMonster() {
+UMonster* URoom::GetMonster() {
 	return monster;
 }
 

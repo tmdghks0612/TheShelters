@@ -4,7 +4,7 @@
 #include "Monster.h"
 
 // constructor sets monster characteristics and its id. depends on MonsterType t
-UMonster::UMonster(MonsterType t, int id)
+void UMonster::InitMonster(MonsterType t, int id)
 {
 	monsterId = id;
 
@@ -26,6 +26,11 @@ int UMonster::GetMonsterId()
 MonsterType UMonster::GetType()
 {
 	return monsterType;
+}
+
+bool UMonster::IsRadioactive()
+{
+	return radioactive;
 }
 
 // default functions
