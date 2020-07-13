@@ -22,4 +22,4 @@ const int             UMonster::MonsterId() const { return monsterId; }
 // returns monsterType. type of monsters can be same among individuals
 const MonsterType     UMonster::Type()      const { return monsterType; }
 const int             UMonster::Speed()     const { return speed; }
-const MonsterProperty UMonster::Affect()    const { return MakeTuple(radioactive, emp, armorpierce); }
+const MonsterProperty UMonster::Property()  const { return MakeTuple(radioactive, emp, armorpierce); }

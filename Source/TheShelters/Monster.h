@@ -12,11 +12,26 @@ enum MonsterType { DefaultMonster };
 // MonsterProperty <radioactive, emp, armorpierce>
 typedef TTuple<bool, bool, bool> MonsterProperty;
 
-/* << UMonster >>
+/* << UMonster : UObject >>
  * Constructor:
- *     Default Constructor
+ * - Default Constructor
  * Initializer:
- *     Argument: MonsterType, MonsterId
+ * - InitMonster: MonsterType, MonsterId
+ * Property:
+ * - ID
+ * - Type
+ * - Speed
+ * - Radioactive
+ * - Emp
+ * - Armorpierce
+ * 
+ * Description:
+ * A monster is just a data class. Every behavior is delegated to ShelterControl.
+ * Monsters have ID, which is unique. It has type, which determines monster's
+ * all property values. Monsters have speed, which determines maximum distance
+ * to move for each turn. And monsters have three properties. Radioactive spoil 
+ * nearby food and water. Emp break nearby CCTVs and doors up. Armorpiercing
+ * monster can break armor up and give fatal damage to the player.
  */
 UCLASS()
 class THESHELTERS_API UMonster : public UObject
@@ -31,11 +46,8 @@ public:
     // Getters and Setters
     const int             MonsterId() const;
     const MonsterType     Type()      const;
-
     const int             Speed()     const;
-
-    // Monster behaviors
-    const MonsterProperty Affect()    const;
+    const MonsterProperty Property()  const;
 
 protected:
 

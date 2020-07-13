@@ -46,7 +46,7 @@ void ARoomControl::EndTurn() {
 
 	URoom* room = FindRoomByLocation(1, 0);
 	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), 13);
-	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), room->GetMonster()->GetMonsterId());
+	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), room->GetMonster()->MonsterId());
 	*/
 }
 
@@ -120,9 +120,9 @@ void ARoomControl::DeleteMonster(URoom* room) {
 	UMonster* monster = room->DeleteMonster();
 
 	// FIXME: If there are two same monster id, it can go wrong...
-	int targetId = monster->GetMonsterId();
+	int targetId = monster->MonsterId();
 	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->GetMonsterId() == targetId) {
+		if (it->first->MonsterId() == targetId) {
 			Monsters.erase(it);
 		}
 	}
@@ -135,13 +135,13 @@ void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y) {
 }
 
 void ARoomControl::MoveMonster(UMonster* monster, Direction d) {
-	int targetId = monster->GetMonsterId();
+	int targetId = monster->MonsterId();
 	MoveMonster(targetId, d);
 }
 
 void ARoomControl::MoveMonster(int monsterId, Direction d) {
 	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->GetMonsterId() == monsterId) {
+		if (it->first->MonsterId() == monsterId) {
 			const Door* door = it->second->GetDoor(d);
 
 			if (door->ConnectedRoom == 0 || door->Status == Close) {
@@ -160,7 +160,7 @@ void ARoomControl::MoveMonster(int monsterId, Direction d) {
 UMonster* ARoomControl::FindMonsterById(const unsigned int id) {
 	
 	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->GetMonsterId() == id) {
+		if (it->first->MonsterId() == id) {
 			UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
 			UMonster* m = it->first;
 
