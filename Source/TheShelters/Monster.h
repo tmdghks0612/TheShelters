@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Monster.generated.h"
 
-// MonsterType determines MonsterProperty values
+// MonsterType determines MonsterProperty values and movement speed
 enum MonsterType { DefaultMonster };
 
 // MonsterProperty <radioactive, emp, armorpierce>
@@ -21,27 +21,35 @@ typedef TTuple<bool, bool, bool> MonsterProperty;
 UCLASS()
 class THESHELTERS_API UMonster : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Constructors and Initializers
-	UMonster();
-	void InitMonster(MonsterType t, int id);
-	int GetMonsterId();
-	MonsterType GetType();
+    // Constructors and Initializers
+    UMonster();
+    void InitMonster(MonsterType t, int id);
 
-	bool IsRadioactive();
+    // Getters and Setters
+    const int             MonsterId() const;
+    const MonsterType     Type()      const;
+
+    const int             Speed()     const;
+
+    // Monster behaviors
+    const MonsterProperty Affect()    const;
 
 protected:
 
 private:
-	UPROPERTY(EditAnywhere)
-	int monsterId;
-	MonsterType monsterType;
+    UPROPERTY(EditAnywhere)
+    // Default Monster values
+    int         monsterId;
+    MonsterType monsterType;
 
-	bool radioactive;
-	bool emp;
-	bool armorpierce;
+    // Monster Properties
+    bool        radioactive;
+    bool        emp;
+    bool        armorpierce;
 
-	int speed;
+    // Monster movement speed
+    int         speed;
 };
