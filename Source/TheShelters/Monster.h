@@ -6,10 +6,17 @@
 #include "UObject/NoExportTypes.h"
 #include "Monster.generated.h"
 
+// MonsterType determines MonsterProperty values
 enum MonsterType { DefaultMonster };
 
-/**
- * 
+// MonsterProperty <radioactive, emp, armorpierce>
+typedef TTuple<bool, bool, bool> MonsterProperty;
+
+/* << UMonster >>
+ * Constructor:
+ *     Default Constructor
+ * Initializer:
+ *     Argument: MonsterType, MonsterId
  */
 UCLASS()
 class THESHELTERS_API UMonster : public UObject
@@ -17,7 +24,7 @@ class THESHELTERS_API UMonster : public UObject
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+	// Constructors and Initializers
 	UMonster();
 	void InitMonster(MonsterType t, int id);
 	int GetMonsterId();
