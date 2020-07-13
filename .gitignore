@@ -9,5 +9,7 @@ Saved
 *.opendb
 *.sdf
 *.suo
+*.sln
 *.xcodeproj
 *.xcworkspace
+TheShelters.sln
