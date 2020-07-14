@@ -15,22 +15,27 @@
 enum AffectStatus {Appear, Disappear};
 
 // key = monsterId, value = shelterNum of the room monster is in
-typedef TMap<int32, int32> ShelterList;
+typedef TMap<int32, int32>     ShelterList;
 // key = monsterId, value = UMonster class instance
 typedef TMap<int32, UMonster*> MonsterList;
 
+/* << AShelterControl : AActor >>
+ * Constructor:
+ *     Default Constructor
+ * Initializer:
+ * - InitGame: MaxHeight, MaxWidth
+ * - InitLevel
+ */
 UCLASS()
 class THESHELTERS_API AShelterControl : public AActor
 {
 	GENERATED_BODY()
-
 private:
-	
-	MonsterList Monsters;
-	ShelterList Shelters;
+	MonsterList monsters;
+	ShelterList shelters;
 
-	unsigned int MaxHeight;
-	unsigned int MaxWidth;
+	unsigned int maxWidth;
+	unsigned int maxHeight;
 
 	int nextMonsterId = 1;
 
@@ -62,6 +67,7 @@ public:
 	void DeleteMonster(UShelter shelter);
 	void DeleteMonster(const unsigned int x, const unsigned int y);
 	*/
+	void RandomMoveMonster(int monsterId, Direction d, int retry);
 	// move monster to certain direction d according to monsterId
 	bool MoveMonster(int monsterId, Direction d);
 	void AffectShelters(int monsterId, int status);
