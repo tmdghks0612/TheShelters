@@ -6,35 +6,62 @@
 #include "UObject/NoExportTypes.h"
 #include "Monster.generated.h"
 
+// MonsterType determines MonsterProperty values and movement speed
 enum MonsterType { DefaultMonster };
 
-/**
+// MonsterProperty <radioactive, emp, armorpierce>
+typedef TTuple<bool, bool, bool> MonsterProperty;
+
+/* << UMonster : UObject >>
+ * Constructor:
+ * - Default Constructor
+ * Initializer:
+ * - InitMonster: MonsterType, MonsterId
+ * Property:
+ * - ID
+ * - Type
+ * - Speed
+ * - Radioactive
+ * - Emp
+ * - Armorpierce
  * 
+ * Description:
+ * A monster is just a data class. Every behavior is delegated to ShelterControl.
+ * Monsters have ID, which is unique. It has type, which determines monster's
+ * all property values. Monsters have speed, which determines maximum distance
+ * to move for each turn. And monsters have three properties. Radioactive spoil 
+ * nearby food and water. Emp break nearby CCTVs and doors up. Armorpiercing
+ * monster can break armor up and give fatal damage to the player.
  */
 UCLASS()
 class THESHELTERS_API UMonster : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	UMonster();
-	void InitMonster(MonsterType t, int id);
-	int GetMonsterId();
-	MonsterType GetType();
+    // Constructors and Initializers
+    UMonster();
+    void InitMonster(MonsterType t, int id);
 
-	bool IsRadioactive();
+    // Getters and Setters
+    const int             MonsterId() const;
+    const MonsterType     Type()      const;
+    const int             Speed()     const;
+    const MonsterProperty Property()  const;
 
 protected:
 
 private:
-	UPROPERTY(EditAnywhere)
-	int monsterId;
-	MonsterType monsterType;
+    UPROPERTY(EditAnywhere)
+    // Default Monster values
+    int         monsterId;
+    MonsterType monsterType;
 
-	bool radioactive;
-	bool emp;
-	bool armorpierce;
+    // Monster Properties
+    bool        radioactive;
+    bool        emp;
+    bool        armorpierce;
 
-	int speed;
+    // Monster movement speed
+    int         speed;
 };

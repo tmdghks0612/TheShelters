@@ -6,218 +6,185 @@
 // Sets default values
 AShelterControl::AShelterControl()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
 void AShelterControl::BeginPlay()
 {
-	Super::BeginPlay();
-
+    Super::BeginPlay();
 }
 
-void AShelterControl::InitLevel() {
+void AShelterControl::PrintMap()
+{
+    for (unsigned int x = 0; x < maxHeight; x++)
+    {
+        FString line = FString();
+        for (unsigned int y = 0; y < maxWidth; y++)
+        {
+            int idx = x * maxWidth + y;
+            int32 monsterId = GameMap[idx]->MonsterId();
+            TArray<FStringFormatArg> args;
+            args.Add(FStringFormatArg(monsterId));
+            line += FString::Format(TEXT("{0} "), args);
+        }
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+    }
+}
 
+void AShelterControl::PrintTestMessage(const TCHAR* testName, const int num, const bool success)
+{
+    FString line = FString();
+    TArray<FStringFormatArg> args;
+    args.Add(FStringFormatArg(testName));
+    args.Add(FStringFormatArg(num));
+    if (success)
+    {
+		line += FString::Format(TEXT("[{0}] TEST {1}: SUCCESS"), args);
+    }
+    else
+    {
+		line += FString::Format(TEXT("[{0}] TEST {1}: FAIL"), args);
+    }
+
+    UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+}
+
+void AShelterControl::TestScenario()
+{
 	InitGame(5, 5);
-	InsertMonster(DefaultMonster, 4);
-	InsertMonster(DefaultMonster, 8);
-	return;
+	InsertMonster(DefaultMonster, 0, 4);  // Monster 1: 0, 4
+	InsertMonster(DefaultMonster, 1, 3);  // Monster 2: 1, 3
+
+    MoveMonster(1, Left);                 // Monster 1: 0, 3
+    MoveMonster(2, Right);                // Monster 2: 1, 4
+
+    // EXPECT
+    bool result;
+    result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
+    PrintTestMessage(TEXT("MonsterMovement"), 1, result);
+
+    result = GameMap[8]->MonsterId() == 0 && GameMap[9]->MonsterId() == 2;
+    PrintTestMessage(TEXT("MonsterMovement"), 2, result);
 }
 
-void AShelterControl::EndTurn() {
+void AShelterControl::EndTurn()
+{
 
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime!"));
-	for (const TPair<int32, UMonster*>& it : Monsters) {
-		if (!MoveMonster(it.Key, Direction(rand() % 4))) {
-			MoveMonster(it.Key, Direction(rand() % 4));
-		}
-	}
-	for (int i = 0; i < 5; ++i) {
-		UE_LOG(LogTemp, Warning, TEXT("%d %d %d %d %d"), GameMap[i*5]->GetMonsterId(), GameMap[i*5+1]->GetMonsterId(), GameMap[i*5+2]->GetMonsterId(), GameMap[i*5 + 3]->GetMonsterId(), GameMap[i*5 + 4]->GetMonsterId());
-	}
-	
-	/*UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime3!"));
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime4!"));
-	URoom* room = FindRoomByLocation(1, 1);
-	UE_LOG(LogTemp, Warning, TEXT("Room no : %d"), room->GetRoomNo());
-	Door* d = room->GetDoor(Left);
-	//Location l = room->GetDoor(Left)->ConnectedRoom->GetLocation();
-	//UE_LOG(LogTemp, Warning, TEXT("Room coord : %d, %d"), l.x, l.y);
-
-	URoom* room = FindRoomByLocation(1, 0);
-	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), 13);
-	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), room->GetMonster()->GetMonsterId());
-	*/
 }
 
 void AShelterControl::InitGame(const unsigned int m, const unsigned int n) {
-	MaxHeight = m;
-	MaxWidth = n;
+    maxHeight = m;
+    maxWidth = n;
 
-	int size = MaxHeight * MaxWidth;
-	
-	for (int i = 0; i < size; i++) {
-		int x = i / MaxWidth;
-		int y = i % MaxWidth;
+    int size = maxHeight * maxWidth;
+    
+    for (int i = 0; i < size; i++) {
+        UShelter *NewRoom = NewObject<UShelter>();
+        NewRoom->InitShelter(i);
+        GameMap.Add(NewRoom);
+    }
 
-		UShelter *NewRoom = NewObject<UShelter>();
-		NewRoom->InitShelter(i);
-		NewRoom->SetLocation(x, y);
-		GameMap.Add(NewRoom);
-		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), i);
-		UE_LOG(LogTemp, Warning, TEXT("Room no : %d"), NewRoom->GetShelterNum());
-	}
+    // Connect all rooms
+    for (int i = 0; i < size; i++) {
+        // A idx is MaxWidth * x + y
+        int x = i / maxWidth;
+        int y = i % maxWidth;
 
-	// Connect all rooms
-	for (int i = 0; i < size; i++) {
-		// A idx is MaxWidth * x + y
-		int x = i / MaxWidth;
-		int y = i % MaxWidth;
-
-		if (x != 0) {
-			GameMap[i]->SetDoor(Up, MaxWidth * (x - 1) + y, Open);
-		}
-		if (x != (MaxHeight - 1)) {
-			GameMap[i]->SetDoor(Down, MaxWidth * (x + 1) + y, Open);
-		}
-		if (y != 0) {
-			GameMap[i]->SetDoor(Left, MaxWidth * x + (y - 1), Open);
-		}
-		if (y != (MaxWidth - 1)) {
-			GameMap[i]->SetDoor(Right, MaxWidth * x + (y + 1), Open);
-		}
-	}
+        if (x != 0) {
+            GameMap[i]->InitDoor(Up, maxWidth * (x - 1) + y, Open);
+        }
+        if (x != (maxHeight - 1)) {
+            GameMap[i]->InitDoor(Down, maxWidth * (x + 1) + y, Open);
+        }
+        if (y != 0) {
+            GameMap[i]->InitDoor(Left, maxWidth * x + (y - 1), Open);
+        }
+        if (y != (maxWidth - 1)) {
+            GameMap[i]->InitDoor(Right, maxWidth * x + (y + 1), Open);
+        }
+    }
 }
 
 
 UShelter* AShelterControl::FindShelterByLocation(const unsigned int x, const unsigned int y) {
-	if (x < 0 || x >= MaxHeight) {
-		throw "You've exceeded map height";
-	}
-	if (y < 0 || y >= MaxWidth) {
-		throw "You've exceeded map width";
-	}
+    if (x < 0 || x >= maxHeight) {
+        throw "You've exceeded map height";
+    }
+    if (y < 0 || y >= maxWidth) {
+        throw "You've exceeded map width";
+    }
 
-	int idx = MaxWidth * x + y;
+    int idx = maxWidth * x + y;
 
-	return GameMap[idx];
+    return GameMap[idx];
 }
 
-void AShelterControl::InsertMonster(MonsterType monsterType, int shelterNum) {
-	GameMap[shelterNum]->InsertMonster(nextMonsterId);
-	
-	UMonster* newMonster = NewObject<UMonster>();
-	newMonster->InitMonster(monsterType, nextMonsterId);
-	Monsters.Add(nextMonsterId, newMonster);
-	Shelters.Add(nextMonsterId, shelterNum);
-	nextMonsterId++;
+UShelter* AShelterControl::FindShelterById(const int shelterId)
+{
+    return GameMap[shelterId];
 }
 
-/*void AShelterControl::InsertMonster(const unsigned int x, const unsigned int y) {
-	UShelter* shelter = FindShelterByLocation(x, y);
-	InsertMonster(nextMonsterId, shelter);
-	nextMonsterId++;
-}*/ 
- /*
-void AShelterControl::DeleteMonster(UShelter* shelter) {
-	UMonster* monster = shelter->DeleteMonster();
-
-	// FIXME: If there are two same monster id, it can go wrong...
-	int targetId = monster->GetMonsterId();
-
-	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->GetMonsterId() == targetId) {
-			Monsters.erase(it);
-		}
-	}
-	delete monster;
+void AShelterControl::InsertMonster(MonsterType monsterType, int x, int y)
+{
+    int shelterNum = x * maxWidth + y;
+    InsertMonster(monsterType, shelterNum);
 }
 
-void AShelterControl::DeleteMonster(const unsigned int x, const unsigned int y) {
-	URoom* room = FindRoomByLocation(x, y);
-	DeleteMonster(room);
+void AShelterControl::InsertMonster(MonsterType monsterType, int shelterId)
+{
+    GameMap[shelterId]->InsertMonster(nextMonsterId);
+    
+    UMonster* newMonster = NewObject<UMonster>();
+    newMonster->InitMonster(monsterType, nextMonsterId);
+    monsters.Add(nextMonsterId, newMonster);
+    monsterLocations.Add(nextMonsterId, shelterId);
+    nextMonsterId++;
 }
-*/
+
+void AShelterControl::DeleteMonster(const unsigned int x, const unsigned int y)
+{
+    UShelter* room = FindShelterByLocation(x, y);
+    room->DeleteMonster();
+}
+
+void AShelterControl::DeleteMonster(int shelterId)
+{
+    UShelter* room = FindShelterById(shelterId);
+    room->DeleteMonster();
+}
 
 bool AShelterControl::MoveMonster(int monsterId, Direction d) {
-	for (const TPair<int32, int32>& it : Shelters) {
-		if (it.Key == monsterId) {
-			Door door = GameMap[it.Value]->GetDoor(d);
+    for (const TPair<int32, int32>& it : monsterLocations) {
+        if (it.Key == monsterId) {
+            Door door = GameMap[it.Value]->GetDoor(d);
 
-			if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->GetMonsterId() != 0) {
-				UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-				return false;
-			}
-			UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."),it.Key, it.Value);
-			GameMap[it.Value]->DeleteMonster();
-			Shelters[it.Key] = door.connectedShelter;
-			GameMap[it.Value]->InsertMonster(monsterId);
-
-			break;
-		}
-	}
-	return true;
-}
-
-// monster's effect on shelters
-void AShelterControl::AffectShelters(int monsterId, int status) {
-	if (status == 1) {
-		if (Monsters[monsterId]->IsRadioactive()) {
-			for (const TPair<int32, int32>& it : Shelters) {
-				if (it.Key == monsterId) {
-					// radiate rooms in all directions
-					Door door = GameMap[it.Value]->GetDoor(Left);
-					if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->GetMonsterId() != 0) {
-						UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-					}
-					else {
-						GameMap[door.connectedShelter]->Radiated();
-					}
-					door = GameMap[it.Value]->GetDoor(Right);
-
-					if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->GetMonsterId() != 0) {
-						UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-					}
-					else {
-						GameMap[door.connectedShelter]->Radiated();
-					}
-					door = GameMap[it.Value]->GetDoor(Up);
-
-					if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->GetMonsterId() != 0) {
-						UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-					}
-					else {
-						GameMap[door.connectedShelter]->Radiated();
-					}
-					door = GameMap[it.Value]->GetDoor(Down);
-
-					if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->GetMonsterId() != 0) {
-						UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-					}
-					else {
-						GameMap[door.connectedShelter]->Radiated();
-					}
-
-					break;
-				}
-			}
-		}
-	}
+            if (door.connectedShelter == 0 || door.status == Close || GameMap[door.connectedShelter]->MonsterId() != 0) {
+                UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
+                return false;
+            }
+            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."),it.Key, it.Value);
+            GameMap[it.Value]->DeleteMonster();
+            monsterLocations[it.Key] = door.connectedShelter;
+            GameMap[it.Value]->InsertMonster(monsterId);
+            break;
+        }
+    }
+    return true;
 }
 
 UMonster* AShelterControl::FindMonsterById(const unsigned int id) {
 
-	for (const TPair<int32, UMonster*>& it : Monsters) {
-		if (it.Key == id) {
-			UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
-			UMonster* m = it.Value;
+    for (const TPair<int32, UMonster*>& it : monsters) {
+        if (it.Key == id) {
+            UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
+            UMonster* m = it.Value;
 
-			return m;
-		}
-	}
-	return NULL;
+            return m;
+        }
+    }
+    return NULL;
 }
 
 
