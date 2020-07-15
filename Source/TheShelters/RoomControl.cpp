@@ -6,186 +6,198 @@
 // Sets default values
 ARoomControl::ARoomControl()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-//	InitGame(3, 3);
-
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
 void ARoomControl::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 }
 
-void ARoomControl::EndTurn() {
-	InitGame(3, 3);
+void ARoomControl::PrintMap()
+{
+    for (unsigned int x = 0; x < maxHeight; x++)
+    {
+        FString line = FString();
+        for (unsigned int y = 0; y < maxWidth; y++)
+        {
+            int idx = x * maxWidth + y;
+            int32 monsterId = GameMap[idx]->MonsterId();
+            TArray<FStringFormatArg> args;
+            args.Add(FStringFormatArg(monsterId));
+            line += FString::Format(TEXT("{0} "), args);
+        }
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+    }
+}
 
-	for (int i = 0; i < 9; ++i) {
-		UE_LOG(LogTemp, Warning, TEXT("Room no in endturn : %d"), GameMap[i]->GetRoomNo());
-		
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime!"));
-	UMonster* NewMonster = NewObject<UMonster>();
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime1!"));
+void ARoomControl::PrintTestMessage(const TCHAR* testName, const int num, const bool success)
+{
+    FString line = FString();
+    TArray<FStringFormatArg> args;
+    args.Add(FStringFormatArg(testName));
+    args.Add(FStringFormatArg(num));
+    if (success)
+    {
+		line += FString::Format(TEXT("[{0}] TEST {1}: SUCCESS"), args);
+    }
+    else
+    {
+		line += FString::Format(TEXT("[{0}] TEST {1}: FAIL"), args);
+    }
 
-	NewMonster->InitMonster(DefaultMonster, 1);
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime2!"));
-	InsertMonster(NewMonster, 1, 1);
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime3!"));
-	UMonster* monster = FindMonsterById(1);
-	UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime4!"));
-	URoom* room = FindRoomByLocation(1, 1);
-	UE_LOG(LogTemp, Warning, TEXT("Room no : %d"), room->GetRoomNo());
-	Door* d = room->GetDoor(Left);
-	//Location l = room->GetDoor(Left)->ConnectedRoom->GetLocation();
-	//UE_LOG(LogTemp, Warning, TEXT("Room coord : %d, %d"), l.x, l.y);
-	/*MoveMonster(monster, Left);
+    UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+}
 
-	URoom* room = FindRoomByLocation(1, 0);
-	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), 13);
-	UE_LOG(LogTemp, Warning, TEXT("Monster found id : %d"), room->GetMonster()->MonsterId());
-	*/
+void ARoomControl::TestScenario()
+{
+	InitGame(5, 5);
+	InsertMonster(DefaultMonster, 0, 4);  // Monster 1: 0, 4
+	InsertMonster(DefaultMonster, 1, 3);  // Monster 2: 1, 3
+
+    MoveMonster(1, Left);                 // Monster 1: 0, 3
+    MoveMonster(2, Right);                // Monster 2: 1, 4
+
+    // EXPECT
+    bool result;
+    result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
+    PrintTestMessage(TEXT("MonsterMovement"), 1, result);
+
+    result = GameMap[8]->MonsterId() == 0 && GameMap[9]->MonsterId() == 2;
+    PrintTestMessage(TEXT("MonsterMovement"), 2, result);
+
+    URoom* room = FindRoomByLocation(3, 3);
+    room->CloseDoor(Left);
+    result = GameMap[18]->GetDoor(Left).status == Close;
+    PrintTestMessage(TEXT("CloseDoor"), 1, result);
+
+    result = GameMap[17]->GetDoor(Right).status == Close;
+    PrintTestMessage(TEXT("CloseDoor"), 2, result);
+}
+
+void ARoomControl::EndTurn()
+{
+
 }
 
 void ARoomControl::InitGame(const unsigned int m, const unsigned int n) {
-	MaxHeight = m;
-	MaxWidth = n;
+    maxHeight = m;
+    maxWidth = n;
 
-	int size = MaxHeight * MaxWidth;
+    int size = maxHeight * maxWidth;
+    
+    for (int i = 0; i < size; i++) {
+        URoom *NewRoom = NewObject<URoom>();
+        NewRoom->InitRoom(i);
+        GameMap.Add(NewRoom);
+    }
 
-	// Initializing Map
-	//GameMap = new URoom*[m*n];
+    // Connect all rooms
+    for (int i = 0; i < size; i++) {
+        // A idx is MaxWidth * x + y
+        int x = i / maxWidth;
+        int y = i % maxWidth;
 
-	for (int i = 0; i < size; i++) {
-		int x = i / MaxWidth;
-		int y = i % MaxWidth;
-
-		URoom *NewRoom = NewObject<URoom>();
-		NewRoom->InitRoom(i);
-		NewRoom->SetLocation(x, y);
-		GameMap[i] = NewRoom;
-		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), i);
-		UE_LOG(LogTemp, Warning, TEXT("Room no : %d"), NewRoom->GetRoomNo());
-	}
-
-	// Connect all rooms
-	for (int i = 0; i < size; i++) {
-		// A idx is MaxWidth * x + y
-		int x = i / MaxWidth;
-		int y = i % MaxWidth;
-
-		if (x != 0) {
-			GameMap[i]->SetDoor(Up, GameMap[MaxWidth * (x - 1) + y], Open);
-		}
-		if (x != (MaxHeight - 1)) {
-			GameMap[i]->SetDoor(Down, GameMap[MaxWidth * (x + 1) + y], Open);
-		}
-		if (y != 0) {
-			GameMap[i]->SetDoor(Left, GameMap[MaxWidth * x + (y - 1)], Open);
-		}
-		if (y != (MaxWidth - 1)) {
-			GameMap[i]->SetDoor(Right, GameMap[MaxWidth * x + (y + 1)], Open);
-		}
-	}
+        URoom* room;
+        if (x != 0) {
+            room = FindRoomByLocation(x - 1, y);
+            GameMap[i]->InitDoor(Up, room, Open);
+        }
+        if (x != (maxHeight - 1)) {
+            room = FindRoomByLocation(x + 1, y);
+            GameMap[i]->InitDoor(Down, room, Open);
+        }
+        if (y != 0) {
+            room = FindRoomByLocation(x, y - 1);
+            GameMap[i]->InitDoor(Left, room, Open);
+        }
+        if (y != (maxWidth - 1)) {
+            room = FindRoomByLocation(x, y + 1);
+            GameMap[i]->InitDoor(Right, room, Open);
+        }
+    }
 }
 
 
 URoom* ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y) {
-	if (x < 0 || x >= MaxHeight) {
-		throw "You've exceeded map height";
-	}
-	if (y < 0 || y >= MaxWidth) {
-		throw "You've exceeded map width";
-	}
+    if (x < 0 || x >= maxHeight) {
+        throw "You've exceeded map height";
+    }
+    if (y < 0 || y >= maxWidth) {
+        throw "You've exceeded map width";
+    }
 
-	int idx = MaxWidth * x + y;
+    int idx = maxWidth * x + y;
 
-	return GameMap[idx];
+    return GameMap[idx];
 }
 
-void ARoomControl::InsertMonster(UMonster* monster, URoom* room) {
-	room->InsertMonster(monster);
-	Monsters.push_back(std::make_pair(monster, room));
+URoom* ARoomControl::FindRoomById(const int roomId)
+{
+    return GameMap[roomId];
 }
 
-void ARoomControl::InsertMonster(UMonster* monster, const unsigned int x, const unsigned int y) {
-	URoom* room = FindRoomByLocation(x, y);
-	InsertMonster(monster, room);
+void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
+{
+    int roomNum = x * maxWidth + y;
+    InsertMonster(monsterType, roomNum);
 }
 
-void ARoomControl::DeleteMonster(URoom* room) {
-	UMonster* monster = room->DeleteMonster();
-
-	// FIXME: If there are two same monster id, it can go wrong...
-	int targetId = monster->MonsterId();
-	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->MonsterId() == targetId) {
-			Monsters.erase(it);
-		}
-	}
-	delete monster;
+void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
+{
+    GameMap[roomId]->InsertMonster(nextMonsterId);
+    
+    UMonster* newMonster = NewObject<UMonster>();
+    newMonster->InitMonster(monsterType, nextMonsterId);
+    monsters.Add(nextMonsterId, newMonster);
+    monsterLocations.Add(nextMonsterId, roomId);
+    nextMonsterId++;
 }
 
-void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y) {
-	URoom* room = FindRoomByLocation(x, y);
-	DeleteMonster(room);
+void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
+{
+    URoom* room = FindRoomByLocation(x, y);
+    room->DeleteMonster();
 }
 
-void ARoomControl::MoveMonster(UMonster* monster, Direction d) {
-	int targetId = monster->MonsterId();
-	MoveMonster(targetId, d);
+void ARoomControl::DeleteMonster(int roomId)
+{
+    URoom* room = FindRoomById(roomId);
+    room->DeleteMonster();
 }
 
-void ARoomControl::MoveMonster(int monsterId, Direction d) {
-	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->MonsterId() == monsterId) {
-			const Door* door = it->second->GetDoor(d);
+bool ARoomControl::MoveMonster(int monsterId, Direction d) {
+    for (const TPair<int32, int32>& it : monsterLocations) {
+        if (it.Key == monsterId) {
+            Door door = GameMap[it.Value]->GetDoor(d);
 
-			if (door->ConnectedRoom == 0 || door->Status == Close) {
-				throw "Cannot move";
-			}
-
-			UMonster* m = it->second->DeleteMonster();
-			it->second = door->ConnectedRoom;
-			it->second->InsertMonster(m);
-
-			break;
-		}
-	}
+            if (door.connectedRoom == nullptr || door.status == Close || GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0) {
+                UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
+                return false;
+            }
+            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."),it.Key, it.Value);
+            GameMap[it.Value]->DeleteMonster();
+            monsterLocations[it.Key] = door.connectedRoom->RoomId();
+            GameMap[it.Value]->InsertMonster(monsterId);
+            break;
+        }
+    }
+    return true;
 }
 
 UMonster* ARoomControl::FindMonsterById(const unsigned int id) {
-	
-	for (MonsterList::iterator it = Monsters.begin(); it != Monsters.end(); it++) {
-		if (it->first->MonsterId() == id) {
-			UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
-			UMonster* m = it->first;
 
-			return m;
-		}
-		
-		break;
-	}
-	return 0;
+    for (const TPair<int32, UMonster*>& it : monsters) {
+        if (it.Key == id) {
+            UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
+            UMonster* m = it.Value;
+
+            return m;
+        }
+    }
+    return NULL;
 }
 
-/*ARoomControl::~ARoomControl() {
-	int size = MaxHeight * MaxWidth;
 
-	UMonster* m;
-	while (!Monsters.empty()) {
-		m = Monsters.back().first;
-		Monsters.pop_back();
-		delete m;
-	}
-
-	if (!GameMap) {
-		for (int i = 0; i < size; i++) {
-			delete GameMap[i];
-		}
-		delete[] GameMap;
-	}
-}*/
