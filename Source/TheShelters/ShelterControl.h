@@ -12,6 +12,9 @@
 #include "GameFramework/Actor.h"
 #include "ShelterControl.generated.h"
 
+#define ROOM_WIDTH 10
+#define ROOM_HEIGHT 10
+
 enum AffectStatus {Appear, Disappear};
 
 // key = monsterId, value = shelterNum of the room monster is in
@@ -37,6 +40,12 @@ private:
 public:	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
 	TArray<UShelter*> GameMap;
+	
+	// cctv room number array and its zap planes accordingly
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<int32> CCTVRoomNum;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<AActor*> ZapPlanes;
 
 	// Sets default values for this actor's properties
 	AShelterControl();
@@ -50,6 +59,12 @@ public:
 	void EndTurn();
 	UFUNCTION(BlueprintCallable)
 	void InitLevel();
+	UFUNCTION(BlueprintCallable)
+	void InitCCTV(TArray<AActor*> _ZapPlanes);
+	UFUNCTION(BlueprintCallable)
+	void ZapCCTV();
+	UFUNCTION(BlueprintCallable)
+	void RestoreZap(AActor* CCTV);
 
 	void InitGame(const unsigned int m, const unsigned int n);
 
@@ -65,5 +80,6 @@ public:
 	// move monster to certain direction d according to monsterId
 	bool MoveMonster(int monsterId, Direction d);
 	void AffectShelters(int monsterId, int status);
+	
 	UMonster* FindMonsterById(const unsigned int id);
 };

@@ -20,10 +20,24 @@ void AShelterControl::BeginPlay()
 
 void AShelterControl::InitLevel() {
 
-	InitGame(5, 5);
+	InitGame(ROOM_WIDTH, ROOM_HEIGHT);
 	InsertMonster(DefaultMonster, 4);
 	InsertMonster(DefaultMonster, 8);
 	return;
+}
+
+void AShelterControl::InitCCTV(TArray<AActor*> _ZapPlanes)
+{
+	for (int i = 0; i < 9; ++i) {
+		ZapPlanes.Add(_ZapPlanes[i]);
+
+		while (CCTVRoomNum.AddUnique(rand() % (ROOM_WIDTH * ROOM_HEIGHT)) == -1);
+		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
+		
+	}
+	for (int i = 0; i < 9; ++i) {
+		ZapPlanes[i]->SetActorHiddenInGame(true);
+	}
 }
 
 void AShelterControl::EndTurn() {
@@ -34,8 +48,8 @@ void AShelterControl::EndTurn() {
 			MoveMonster(it.Key, Direction(rand() % 4));
 		}
 	}
-	for (int i = 0; i < 5; ++i) {
-		UE_LOG(LogTemp, Warning, TEXT("%d %d %d %d %d"), GameMap[i*5]->GetMonsterId(), GameMap[i*5+1]->GetMonsterId(), GameMap[i*5+2]->GetMonsterId(), GameMap[i*5 + 3]->GetMonsterId(), GameMap[i*5 + 4]->GetMonsterId());
+	for (int i = 0; i < 10; ++i) {
+		UE_LOG(LogTemp, Warning, TEXT("%d %d %d %d %d %d %d %d %d %d"), GameMap[i*10]->GetMonsterId(), GameMap[i*10+1]->GetMonsterId(), GameMap[i*10+2]->GetMonsterId(), GameMap[i*10 + 3]->GetMonsterId(), GameMap[i*10 + 4]->GetMonsterId(), GameMap[i * 10 + 5]->GetMonsterId(), GameMap[i * 10 + 6]->GetMonsterId(), GameMap[i * 10 + 7]->GetMonsterId(), GameMap[i * 10 + 8]->GetMonsterId(), GameMap[i * 10 + 9]->GetMonsterId());
 	}
 	
 	/*UE_LOG(LogTemp, Warning, TEXT("Printing to Log runtime3!"));
@@ -220,4 +234,23 @@ UMonster* AShelterControl::FindMonsterById(const unsigned int id) {
 	return NULL;
 }
 
+void AShelterControl::ZapCCTV()
+{
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+
+	int zapped = rand()%9;
+	UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
+
+	ZapPlanes[zapped]->SetActorHiddenInGame(false);
+
+	TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+}
+
+void AShelterControl::RestoreZap(AActor* CCTV)
+{
+	CCTV->SetActorHiddenInGame(true);
+	UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
+}
 
