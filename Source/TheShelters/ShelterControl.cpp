@@ -74,7 +74,7 @@ void AShelterControl::InitCCTV(TArray<AActor*> _ZapPlanes)
 	for (int i = 0; i < 9; ++i) {
 		ZapPlanes.Add(_ZapPlanes[i]);
 
-		while (CCTVRoomNum.AddUnique(rand() % (ROOM_WIDTH * ROOM_HEIGHT)) == -1);
+		while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1);
 		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
 		
 	}
