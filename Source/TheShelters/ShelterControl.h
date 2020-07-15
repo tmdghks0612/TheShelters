@@ -12,6 +12,9 @@
 #include "GameFramework/Actor.h"
 #include "ShelterControl.generated.h"
 
+
+enum AffectStatus {Appear, Disappear};
+
 // key = monsterId, value = shelterNum of the room monster is in
 typedef TMap<int32, int32>     MonsterLocationList;
 // key = monsterId, value = UMonster class instance
@@ -45,6 +48,12 @@ public:
 	void TestScenario();
 	UFUNCTION(BlueprintCallable)
 	void EndTurn();
+	UFUNCTION(BlueprintCallable)
+	void InitCCTV(TArray<AActor*> _ZapPlanes);
+	UFUNCTION(BlueprintCallable)
+	void ZapCCTV();
+	UFUNCTION(BlueprintCallable)
+	void RestoreZap(AActor* CCTV);
 
 	// Functions to find something in GameMap
 	UShelter* FindShelterByLocation(const unsigned int x, const unsigned int y);
@@ -60,6 +69,12 @@ public:
 	void DeleteMonster(int shelterId);
 	// Move the given mosnter's location to the direction d.
 	bool MoveMonster(int monsterId, Direction d);
+	
+	// cctv room number array and its zap planes accordingly
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<int32> CCTVRoomNum;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<AActor*> ZapPlanes;
 
 	// To show in blueprint
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
@@ -70,7 +85,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-
 	// Monster related values
 	MonsterList			monsters;
 	MonsterLocationList monsterLocations;

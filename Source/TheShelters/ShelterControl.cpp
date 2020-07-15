@@ -69,9 +69,22 @@ void AShelterControl::TestScenario()
     PrintTestMessage(TEXT("MonsterMovement"), 2, result);
 }
 
+void AShelterControl::InitCCTV(TArray<AActor*> _ZapPlanes)
+{
+	for (int i = 0; i < 9; ++i) {
+		ZapPlanes.Add(_ZapPlanes[i]);
+
+		while (CCTVRoomNum.AddUnique(rand() % (ROOM_WIDTH * ROOM_HEIGHT)) == -1);
+		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
+		
+	}
+	for (int i = 0; i < 9; ++i) {
+		ZapPlanes[i]->SetActorHiddenInGame(true);
+	}
+}
+
 void AShelterControl::EndTurn()
 {
-
 }
 
 void AShelterControl::InitGame(const unsigned int m, const unsigned int n) {
@@ -187,4 +200,23 @@ UMonster* AShelterControl::FindMonsterById(const unsigned int id) {
     return NULL;
 }
 
+void AShelterControl::ZapCCTV()
+{
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+
+	int zapped = rand()%9;
+	UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
+
+	ZapPlanes[zapped]->SetActorHiddenInGame(false);
+
+	TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+}
+
+void AShelterControl::RestoreZap(AActor* CCTV)
+{
+	CCTV->SetActorHiddenInGame(true);
+	UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
+}
 
