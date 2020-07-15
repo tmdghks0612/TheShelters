@@ -55,7 +55,7 @@ public:
 	// Constructors and Initializers
 	UShelter();
 	void InitShelter(const int num);
-	void InitDoor(const Direction d, int shelterId, DoorStatus s);
+	void InitDoor(const Direction d, int _shelterId, DoorStatus s);
 
 	// Getters and Setters
 	const int  ShelterId()                const;

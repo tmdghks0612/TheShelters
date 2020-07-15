@@ -23,8 +23,8 @@ void UShelter::InitShelter(int num)
 	doors[Down] = { 0, Open };
 }
 
-void UShelter::InitDoor(const Direction d, int shelterNum, DoorStatus s) {
-	doors[d].connectedShelter = shelterId; 
+void UShelter::InitDoor(const Direction d, int _shelterId, DoorStatus s) {
+	doors[d].connectedShelter = _shelterId;
 	doors[d].status = s;
 }
 
@@ -34,11 +34,7 @@ const int  UShelter::MonsterId()				const { return monsterId; }
 const bool UShelter::IsConnectedToPanicRoom()   const { return panicRoomConnection; }
 const Door UShelter::GetDoor(const Direction d)		  { return doors[d]; }
 
-void UShelter::SetDoor(const Direction d, const DoorStatus status)
-{
-
-	doors[d].status = status;
-}
+void UShelter::SetDoor(const Direction d, const DoorStatus status) { doors[d].status = status; }
 
 void UShelter::InsertMonster(int newMonsterId) { monsterId = newMonsterId; }
 void UShelter::DeleteMonster()				   { monsterId = 0;}
