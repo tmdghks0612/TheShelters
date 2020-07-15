@@ -9,16 +9,13 @@
 #include "UObject/NoExportTypes.h"
 #include "Shelter.generated.h"
 
-/**
- * 
- */
 
 class UShelter;
 
-enum ResourceType { Empty, Electricity, Water, Food, Metal, Circuit };
+enum ResourceType  { Empty, Electricity, Water, Food, Metal, Circuit };
 enum ShelterStatus { Peaceful, Dangerous };
-enum DoorStatus { Open, Close };
-enum Direction { Left, Right, Up, Down };
+enum DoorStatus    { Open, Close };
+enum Direction     { Left, Right, Up, Down };
 
 typedef struct {
 	unsigned int x;
@@ -30,45 +27,59 @@ typedef struct {
 	DoorStatus status;
 } Door;
 
+/* << UShelter : UObject >>
+ * Constructor:
+ * - Default Constructor
+ * Initializer:
+ * - InitShelter: ShelterId
+ * Property:
+ * - ID
+ * - MonsterId
+ * - ShelterType
+ * - Doors
+ * - ShelterStatus
+ * - CCTV
+ * - PanicRoomConnection
+ * 
+ * Description:
+ * A Shelter is a object which contains a monster and resource. It is
+ * connected to the other Shelters by doors.
+ */
+
 UCLASS()
 class THESHELTERS_API UShelter : public UObject
 {
 	GENERATED_BODY()
-	
-private:
-	int shelterNum;
-	// monsterid 0 means no monster.
-	int monsterId;
-	ShelterStatus shelterStatus;
-
-	Location location;
-
-	// NOTE: Can be changed to room type
-	ResourceType shelterType;
-	// To save resources
-	int storage;
-
-	std::map<Direction, Door> doors;
-
-	bool cctv;
-	bool panicRoomConnection;
 
 public:
+	// Constructors and Initializers
 	UShelter();
 	void InitShelter(const int num);
-	int GetShelterNum();
-	void SetLocation(const unsigned int x, const unsigned int y);
-	Location GetLocation();
-	bool IsConnectedToPanicRoom();
+	void InitDoor(const Direction d, int shelterId, DoorStatus s);
 
-	Door GetDoor(const Direction d);
-	void SetDoor(const Direction d, int _shelterNum, DoorStatus s);
-	void OpenDoor(const Direction d);
-	void CloseDoor(const Direction d);
+	// Getters and Setters
+	const int  ShelterId()                const;
+	const int  MonsterId()				  const;
+	const bool IsConnectedToPanicRoom()   const;
+	const Door GetDoor(const Direction d);
 
-	int GetMonsterId();
+	void SetDoor(const Direction d, const DoorStatus s);
 	void InsertMonster(int newMonsterId);
 	void DeleteMonster();
 
 	void Radiated();
+
+private:
+	// Default Shelter values
+	int shelterId;
+
+	// Keep changing variables
+	bool cctv;
+	int monsterId;  // 0 means no monster
+	ShelterStatus shelterStatus;
+	std::map<Direction, Door> doors;
+
+	// Shelter Properties
+	ResourceType shelterType;
+	bool panicRoomConnection;
 };
