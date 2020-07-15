@@ -53,7 +53,7 @@ void AShelterControl::PrintTestMessage(const TCHAR* testName, const int num, con
 
 void AShelterControl::TestScenario()
 {
-	InitGame(5, 5);
+	InitGame(10, 10);
 	InsertMonster(DefaultMonster, 0, 4);  // Monster 1: 0, 4
 	InsertMonster(DefaultMonster, 1, 3);  // Monster 2: 1, 3
 
@@ -75,11 +75,10 @@ void AShelterControl::InitCCTV(TArray<AActor*> _ZapPlanes)
 		ZapPlanes.Add(_ZapPlanes[i]);
 
 		while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1);
-		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
-		
 	}
 	for (int i = 0; i < 9; ++i) {
 		ZapPlanes[i]->SetActorHiddenInGame(true);
+		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
 	}
 }
 
