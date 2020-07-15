@@ -31,7 +31,6 @@ void URoom::InitDoor(const Direction d, URoom* connectedRoom, DoorStatus s) {
 // Getters and Setters
 const int  URoom::RoomId()					const { return roomId; }
 const int  URoom::MonsterId()				const { return monsterId; }
-const bool URoom::IsConnectedToPanicRoom()  const { return panicRoomConnection; }
 const Door URoom::GetDoor(const Direction d)      { return doors[d]; }
 
 void URoom::SetDoor(const Direction d, const DoorStatus status) { doors[d].status = status; }

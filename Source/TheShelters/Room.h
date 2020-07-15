@@ -60,7 +60,6 @@ public:
 	// Getters and Setters
 	const int  RoomId()                   const;
 	const int  MonsterId()				  const;
-	const bool IsConnectedToPanicRoom()   const;
 	const Door GetDoor(const Direction d);
 
 	void SetDoor(const Direction d, const DoorStatus s);
@@ -83,5 +82,4 @@ private:
 
 	// Room Properties
 	ResourceType roomType;
-	bool panicRoomConnection;
 };
