@@ -4,18 +4,15 @@
 #include "Shelter.h"
 
 //Default Constructor
-UShelter::UShelter() {
-
-}
+UShelter::UShelter() {}
 
 // Constructor
 void UShelter::InitShelter(int num)
 {
 	monsterId = 0;
 	shelterType = Empty;
-	shelterNum = num;
+	shelterId = num;
 	cctv = false;
-	storage = 0;
 	shelterStatus = Peaceful;
 	panicRoomConnection = false;
 
@@ -24,60 +21,25 @@ void UShelter::InitShelter(int num)
 	doors[Right] = { 0, Open };
 	doors[Up] = { 0, Open };
 	doors[Down] = { 0, Open };
-
 }
 
-// Public Methods
-int UShelter::GetShelterNum() {
-	return shelterNum;
-}
-
-void UShelter::SetLocation(const unsigned int x, const unsigned int y) {
-	location = { x, y };
-}
-
-Location UShelter::GetLocation() {
-	return location;
-}
-
-bool UShelter::IsConnectedToPanicRoom() {
-	return panicRoomConnection;
-}
-
-Door UShelter::GetDoor(const Direction d) {
-	UE_LOG(LogTemp, Warning, TEXT("Door Status : %d"), d);
-	
-	return doors[d];
-}
-
-void UShelter::SetDoor(const Direction d, int _shelterNum, DoorStatus s) {
-	doors[d].connectedShelter = _shelterNum;
+void UShelter::InitDoor(const Direction d, int _shelterId, DoorStatus s) {
+	doors[d].connectedShelter = _shelterId;
 	doors[d].status = s;
 }
 
-void UShelter::OpenDoor(const Direction d) {
-	doors[d].status = Open;
-}
+// Getters and Setters
+const int  UShelter::ShelterId()				const { return shelterId; }
+const int  UShelter::MonsterId()				const { return monsterId; }
+const bool UShelter::IsConnectedToPanicRoom()   const { return panicRoomConnection; }
+const Door UShelter::GetDoor(const Direction d)		  { return doors[d]; }
 
-void UShelter::CloseDoor(const Direction d) {
-	doors[d].status = Close;
-}
+void UShelter::SetDoor(const Direction d, const DoorStatus status) { doors[d].status = status; }
 
-int UShelter::GetMonsterId() {
-	return monsterId;
-}
-
-void UShelter::InsertMonster(int newMonsterId) {
-	monsterId = newMonsterId;
-}
-
-void UShelter::DeleteMonster() {
-	monsterId = 0;
-	return;
-}
+void UShelter::InsertMonster(int newMonsterId) { monsterId = newMonsterId; }
+void UShelter::DeleteMonster()				   { monsterId = 0;}
 
 void UShelter::Radiated()
 {
 	UE_LOG(LogTemp, Warning, TEXT("radiated"));
 }
-
