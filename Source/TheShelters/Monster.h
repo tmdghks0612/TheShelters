@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Monster.generated.h"
 #include "UObject/NoExportTypes.h"
+
+#include "Monster.generated.h"
 
 // MonsterType determines MonsterProperty values and movement speed
 enum MonsterType

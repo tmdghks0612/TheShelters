@@ -3,13 +3,13 @@
 #pragma once
 
 #include <map>
-#include <stdlib.h>
 #include <vector>
 
 #include "Room.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "RoomControl.generated.h"
 
 // key = monsterId, value = roomNum of the room monster is in

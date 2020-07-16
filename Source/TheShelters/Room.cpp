@@ -15,7 +15,6 @@ void URoom::InitRoom(int num)
     roomId = num;
     cctv = false;
     roomStatus = Peaceful;
-    panicRoomConnection = false;
 
     doors = std::map<Direction, Door>();
     doors[Left] = {nullptr, Open};

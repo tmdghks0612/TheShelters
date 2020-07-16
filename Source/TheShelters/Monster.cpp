@@ -2,8 +2,7 @@
 
 #include "Monster.h"
 
-// constructor sets monster characteristics and its id. depends on MonsterType
-// t
+// constructor sets monster characteristics and its id. depends on MonsterType t
 void UMonster::InitMonster(MonsterType t, int id)
 {
     monsterId = id;
