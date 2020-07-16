@@ -45,6 +45,13 @@ class THESHELTERS_API ARoomControl : public AActor
     void TestScenario();
     UFUNCTION(BlueprintCallable)
     void EndTurn();
+    UFUNCTION(BlueprintCallable)
+    void InitCCTV(TArray<AActor*> _ZapPlanes);
+    UFUNCTION(BlueprintCallable)
+    void ZapCCTV();
+    UFUNCTION(BlueprintCallable)
+    void RestoreZap(AActor* CCTV);
+
 
     // Functions to find something in GameMap
     URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
@@ -60,6 +67,12 @@ class THESHELTERS_API ARoomControl : public AActor
     void DeleteMonster(int roomId);
     // Move the given mosnter's location to the direction d.
     bool MoveMonster(int monsterId, Direction d);
+
+    // cctv room number array and its zap planes accordingly
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    TArray<int32> CCTVRoomNum;
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    TArray<AActor*> ZapPlanes;
 
     // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere);

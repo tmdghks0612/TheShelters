@@ -52,7 +52,7 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 
 void ARoomControl::TestScenario()
 {
-    InitGame(5, 5);
+    InitGame(10, 10);
     InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
@@ -64,17 +64,28 @@ void ARoomControl::TestScenario()
     result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
     PrintTestMessage(TEXT("MonsterMovement"), 1, result);
 
-    result = GameMap[8]->MonsterId() == 0 && GameMap[9]->MonsterId() == 2;
+    result = GameMap[13]->MonsterId() == 0 && GameMap[14]->MonsterId() == 2;
     PrintTestMessage(TEXT("MonsterMovement"), 2, result);
 
     URoom *room = FindRoomByLocation(3, 3);
     room->CloseDoor(Left);
-    result = GameMap[18]->GetDoor(Left).status == Close;
+    result = GameMap[33]->GetDoor(Left).status == Close;
     PrintTestMessage(TEXT("CloseDoor"), 1, result);
 
-    result = GameMap[17]->GetDoor(Right).status == Close;
+    result = GameMap[32]->GetDoor(Right).status == Close;
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 }
+
+void ARoomControl::InitCCTV(TArray<AActor*> _ZapPlanes)
+{
+    for (int i = 0; i< 9; ++i) {
+        ZapPlanes.Add(_ZapPlanes[i]);
+
+        while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1);
+    }
+    for (int i = 0; i < 9; ++i) {
+        ZapPlanes[i]->SetActorHiddenInGame(true);
+        UE_LOG(LogTemp, Warning, TEXT("loop: %d"), CCTVRoomNum[i]);
 
 void ARoomControl::EndTurn()
 {
@@ -213,4 +224,24 @@ UMonster *ARoomControl::FindMonsterById(const unsigned int id)
         }
     }
     return NULL;
+}
+
+void ARoomControl::ZapCCTV()
+{
+    FTimerDelegate TimerDel;
+    FTimerHandle TimerHandle;
+
+    int zapped = rand() % 9;
+    UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
+
+    ZapPlanes[zapped]->SetActorHiddenInGame(false);
+
+    TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
+    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+}
+
+void AShelterControl::RestoreZap(AActor* CCTV)
+{
+    CCTV->SetActorHiddenInGame(true);
+    UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
 }
