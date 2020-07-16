@@ -6,8 +6,8 @@
 #include <map>
 
 #include "CoreMinimal.h"
-#include "Room.generated.h"
 #include "UObject/NoExportTypes.h"
+#include "Room.generated.h"
 
 class URoom;
 
