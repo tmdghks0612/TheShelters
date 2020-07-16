@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RoomControl.h"
 
 // Sets default values
@@ -33,7 +32,7 @@ void ARoomControl::PrintMap()
     }
 }
 
-void ARoomControl::PrintTestMessage(const TCHAR* testName, const int num, const bool success)
+void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
 {
     FString line = FString();
     TArray<FStringFormatArg> args;
@@ -41,11 +40,11 @@ void ARoomControl::PrintTestMessage(const TCHAR* testName, const int num, const 
     args.Add(FStringFormatArg(num));
     if (success)
     {
-		line += FString::Format(TEXT("[{0}] TEST {1}: SUCCESS"), args);
+        line += FString::Format(TEXT("[{0}] TEST {1}: SUCCESS"), args);
     }
     else
     {
-		line += FString::Format(TEXT("[{0}] TEST {1}: FAIL"), args);
+        line += FString::Format(TEXT("[{0}] TEST {1}: FAIL"), args);
     }
 
     UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
@@ -53,12 +52,12 @@ void ARoomControl::PrintTestMessage(const TCHAR* testName, const int num, const 
 
 void ARoomControl::TestScenario()
 {
-	InitGame(5, 5);
-	InsertMonster(DefaultMonster, 0, 4);  // Monster 1: 0, 4
-	InsertMonster(DefaultMonster, 1, 3);  // Monster 2: 1, 3
+    InitGame(5, 5);
+    InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
+    InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
-    MoveMonster(1, Left);                 // Monster 1: 0, 3
-    MoveMonster(2, Right);                // Monster 2: 1, 4
+    MoveMonster(1, Left);  // Monster 1: 0, 3
+    MoveMonster(2, Right); // Monster 2: 1, 4
 
     // EXPECT
     bool result;
@@ -68,7 +67,7 @@ void ARoomControl::TestScenario()
     result = GameMap[8]->MonsterId() == 0 && GameMap[9]->MonsterId() == 2;
     PrintTestMessage(TEXT("MonsterMovement"), 2, result);
 
-    URoom* room = FindRoomByLocation(3, 3);
+    URoom *room = FindRoomByLocation(3, 3);
     room->CloseDoor(Left);
     result = GameMap[18]->GetDoor(Left).status == Close;
     PrintTestMessage(TEXT("CloseDoor"), 1, result);
@@ -79,53 +78,61 @@ void ARoomControl::TestScenario()
 
 void ARoomControl::EndTurn()
 {
-
 }
 
-void ARoomControl::InitGame(const unsigned int m, const unsigned int n) {
+void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
+{
     maxHeight = m;
     maxWidth = n;
 
     int size = maxHeight * maxWidth;
-    
-    for (int i = 0; i < size; i++) {
+
+    for (int i = 0; i < size; i++)
+    {
         URoom *NewRoom = NewObject<URoom>();
         NewRoom->InitRoom(i);
         GameMap.Add(NewRoom);
     }
 
     // Connect all rooms
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         // A idx is MaxWidth * x + y
         int x = i / maxWidth;
         int y = i % maxWidth;
 
-        URoom* room;
-        if (x != 0) {
+        URoom *room;
+        if (x != 0)
+        {
             room = FindRoomByLocation(x - 1, y);
             GameMap[i]->InitDoor(Up, room, Open);
         }
-        if (x != (maxHeight - 1)) {
+        if (x != (maxHeight - 1))
+        {
             room = FindRoomByLocation(x + 1, y);
             GameMap[i]->InitDoor(Down, room, Open);
         }
-        if (y != 0) {
+        if (y != 0)
+        {
             room = FindRoomByLocation(x, y - 1);
             GameMap[i]->InitDoor(Left, room, Open);
         }
-        if (y != (maxWidth - 1)) {
+        if (y != (maxWidth - 1))
+        {
             room = FindRoomByLocation(x, y + 1);
             GameMap[i]->InitDoor(Right, room, Open);
         }
     }
 }
 
-
-URoom* ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y) {
-    if (x < 0 || x >= maxHeight) {
+URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
+{
+    if (x < 0 || x >= maxHeight)
+    {
         throw "You've exceeded map height";
     }
-    if (y < 0 || y >= maxWidth) {
+    if (y < 0 || y >= maxWidth)
+    {
         throw "You've exceeded map width";
     }
 
@@ -134,7 +141,7 @@ URoom* ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int
     return GameMap[idx];
 }
 
-URoom* ARoomControl::FindRoomById(const int roomId)
+URoom *ARoomControl::FindRoomById(const int roomId)
 {
     return GameMap[roomId];
 }
@@ -148,8 +155,8 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
 void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
 {
     GameMap[roomId]->InsertMonster(nextMonsterId);
-    
-    UMonster* newMonster = NewObject<UMonster>();
+
+    UMonster *newMonster = NewObject<UMonster>();
     newMonster->InitMonster(monsterType, nextMonsterId);
     monsters.Add(nextMonsterId, newMonster);
     monsterLocations.Add(nextMonsterId, roomId);
@@ -158,26 +165,31 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
 
 void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
 {
-    URoom* room = FindRoomByLocation(x, y);
+    URoom *room = FindRoomByLocation(x, y);
     room->DeleteMonster();
 }
 
 void ARoomControl::DeleteMonster(int roomId)
 {
-    URoom* room = FindRoomById(roomId);
+    URoom *room = FindRoomById(roomId);
     room->DeleteMonster();
 }
 
-bool ARoomControl::MoveMonster(int monsterId, Direction d) {
-    for (const TPair<int32, int32>& it : monsterLocations) {
-        if (it.Key == monsterId) {
+bool ARoomControl::MoveMonster(int monsterId, Direction d)
+{
+    for (const TPair<int32, int32> &it : monsterLocations)
+    {
+        if (it.Key == monsterId)
+        {
             Door door = GameMap[it.Value]->GetDoor(d);
 
-            if (door.connectedRoom == nullptr || door.status == Close || GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0) {
+            if (door.connectedRoom == nullptr || door.status == Close ||
+                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
+            {
                 UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
                 return false;
             }
-            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."),it.Key, it.Value);
+            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."), it.Key, it.Value);
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
@@ -187,17 +199,18 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d) {
     return true;
 }
 
-UMonster* ARoomControl::FindMonsterById(const unsigned int id) {
+UMonster *ARoomControl::FindMonsterById(const unsigned int id)
+{
 
-    for (const TPair<int32, UMonster*>& it : monsters) {
-        if (it.Key == id) {
+    for (const TPair<int32, UMonster *> &it : monsters)
+    {
+        if (it.Key == id)
+        {
             UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
-            UMonster* m = it.Value;
+            UMonster *m = it.Value;
 
             return m;
         }
     }
     return NULL;
 }
-
-
