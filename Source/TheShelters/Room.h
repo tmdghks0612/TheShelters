@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include "Monster.h"
 #include <map>
+
+#include "Monster.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Room.generated.h"
 
+#include "Room.generated.h"
 class URoom;
 
 enum ResourceType
