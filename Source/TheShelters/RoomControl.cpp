@@ -94,6 +94,11 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes)
 
 void ARoomControl::EndTurn()
 {
+    for (const <TPair<int32, int32>& it : monsterLocations) {
+        if (!MoveMonster(it.Key, Direction(rand() % 4))) {
+            MoveMonster(it.Key, Direction(rand() % 4));
+        }
+    }
 }
 
 void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
@@ -177,6 +182,21 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
     monsters.Add(nextMonsterId, newMonster);
     monsterLocations.Add(nextMonsterId, roomId);
     nextMonsterId++;
+
+    if (MonsterSpawn[monsterType])
+    {
+        UWorld* world = GetWorld();
+        if (world)
+        {
+            FActorSpawnParameters spawnParams;
+            spawnParams.Owner = this;
+
+			FRotator rotator(0.0f, 0.0f, 0.0f);
+			FVector spawnLocation(startX - x * interval, startY + y * interval, startZ);
+
+			monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams));
+		}
+	}
 }
 
 void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
@@ -209,6 +229,9 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
+            if (monsterActors[mosnterId - 1]) {
+                monsterActors[monsterId - 1]->SetActorLocation(FVector(startX - interval * (it.Value % maxWidth), startY + interval * (it.Value/maxWidth), startZ));
+            }
             break;
         }
     }
