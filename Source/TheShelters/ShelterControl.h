@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "Shelter.h"
+#include "MonsterActor.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -75,11 +76,16 @@ public:
 	TArray<int32> CCTVRoomNum;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<AActor*> ZapPlanes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UBlueprint*> SpawnActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
 
 	// To show in blueprint
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
-	TArray<UShelter*>	GameMap;
-
+	TArray<UShelter*> GameMap;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -89,10 +95,15 @@ private:
 	MonsterList			monsters;
 	MonsterLocationList monsterLocations;
 			 int		nextMonsterId = 1;
+	TArray<AMonsterActor*> monsterActors;
 
 	// GameMap size
 	unsigned int		maxWidth;
 	unsigned int		maxHeight;
+	float				startX = 4000.0f;
+	float				startY = 0.0f;
+	float				startZ = 190.0f;
+	float				interval = 700.0f;
 
 	// For test and debugging
 	void PrintMap();

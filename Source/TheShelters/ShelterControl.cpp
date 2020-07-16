@@ -54,8 +54,8 @@ void AShelterControl::PrintTestMessage(const TCHAR* testName, const int num, con
 void AShelterControl::TestScenario()
 {
 	InitGame(10, 10);
-	InsertMonster(DefaultMonster, 0, 4);  // Monster 1: 0, 4
-	InsertMonster(DefaultMonster, 1, 3);  // Monster 2: 1, 3
+	InsertMonster(DefaultMonster, 0, 2);  // Monster 1: 0, 4
+	InsertMonster(DefaultMonster, 1, 1);  // Monster 2: 1, 3
 
     MoveMonster(1, Left);                 // Monster 1: 0, 3
     MoveMonster(2, Right);                // Monster 2: 1, 4
@@ -78,12 +78,16 @@ void AShelterControl::InitCCTV(TArray<AActor*> _ZapPlanes)
 	}
 	for (int i = 0; i < 9; ++i) {
 		ZapPlanes[i]->SetActorHiddenInGame(true);
-		UE_LOG(LogTemp, Warning, TEXT("loop : %d"), CCTVRoomNum[i]);
 	}
 }
 
 void AShelterControl::EndTurn()
 {
+	for (const TPair<int32, int32>& it : monsterLocations) {
+		if (!MoveMonster(it.Key, Direction(rand() % 4))) {
+			MoveMonster(it.Key, Direction(rand() % 4));
+		}
+	}
 }
 
 void AShelterControl::InitGame(const unsigned int m, const unsigned int n) {
@@ -142,6 +146,21 @@ void AShelterControl::InsertMonster(MonsterType monsterType, int x, int y)
 {
     int shelterNum = x * maxWidth + y;
     InsertMonster(monsterType, shelterNum);
+
+
+	if (MonsterSpawn[monsterType]) {
+		UWorld* world = GetWorld();
+		if (world) {
+			FActorSpawnParameters spawnParams;
+			spawnParams.Owner = this;
+
+			FRotator rotator(0.0f, 0.0f, 0.0f);
+			FVector spawnLocation(startX - x * interval, startY + y * interval, startZ);
+
+			monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams));
+		}
+	}
+
 }
 
 void AShelterControl::InsertMonster(MonsterType monsterType, int shelterId)
@@ -180,6 +199,9 @@ bool AShelterControl::MoveMonster(int monsterId, Direction d) {
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedShelter;
             GameMap[it.Value]->InsertMonster(monsterId);
+			if (monsterActors[monsterId - 1]) {
+				monsterActors[monsterId - 1]->SetActorLocation(FVector(startX - interval * (it.Value%maxWidth), startY + interval * (it.Value/maxWidth), startZ));
+			}
             break;
         }
     }
