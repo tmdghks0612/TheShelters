@@ -76,172 +76,175 @@ void ARoomControl::TestScenario()
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 }
 
-void ARoomControl::InitCCTV(TArray<AActor*> _ZapPlanes)
+void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes)
 {
-    for (int i = 0; i< 9; ++i) {
+    for (int i = 0; i < 9; ++i)
+    {
         ZapPlanes.Add(_ZapPlanes[i]);
 
-        while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1);
+        while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1)
+            ;
     }
-    for (int i = 0; i < 9; ++i) {
+    for (int i = 0; i < 9; ++i)
+    {
         ZapPlanes[i]->SetActorHiddenInGame(true);
         UE_LOG(LogTemp, Warning, TEXT("loop: %d"), CCTVRoomNum[i]);
 
-void ARoomControl::EndTurn()
-{
-}
-
-void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
-{
-    maxHeight = m;
-    maxWidth = n;
-
-    int size = maxHeight * maxWidth;
-
-    for (int i = 0; i < size; i++)
-    {
-        URoom *NewRoom = NewObject<URoom>();
-        NewRoom->InitRoom(i);
-        GameMap.Add(NewRoom);
-    }
-
-    // Connect all rooms
-    for (int i = 0; i < size; i++)
-    {
-        // A idx is MaxWidth * x + y
-        int x = i / maxWidth;
-        int y = i % maxWidth;
-
-        URoom *room;
-        if (x != 0)
+        void ARoomControl::EndTurn()
         {
-            room = FindRoomByLocation(x - 1, y);
-            GameMap[i]->InitDoor(Up, room, Open);
         }
-        if (x != (maxHeight - 1))
+
+        void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
         {
-            room = FindRoomByLocation(x + 1, y);
-            GameMap[i]->InitDoor(Down, room, Open);
-        }
-        if (y != 0)
-        {
-            room = FindRoomByLocation(x, y - 1);
-            GameMap[i]->InitDoor(Left, room, Open);
-        }
-        if (y != (maxWidth - 1))
-        {
-            room = FindRoomByLocation(x, y + 1);
-            GameMap[i]->InitDoor(Right, room, Open);
-        }
-    }
-}
+            maxHeight = m;
+            maxWidth = n;
 
-URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
-{
-    if (x < 0 || x >= maxHeight)
-    {
-        throw "You've exceeded map height";
-    }
-    if (y < 0 || y >= maxWidth)
-    {
-        throw "You've exceeded map width";
-    }
+            int size = maxHeight * maxWidth;
 
-    int idx = maxWidth * x + y;
-
-    return GameMap[idx];
-}
-
-URoom *ARoomControl::FindRoomById(const int roomId)
-{
-    return GameMap[roomId];
-}
-
-void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
-{
-    int roomNum = x * maxWidth + y;
-    InsertMonster(monsterType, roomNum);
-}
-
-void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
-{
-    GameMap[roomId]->InsertMonster(nextMonsterId);
-
-    UMonster *newMonster = NewObject<UMonster>();
-    newMonster->InitMonster(monsterType, nextMonsterId);
-    monsters.Add(nextMonsterId, newMonster);
-    monsterLocations.Add(nextMonsterId, roomId);
-    nextMonsterId++;
-}
-
-void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
-{
-    URoom *room = FindRoomByLocation(x, y);
-    room->DeleteMonster();
-}
-
-void ARoomControl::DeleteMonster(int roomId)
-{
-    URoom *room = FindRoomById(roomId);
-    room->DeleteMonster();
-}
-
-bool ARoomControl::MoveMonster(int monsterId, Direction d)
-{
-    for (const TPair<int32, int32> &it : monsterLocations)
-    {
-        if (it.Key == monsterId)
-        {
-            Door door = GameMap[it.Value]->GetDoor(d);
-
-            if (door.connectedRoom == nullptr || door.status == Close ||
-                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
+            for (int i = 0; i < size; i++)
             {
-                UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
-                return false;
+                URoom *NewRoom = NewObject<URoom>();
+                NewRoom->InitRoom(i);
+                GameMap.Add(NewRoom);
             }
-            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."), it.Key, it.Value);
-            GameMap[it.Value]->DeleteMonster();
-            monsterLocations[it.Key] = door.connectedRoom->RoomId();
-            GameMap[it.Value]->InsertMonster(monsterId);
-            break;
+
+            // Connect all rooms
+            for (int i = 0; i < size; i++)
+            {
+                // A idx is MaxWidth * x + y
+                int x = i / maxWidth;
+                int y = i % maxWidth;
+
+                URoom *room;
+                if (x != 0)
+                {
+                    room = FindRoomByLocation(x - 1, y);
+                    GameMap[i]->InitDoor(Up, room, Open);
+                }
+                if (x != (maxHeight - 1))
+                {
+                    room = FindRoomByLocation(x + 1, y);
+                    GameMap[i]->InitDoor(Down, room, Open);
+                }
+                if (y != 0)
+                {
+                    room = FindRoomByLocation(x, y - 1);
+                    GameMap[i]->InitDoor(Left, room, Open);
+                }
+                if (y != (maxWidth - 1))
+                {
+                    room = FindRoomByLocation(x, y + 1);
+                    GameMap[i]->InitDoor(Right, room, Open);
+                }
+            }
         }
-    }
-    return true;
-}
 
-UMonster *ARoomControl::FindMonsterById(const unsigned int id)
-{
-
-    for (const TPair<int32, UMonster *> &it : monsters)
-    {
-        if (it.Key == id)
+        URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
-            UMonster *m = it.Value;
+            if (x < 0 || x >= maxHeight)
+            {
+                throw "You've exceeded map height";
+            }
+            if (y < 0 || y >= maxWidth)
+            {
+                throw "You've exceeded map width";
+            }
 
-            return m;
+            int idx = maxWidth * x + y;
+
+            return GameMap[idx];
         }
-    }
-    return NULL;
-}
 
-void ARoomControl::ZapCCTV()
-{
-    FTimerDelegate TimerDel;
-    FTimerHandle TimerHandle;
+        URoom *ARoomControl::FindRoomById(const int roomId)
+        {
+            return GameMap[roomId];
+        }
 
-    int zapped = rand() % 9;
-    UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
+        void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
+        {
+            int roomNum = x * maxWidth + y;
+            InsertMonster(monsterType, roomNum);
+        }
 
-    ZapPlanes[zapped]->SetActorHiddenInGame(false);
+        void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
+        {
+            GameMap[roomId]->InsertMonster(nextMonsterId);
 
-    TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
-    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
-}
+            UMonster *newMonster = NewObject<UMonster>();
+            newMonster->InitMonster(monsterType, nextMonsterId);
+            monsters.Add(nextMonsterId, newMonster);
+            monsterLocations.Add(nextMonsterId, roomId);
+            nextMonsterId++;
+        }
 
-void AShelterControl::RestoreZap(AActor* CCTV)
-{
-    CCTV->SetActorHiddenInGame(true);
-    UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
-}
+        void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
+        {
+            URoom *room = FindRoomByLocation(x, y);
+            room->DeleteMonster();
+        }
+
+        void ARoomControl::DeleteMonster(int roomId)
+        {
+            URoom *room = FindRoomById(roomId);
+            room->DeleteMonster();
+        }
+
+        bool ARoomControl::MoveMonster(int monsterId, Direction d)
+        {
+            for (const TPair<int32, int32> &it : monsterLocations)
+            {
+                if (it.Key == monsterId)
+                {
+                    Door door = GameMap[it.Value]->GetDoor(d);
+
+                    if (door.connectedRoom == nullptr || door.status == Close ||
+                        GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
+                    {
+                        UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
+                        return false;
+                    }
+                    UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."), it.Key, it.Value);
+                    GameMap[it.Value]->DeleteMonster();
+                    monsterLocations[it.Key] = door.connectedRoom->RoomId();
+                    GameMap[it.Value]->InsertMonster(monsterId);
+                    break;
+                }
+            }
+            return true;
+        }
+
+        UMonster *ARoomControl::FindMonsterById(const unsigned int id)
+        {
+
+            for (const TPair<int32, UMonster *> &it : monsters)
+            {
+                if (it.Key == id)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Hello pretty monster"));
+                    UMonster *m = it.Value;
+
+                    return m;
+                }
+            }
+            return NULL;
+        }
+
+        void ARoomControl::ZapCCTV()
+        {
+            FTimerDelegate TimerDel;
+            FTimerHandle TimerHandle;
+
+            int zapped = rand() % 9;
+            UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
+
+            ZapPlanes[zapped]->SetActorHiddenInGame(false);
+
+            TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
+            GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+        }
+
+        void AShelterControl::RestoreZap(AActor * CCTV)
+        {
+            CCTV->SetActorHiddenInGame(true);
+            UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
+        }

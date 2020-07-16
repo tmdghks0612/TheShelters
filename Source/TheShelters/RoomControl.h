@@ -46,12 +46,11 @@ class THESHELTERS_API ARoomControl : public AActor
     UFUNCTION(BlueprintCallable)
     void EndTurn();
     UFUNCTION(BlueprintCallable)
-    void InitCCTV(TArray<AActor*> _ZapPlanes);
+    void InitCCTV(TArray<AActor *> _ZapPlanes);
     UFUNCTION(BlueprintCallable)
     void ZapCCTV();
     UFUNCTION(BlueprintCallable)
-    void RestoreZap(AActor* CCTV);
-
+    void RestoreZap(AActor *CCTV);
 
     // Functions to find something in GameMap
     URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
@@ -72,7 +71,7 @@ class THESHELTERS_API ARoomControl : public AActor
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<int32> CCTVRoomNum;
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-    TArray<AActor*> ZapPlanes;
+    TArray<AActor *> ZapPlanes;
 
     // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
