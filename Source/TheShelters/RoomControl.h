@@ -73,8 +73,6 @@ class THESHELTERS_API ARoomControl : public AActor
     TArray<int32> CCTVRoomNum;
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<AActor *> ZapPlanes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UBlueprint*> SpawnActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
