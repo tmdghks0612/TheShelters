@@ -2,70 +2,107 @@
 
 #pragma once
 
-#include <map>
 #include "Monster.h"
+#include <map>
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "Room.generated.h"
-
-/**
- * 
- */
+#include "UObject/NoExportTypes.h"
 
 class URoom;
 
-enum ResourceType { Empty, Electricity, Water, Food, Metal, Circuit };
-enum RoomStatus { Peaceful, Dangerous };
-enum DoorStatus { Open, Close };
-enum Direction { Left, Right, Up, Down };
+enum ResourceType
+{
+    Empty,
+    Electricity,
+    Water,
+    Food,
+    Metal,
+    Circuit
+};
+enum RoomStatus
+{
+    Peaceful,
+    Dangerous
+};
+enum DoorStatus
+{
+    Open,
+    Close
+};
+enum Direction
+{
+    Left,
+    Up,
+    Right,
+    Down
+};
 
-typedef struct {
-	unsigned int x;
-	unsigned int y;
+typedef struct
+{
+    unsigned int x;
+    unsigned int y;
 } Location;
 
-typedef struct {
-	URoom* ConnectedRoom;
-	DoorStatus Status;
+typedef struct
+{
+    URoom *connectedRoom;
+    DoorStatus status;
 } Door;
+
+/* << URoom : UObject >>
+ * Constructor:
+ * - Default Constructor
+ * Initializer:
+ * - InitRoom: RoomId
+ * Property:
+ * - ID
+ * - MonsterId
+ * - RoomType
+ * - Doors
+ * - RoomStatus
+ * - CCTV
+ * - PanicRoomConnection
+ *
+ * Description:
+ * A Room is a object which contains a monster and resource. It is
+ * connected to the other Rooms by doors.
+ */
 
 UCLASS()
 class THESHELTERS_API URoom : public UObject
 {
-	GENERATED_BODY()
-private:
-	int roomNo;
-	UMonster* monster;
-	RoomStatus roomStatus;
+    GENERATED_BODY()
 
-	Location location;
+  public:
+    // Constructors and Initializers
+    URoom();
+    void InitRoom(const int num);
+    void InitDoor(const Direction d, URoom *connectedRoom, DoorStatus s);
 
-	// NOTE: Can be changed to room type
-	ResourceType roomType;
-	// To save resources
-	int storage;
+    // Getters and Setters
+    const int RoomId() const;
+    const int MonsterId() const;
+    const Door GetDoor(const Direction d);
 
-	std::map<Direction, Door> doors;
+    void SetDoor(const Direction d, const DoorStatus s);
+    void OpenDoor(const Direction d);
+    void CloseDoor(const Direction d);
+    void InsertMonster(int newMonsterId);
+    void DeleteMonster();
 
-	bool cctv;
+    void Radiated();
 
-	bool panicRoomConnection;
+  private:
+    // Default Room values
+    int roomId;
 
-public:
-	URoom();
-	void InitRoom(const int no);
-	int GetRoomNo();
-	void SetLocation(const unsigned int x, const unsigned int y);
-	Location GetLocation();
-	bool IsConnectedToPanicRoom();
+    // Keep changing variables
+    bool cctv;
+    int monsterId; // 0 means no monster
+    RoomStatus roomStatus;
+    std::map<Direction, Door> doors;
 
-	Door* GetDoor(const Direction d);
-	void SetDoor(const Direction d, URoom* room, DoorStatus s);
-	void OpenDoor(const Direction d);
-	void CloseDoor(const Direction d);
-
-	UMonster* GetMonster();
-	void InsertMonster(UMonster* newMonster);
-	UMonster* DeleteMonster();
+    // Room Properties
+    ResourceType roomType;
 };

@@ -1,81 +1,76 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Room.h"
 
-//Default Constructor
-URoom::URoom() {
-
+// Default Constructor
+URoom::URoom()
+{
 }
 
 // Constructor
-void URoom::InitRoom(int no)
+void URoom::InitRoom(int num)
 {
-	monster = 0;
-	roomType = Empty;
-	roomNo = no;
-	cctv = false;
-	storage = 0;
-	roomStatus = Peaceful;
-	panicRoomConnection = false;
+    monsterId = 0;
+    roomType = Empty;
+    roomId = num;
+    cctv = false;
+    roomStatus = Peaceful;
+    panicRoomConnection = false;
 
-	doors = std::map<Direction, Door>();
-	doors[Left] = { 0, Open };
-	doors[Right] = { 0, Open };
-	doors[Up] = { 0, Open };
-	doors[Down] = { 0, Open };
-
+    doors = std::map<Direction, Door>();
+    doors[Left] = {nullptr, Open};
+    doors[Right] = {nullptr, Open};
+    doors[Up] = {nullptr, Open};
+    doors[Down] = {nullptr, Open};
 }
 
-// Public Methods
-int URoom::GetRoomNo() {
-	return roomNo;
+void URoom::InitDoor(const Direction d, URoom *connectedRoom, DoorStatus s)
+{
+    doors[d].connectedRoom = connectedRoom;
+    doors[d].status = s;
 }
 
-void URoom::SetLocation(const unsigned int x, const unsigned int y) {
-	location = { x, y };
+// Getters and Setters
+const int URoom::RoomId() const
+{
+    return roomId;
+}
+const int URoom::MonsterId() const
+{
+    return monsterId;
+}
+const Door URoom::GetDoor(const Direction d)
+{
+    return doors[d];
 }
 
-Location URoom::GetLocation() {
-	return location;
+void URoom::SetDoor(const Direction d, const DoorStatus status)
+{
+    doors[d].status = status;
+}
+void URoom::OpenDoor(const Direction d)
+{
+    SetDoor(d, Open);
+    Direction oppositeDirection = static_cast<Direction>((d + 2) % 4);
+    doors[d].connectedRoom->SetDoor(oppositeDirection, Open);
+}
+void URoom::CloseDoor(const Direction d)
+{
+    SetDoor(d, Close);
+    Direction oppositeDirection = static_cast<Direction>((d + 2) % 4);
+    doors[d].connectedRoom->SetDoor(oppositeDirection, Close);
 }
 
-bool URoom::IsConnectedToPanicRoom() {
-	return panicRoomConnection;
+void URoom::InsertMonster(int newMonsterId)
+{
+    monsterId = newMonsterId;
+}
+void URoom::DeleteMonster()
+{
+    monsterId = 0;
 }
 
-Door* URoom::GetDoor(const Direction d) {
-	UE_LOG(LogTemp, Warning, TEXT("Door Status : %d"), d);
-	//UE_LOG(LogTemp, Warning, TEXT("Door Status : %d"), doors[d].Status);
-	//return &doors.at(d);
-	
-	//return &doors[d];
-	return nullptr;
-}
-
-void URoom::SetDoor(const Direction d, URoom* room, DoorStatus s) {
-	doors[d].ConnectedRoom = room;
-	doors[d].Status = s;
-}
-
-void URoom::OpenDoor(const Direction d) {
-	doors[d].Status = Open;
-}
-
-void URoom::CloseDoor(const Direction d) {
-	doors[d].Status = Close;
-}
-
-UMonster* URoom::GetMonster() {
-	return monster;
-}
-
-void URoom::InsertMonster(UMonster* newMonster) {
-	this->monster = newMonster;
-}
-
-UMonster* URoom::DeleteMonster() {
-	UMonster* m = monster;
-	monster = 0;
-	return m;
+void URoom::Radiated()
+{
+    UE_LOG(LogTemp, Warning, TEXT("radiated"));
 }
