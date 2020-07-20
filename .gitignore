@@ -12,4 +12,5 @@ Saved
 *.sln
 *.xcodeproj
 *.xcworkspace
-TheShelters.sln
+*.sln
+*.code-workspace
