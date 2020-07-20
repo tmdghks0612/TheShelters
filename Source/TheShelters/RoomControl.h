@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Room.h"
+#include "MonsterActor.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -72,6 +73,12 @@ class THESHELTERS_API ARoomControl : public AActor
     TArray<int32> CCTVRoomNum;
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<AActor *> ZapPlanes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UBlueprint*> SpawnActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
+
 
     // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
@@ -86,10 +93,15 @@ class THESHELTERS_API ARoomControl : public AActor
     MonsterList monsters;
     MonsterLocationList monsterLocations;
     int nextMonsterId = 1;
+	TArray<AMonsterActor*> monsterActors;
 
     // GameMap size
     unsigned int maxWidth;
     unsigned int maxHeight;
+    float startX = 4000.0f;
+    float startY = 0.0f;
+    float startZ = 190.0f;
+    float interval = 700.0f;
 
     // For test and debugging
     void PrintMap();
