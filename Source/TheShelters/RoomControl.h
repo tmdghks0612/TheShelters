@@ -5,8 +5,8 @@
 #include <map>
 #include <vector>
 
-#include "Room.h"
 #include "MonsterActor.h"
+#include "Room.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -43,7 +43,7 @@ class THESHELTERS_API ARoomControl : public AActor
 
     // Blueprint Callable Functions
     UFUNCTION(BlueprintCallable)
-    void TestScenario();
+    void TestScenario(); // For test
     UFUNCTION(BlueprintCallable)
     void EndTurn();
     UFUNCTION(BlueprintCallable)
@@ -75,10 +75,10 @@ class THESHELTERS_API ARoomControl : public AActor
     TArray<int32> CCTVRoomNum;
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<AActor *> ZapPlanes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<UBlueprint *> SpawnActor;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
 
     // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
@@ -89,11 +89,18 @@ class THESHELTERS_API ARoomControl : public AActor
     virtual void BeginPlay() override;
 
   private:
+    // Initializers
+    void InitRooms();
+    void InitPanicRoom(); // Must call after InitRooms
+
     // Monster related values
     MonsterList monsters;
     MonsterLocationList monsterLocations;
     int nextMonsterId = 1;
-	TArray<AMonsterActor*> monsterActors;
+    TArray<AMonsterActor *> monsterActors;
+
+    // Panic Room related values
+    int panicRoomId = 5;
 
 	bool myContains(int input_num);
 

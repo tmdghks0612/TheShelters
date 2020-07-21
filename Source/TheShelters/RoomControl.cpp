@@ -17,26 +17,32 @@ void ARoomControl::BeginPlay()
 
 bool ARoomControl::myContains(int input_num)
 {
-	int row_count = 0;
-	int col_count = 0;
-	for (int j = 0; j < CCTVRoomNum.Num(); ++j) {
-		if (CCTVRoomNum[j] == input_num) {
-			return true;
-		}
-		if ((CCTVRoomNum[j] / maxWidth) == (input_num / maxWidth)) {
-			if (row_count > 0) {
-				return true;
-			}
-			row_count++;
-		}
-		if ((CCTVRoomNum[j] % maxWidth) == (input_num % maxWidth)) {
-			if (col_count > 0) {
-				return true;
-			}
-			col_count++;
-		}
-	}
-	return false;
+    int row_count = 0;
+    int col_count = 0;
+    for (int j = 0; j < CCTVRoomNum.Num(); ++j)
+    {
+        if (CCTVRoomNum[j] == input_num)
+        {
+            return true;
+        }
+        if ((CCTVRoomNum[j] / maxWidth) == (input_num / maxWidth))
+        {
+            if (row_count > 0)
+            {
+                return true;
+            }
+            row_count++;
+        }
+        if ((CCTVRoomNum[j] % maxWidth) == (input_num % maxWidth))
+        {
+            if (col_count > 0)
+            {
+                return true;
+            }
+            col_count++;
+        }
+    }
+    return false;
 }
 
 void ARoomControl::PrintMap()
@@ -76,7 +82,28 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 
 void ARoomControl::TestScenario()
 {
+    bool result;
+
     InitGame(10, 10);
+    result = this->panicRoomId == 5;
+    PrintTestMessage(TEXT("InitPanicRoom"), 1, result);
+
+    result = GameMap[5]->GetDoor(Left).status == Close;
+    PrintTestMessage(TEXT("InitPanicRoom"), 2, result);
+    result = GameMap[5]->GetDoor(Up).status == Open;
+    PrintTestMessage(TEXT("InitPanicRoom"), 3, result);
+    result = GameMap[5]->GetDoor(Right).status == Open;
+    PrintTestMessage(TEXT("InitPanicRoom"), 4, result);
+    result = GameMap[5]->GetDoor(Down).status == Open;
+    PrintTestMessage(TEXT("InitPanicRoom"), 5, result);
+
+    result = GameMap[4]->GetDoor(Right).status == Close;
+    PrintTestMessage(TEXT("InitPanicRoom"), 6, result);
+    result = GameMap[6]->GetDoor(Left).status == Open;
+    PrintTestMessage(TEXT("InitPanicRoom"), 7, result);
+    result = GameMap[15]->GetDoor(Up).status == Open;
+    PrintTestMessage(TEXT("InitPanicRoom"), 8, result);
+
     InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
@@ -84,7 +111,6 @@ void ARoomControl::TestScenario()
     MoveMonster(2, Right); // Monster 2: 1, 4
 
     // EXPECT
-    bool result;
     result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
     PrintTestMessage(TEXT("MonsterMovement"), 1, result);
 
@@ -102,33 +128,36 @@ void ARoomControl::TestScenario()
 
 void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
-	CCTVRoomNum.Empty();
+    CCTVRoomNum.Empty();
     for (int i = 0; i < 12; ++i)
     {
         ZapPlanes.Add(_ZapPlanes[i]);
-		int input_num = rand() % (maxWidth * maxHeight);
-		
-		while (myContains(input_num)) {
-			input_num = rand() % (maxWidth * maxHeight);
-		}
-		CCTVRoomNum.Add(input_num);
+        int input_num = rand() % (maxWidth * maxHeight);
+
+        while (myContains(input_num))
+        {
+            input_num = rand() % (maxWidth * maxHeight);
+        }
+        CCTVRoomNum.Add(input_num);
     }
     for (int i = 0; i < 12; ++i)
     {
         ZapPlanes[i]->SetActorHiddenInGame(true);
-		FRotator rotator(0.0f, 0.0f, 0.0f);
-		int row = CCTVRoomNum[i] / maxWidth;
-		int col = CCTVRoomNum[i] % maxWidth;
-		FVector spawnLocation(startX - col * interval, startY + row * interval, startZ);
+        FRotator rotator(0.0f, 0.0f, 0.0f);
+        int row = CCTVRoomNum[i] / maxWidth;
+        int col = CCTVRoomNum[i] % maxWidth;
+        FVector spawnLocation(startX - col * interval, startY + row * interval, startZ);
 
-		_RoomActors[i]->SetActorLocation(spawnLocation);
+        _RoomActors[i]->SetActorLocation(spawnLocation);
     }
 }
 
 void ARoomControl::EndTurn()
 {
-    for (const TPair<int32, int32>& it : monsterLocations) {
-        if (!MoveMonster(it.Key, Direction(rand() % 4))) {
+    for (const TPair<int32, int32> &it : monsterLocations)
+    {
+        if (!MoveMonster(it.Key, Direction(rand() % 4)))
+        {
             MoveMonster(it.Key, Direction(rand() % 4));
         }
     }
@@ -139,6 +168,12 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
     maxHeight = m;
     maxWidth = n;
 
+    this->InitRooms();
+    this->InitPanicRoom();
+}
+
+void ARoomControl::InitRooms()
+{
     int size = maxHeight * maxWidth;
 
     for (int i = 0; i < size; i++)
@@ -177,6 +212,47 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
             GameMap[i]->InitDoor(Right, room, Open);
         }
     }
+}
+
+void ARoomControl::InitPanicRoom()
+{
+    // Get Panic Room Id
+
+    UE_LOG(LogTemp, Warning, TEXT("panic room id: %d"), this->panicRoomId);
+    UPanicRoom *panicRoom = NewObject<UPanicRoom>();
+    panicRoom->InitRoom(panicRoomId);
+    GameMap[panicRoomId] = panicRoom;
+
+    int x = panicRoomId / maxWidth;
+    int y = panicRoomId % maxHeight;
+    URoom *room;
+
+    if (x != 0)
+    {
+        room = FindRoomByLocation(x - 1, y);
+        GameMap[panicRoomId]->InitDoor(Up, room, Open);
+        GameMap[(x - 1) * maxWidth + y]->InitDoor(Down, panicRoom, Open);
+    }
+    if (x != (maxHeight - 1))
+    {
+        room = FindRoomByLocation(x + 1, y);
+        GameMap[panicRoomId]->InitDoor(Down, room, Open);
+        GameMap[(x + 1) * maxWidth + y]->InitDoor(Up, panicRoom, Open);
+    }
+    if (y != 0)
+    {
+        room = FindRoomByLocation(x, y - 1);
+        GameMap[panicRoomId]->InitDoor(Left, room, Open);
+        GameMap[x * maxWidth + (y - 1)]->InitDoor(Right, panicRoom, Open);
+    }
+    if (y != (maxWidth - 1))
+    {
+        room = FindRoomByLocation(x, y + 1);
+        GameMap[panicRoomId]->InitDoor(Right, room, Open);
+        GameMap[x * maxWidth + (y + 1)]->InitDoor(Left, panicRoom, Open);
+    }
+
+    panicRoom->InitPanicRoom(Close, Open, Close, Open, panicRoomId);
 }
 
 URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
@@ -221,18 +297,18 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
 
     if (MonsterSpawn[monsterType])
     {
-        UWorld* world = GetWorld();
+        UWorld *world = GetWorld();
         if (world)
         {
             FActorSpawnParameters spawnParams;
             spawnParams.Owner = this;
 
-			FRotator rotator(0.0f, 0.0f, 0.0f);
-			FVector spawnLocation(startX - x * interval, startY + y * interval, startZ);
+            FRotator rotator(0.0f, 0.0f, 0.0f);
+            FVector spawnLocation(startX - x * interval, startY + y * interval, startZ);
 
-			monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams));
-		}
-	}
+            monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams));
+        }
+    }
 }
 
 void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
@@ -266,9 +342,10 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
-
-            if (monsterActors[monsterId - 1]) {
-                monsterActors[monsterId - 1]->SetActorLocation(FVector(startX - interval * (it.Value % maxWidth), startY + interval * (it.Value/maxWidth), startZ));
+            if (monsterActors[monsterId - 1])
+            {
+                monsterActors[monsterId - 1]->SetActorLocation(FVector(
+                    startX - interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
             }
             break;
         }
@@ -292,7 +369,7 @@ UMonster *ARoomControl::FindMonsterById(const unsigned int id)
     return NULL;
 }
 
-void ARoomControl::ZapCCTV(AActor* _CurrentZapPlane)
+void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
 {
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
@@ -305,9 +382,9 @@ void ARoomControl::ZapCCTV(AActor* _CurrentZapPlane)
     TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
 	*/
-	_CurrentZapPlane->SetActorHiddenInGame(false);
-	TimerDel.BindUFunction(this, FName("RestoreZap"), _CurrentZapPlane);
-	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+    _CurrentZapPlane->SetActorHiddenInGame(false);
+    TimerDel.BindUFunction(this, FName("RestoreZap"), _CurrentZapPlane);
+    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
 }
 
 void ARoomControl::RestoreZap(AActor *CCTV)
@@ -318,12 +395,14 @@ void ARoomControl::RestoreZap(AActor *CCTV)
 
 void ARoomControl::SelectCCTV()
 {
-	for (const TPair<int32, int32> &it : monsterLocations)
-	{
-		for (int i = 0; i < 12; ++i) {
-			if (CCTVRoomNum[i] == it.Value) {
-				ZapCCTV(ZapPlanes[i]);
-			}
-		}
-	}
+    for (const TPair<int32, int32> &it : monsterLocations)
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            if (CCTVRoomNum[i] == it.Value)
+            {
+                ZapCCTV(ZapPlanes[i]);
+            }
+        }
+    }
 }
