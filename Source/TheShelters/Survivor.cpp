@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "RobotControl.h"
 #include "Survivor.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-
+#include "Engine/Classes/Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -54,5 +55,40 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("TurnView", IE_Pressed, this, &ASurvivor::TurnView);
+    PlayerInputComponent->BindAction("CameraChangeToMap", IE_Pressed, this, &ASurvivor::CameraChange);
+
+	PlayerInputComponent->BindAction("MapRight", IE_Pressed, this, &ASurvivor::RobotMapRight);
+    PlayerInputComponent->BindAction("MapLeft", IE_Pressed, this, &ASurvivor::RobotMapLeft);
+    PlayerInputComponent->BindAction("MapUp", IE_Pressed, this, &ASurvivor::RobotMapUp);
+    PlayerInputComponent->BindAction("MapDown", IE_Pressed, this, &ASurvivor::RobotMapDown);
 }
 
+void ASurvivor::CameraChange()
+{
+
+}
+
+void ASurvivor::InitRobots(ARobotControl *_Robot)
+{
+    Robot = _Robot;
+}
+
+void ASurvivor::RobotMapRight()
+{
+    Robot->MapRight();
+}
+
+void ASurvivor::RobotMapLeft()
+{
+    Robot->MapLeft();
+}
+
+void ASurvivor::RobotMapUp()
+{
+    Robot->MapUp();
+}
+
+void ASurvivor::RobotMapDown()
+{
+    Robot->MapDown();
+}

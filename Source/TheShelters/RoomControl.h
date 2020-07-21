@@ -77,9 +77,8 @@ class THESHELTERS_API ARoomControl : public AActor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
 
-
     // To show in blueprint
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<URoom *> GameMap;
 
   protected:
