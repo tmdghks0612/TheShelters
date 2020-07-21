@@ -47,11 +47,13 @@ class THESHELTERS_API ARoomControl : public AActor
     UFUNCTION(BlueprintCallable)
     void EndTurn();
     UFUNCTION(BlueprintCallable)
-    void InitCCTV(TArray<AActor *> _ZapPlanes);
+    void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
     UFUNCTION(BlueprintCallable)
-    void ZapCCTV();
+	void SelectCCTV();
     UFUNCTION(BlueprintCallable)
-    void RestoreZap(AActor *CCTV);
+    void RestoreZap(AActor *_ZapPlane);
+
+	void ZapCCTV(AActor *_CurrentZapPlane);
 
     // Functions to find something in GameMap
     URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
@@ -92,6 +94,8 @@ class THESHELTERS_API ARoomControl : public AActor
     MonsterLocationList monsterLocations;
     int nextMonsterId = 1;
 	TArray<AMonsterActor*> monsterActors;
+
+	bool myContains(int input_num);
 
     // GameMap size
     unsigned int maxWidth;

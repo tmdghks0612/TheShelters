@@ -15,6 +15,30 @@ void ARoomControl::BeginPlay()
     Super::BeginPlay();
 }
 
+bool ARoomControl::myContains(int input_num)
+{
+	int row_count = 0;
+	int col_count = 0;
+	for (int j = 0; j < CCTVRoomNum.Num(); ++j) {
+		if (CCTVRoomNum[j] == input_num) {
+			return true;
+		}
+		if ((CCTVRoomNum[j] / maxWidth) == (input_num / maxWidth)) {
+			if (row_count > 0) {
+				return true;
+			}
+			row_count++;
+		}
+		if ((CCTVRoomNum[j] % maxWidth) == (input_num % maxWidth)) {
+			if (col_count > 0) {
+				return true;
+			}
+			col_count++;
+		}
+	}
+	return false;
+}
+
 void ARoomControl::PrintMap()
 {
     for (unsigned int x = 0; x < maxHeight; x++)
@@ -76,19 +100,28 @@ void ARoomControl::TestScenario()
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 }
 
-void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes)
+void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
-    for (int i = 0; i < 9; ++i)
+	CCTVRoomNum.Empty();
+    for (int i = 0; i < 12; ++i)
     {
         ZapPlanes.Add(_ZapPlanes[i]);
-
-        while (CCTVRoomNum.AddUnique(rand() % (maxWidth * maxHeight)) == -1)
-            ;
+		int input_num = rand() % (maxWidth * maxHeight);
+		
+		while (myContains(input_num)) {
+			input_num = rand() % (maxWidth * maxHeight);
+		}
+		CCTVRoomNum.Add(input_num);
     }
-    for (int i = 0; i < 9; ++i)
+    for (int i = 0; i < 12; ++i)
     {
         ZapPlanes[i]->SetActorHiddenInGame(true);
-        UE_LOG(LogTemp, Warning, TEXT("loop: %d"), CCTVRoomNum[i]);
+		FRotator rotator(0.0f, 0.0f, 0.0f);
+		int row = CCTVRoomNum[i] / maxWidth;
+		int col = CCTVRoomNum[i] % maxWidth;
+		FVector spawnLocation(startX - col * interval, startY + row * interval, startZ);
+
+		_RoomActors[i]->SetActorLocation(spawnLocation);
     }
 }
 
@@ -229,9 +262,11 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
                 return false;
             }
             UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."), it.Key, it.Value);
+
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
+
             if (monsterActors[monsterId - 1]) {
                 monsterActors[monsterId - 1]->SetActorLocation(FVector(startX - interval * (it.Value % maxWidth), startY + interval * (it.Value/maxWidth), startZ));
             }
@@ -257,22 +292,38 @@ UMonster *ARoomControl::FindMonsterById(const unsigned int id)
     return NULL;
 }
 
-void ARoomControl::ZapCCTV()
+void ARoomControl::ZapCCTV(AActor* _CurrentZapPlane)
 {
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
 
-    int zapped = rand() % 9;
+    /*int zapped = rand() % 9;
     UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
 
     ZapPlanes[zapped]->SetActorHiddenInGame(false);
 
     TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
+	*/
+	_CurrentZapPlane->SetActorHiddenInGame(false);
+	TimerDel.BindUFunction(this, FName("RestoreZap"), _CurrentZapPlane);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
 }
 
 void ARoomControl::RestoreZap(AActor *CCTV)
 {
     CCTV->SetActorHiddenInGame(true);
     UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
+}
+
+void ARoomControl::SelectCCTV()
+{
+	for (const TPair<int32, int32> &it : monsterLocations)
+	{
+		for (int i = 0; i < 12; ++i) {
+			if (CCTVRoomNum[i] == it.Value) {
+				ZapCCTV(ZapPlanes[i]);
+			}
+		}
+	}
 }
