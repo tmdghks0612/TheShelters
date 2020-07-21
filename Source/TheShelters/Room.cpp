@@ -7,6 +7,10 @@ URoom::URoom()
 {
 }
 
+URoom::~URoom()
+{
+}
+
 // Constructor
 void URoom::InitRoom(int num)
 {
