@@ -78,6 +78,7 @@ class THESHELTERS_API URoom : public UObject
   public:
     // Constructors and Initializers
     URoom();
+    ~URoom();
     void InitRoom(const int num);
     void InitDoor(const Direction d, URoom *connectedRoom, DoorStatus s);
 
@@ -106,4 +107,20 @@ class THESHELTERS_API URoom : public UObject
 
     // Room Properties
     ResourceType roomType;
+};
+
+/* << UPanicRoom : URoom >>
+ *
+ */
+UCLASS()
+class THESHELTERS_API UPanicRoom : public URoom
+{
+    GENERATED_BODY()
+  public:
+    UPanicRoom();
+    ~UPanicRoom();
+
+    // left, right, up, down mean the door to close. If all false or true, it will randomly close door.
+    void InitPanicRoom(const DoorStatus left, const DoorStatus right, const DoorStatus up, const DoorStatus down,
+                       const int roomId);
 };
