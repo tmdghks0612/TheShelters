@@ -19,6 +19,22 @@ public:
 	// Sets default values for this character's properties
 	ASurvivor();
 
+	UFUNCTION(BlueprintCallable)
+	void CameraChange();
+
+	UFUNCTION(BlueprintCallable)
+    void InitRobots(ARobotControl* _Robot);
+
+	UFUNCTION()
+    void RobotMapRight();
+    UFUNCTION()
+    void RobotMapLeft();
+    UFUNCTION()
+    void RobotMapUp();
+    UFUNCTION()
+    void RobotMapDown();
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
 
@@ -27,6 +43,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
 	UStaticMeshComponent* MeshComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    ARobotControl* Robot = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TArray<ARobotControl *> lists;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,5 +64,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 };

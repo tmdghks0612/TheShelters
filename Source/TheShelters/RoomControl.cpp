@@ -334,11 +334,8 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             if (door.connectedRoom == nullptr || door.status == Close ||
                 GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
             {
-                UE_LOG(LogTemp, Warning, TEXT("Cannot move!"));
                 return false;
             }
-            UE_LOG(LogTemp, Warning, TEXT("monster %d moving from room %d..."), it.Key, it.Value);
-
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
@@ -390,7 +387,6 @@ void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
 void ARoomControl::RestoreZap(AActor *CCTV)
 {
     CCTV->SetActorHiddenInGame(true);
-    UE_LOG(LogTemp, Warning, TEXT("CCTV enabled"));
 }
 
 void ARoomControl::SelectCCTV()

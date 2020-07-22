@@ -34,85 +34,85 @@ typedef TMap<int32, UMonster *> MonsterList;
 UCLASS()
 class THESHELTERS_API ARoomControl : public AActor
 {
-    GENERATED_BODY()
+  GENERATED_BODY()
 
-  public:
-    // Constructors and Initializers
-    ARoomControl();
-    void InitGame(const unsigned int m, const unsigned int n);
+public:
+  // Constructors and Initializers
+  ARoomControl();
+  void InitGame(const unsigned int m, const unsigned int n);
 
-    // Blueprint Callable Functions
-    UFUNCTION(BlueprintCallable)
-    void TestScenario(); // For test
-    UFUNCTION(BlueprintCallable)
-    void EndTurn();
-    UFUNCTION(BlueprintCallable)
-    void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
-    UFUNCTION(BlueprintCallable)
-	void SelectCCTV();
-    UFUNCTION(BlueprintCallable)
-    void RestoreZap(AActor *_ZapPlane);
+  // Blueprint Callable Functions
+  UFUNCTION(BlueprintCallable)
+  void TestScenario(); // For test
+  UFUNCTION(BlueprintCallable)
+  void EndTurn();
+  UFUNCTION(BlueprintCallable)
+  void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
+  UFUNCTION(BlueprintCallable)
+  void SelectCCTV();
+  UFUNCTION(BlueprintCallable)
+  void RestoreZap(AActor *_ZapPlane);
 
-	void ZapCCTV(AActor *_CurrentZapPlane);
+  void ZapCCTV(AActor *_CurrentZapPlane);
 
-    // Functions to find something in GameMap
-    URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
-    URoom *FindRoomById(const int roomId);
-    UMonster *FindMonsterById(const unsigned int id);
+  // Functions to find something in GameMap
+  URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
+  URoom *FindRoomById(const int roomId);
+  UMonster *FindMonsterById(const unsigned int id);
 
-    // Monster's behavior
-    // Monsters will be created when inserted
-    void InsertMonster(MonsterType monsterType, int x, int y);
-    void InsertMonster(MonsterType monsterType, int roomId);
-    // To delete monster from Room, set Room's monsterId to 0.
-    void DeleteMonster(const unsigned int x, const unsigned int y);
-    void DeleteMonster(int roomId);
-    // Move the given mosnter's location to the direction d.
-    bool MoveMonster(int monsterId, Direction d);
+  // Monster's behavior
+  // Monsters will be created when inserted
+  void InsertMonster(MonsterType monsterType, int x, int y);
+  void InsertMonster(MonsterType monsterType, int roomId);
+  // To delete monster from Room, set Room's monsterId to 0.
+  void DeleteMonster(const unsigned int x, const unsigned int y);
+  void DeleteMonster(int roomId);
+  // Move the given mosnter's location to the direction d.
+  bool MoveMonster(int monsterId, Direction d);
 
-    // cctv room number array and its zap planes accordingly
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-    TArray<int32> CCTVRoomNum;
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-    TArray<AActor *> ZapPlanes;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<UBlueprint *> SpawnActor;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
+  // cctv room number array and its zap planes accordingly
+  UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+  TArray<int32> CCTVRoomNum;
+  UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+  TArray<AActor *> ZapPlanes;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TArray<UBlueprint *> SpawnActor;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
 
-    // To show in blueprint
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
-    TArray<URoom *> GameMap;
+  // To show in blueprint
+  UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+  TArray<URoom *> GameMap;
 
-  protected:
-    // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
+protected:
+  // Called when the game starts or when spawned
+  virtual void BeginPlay() override;
 
-  private:
-    // Initializers
-    void InitRooms();
-    void InitPanicRoom(); // Must call after InitRooms
+private:
+  // Initializers
+  void InitRooms();
+  void InitPanicRoom(); // Must call after InitRooms
 
-    // Monster related values
-    MonsterList monsters;
-    MonsterLocationList monsterLocations;
-    int nextMonsterId = 1;
-    TArray<AMonsterActor *> monsterActors;
+  // Monster related values
+  MonsterList monsters;
+  MonsterLocationList monsterLocations;
+  int nextMonsterId = 1;
+  TArray<AMonsterActor *> monsterActors;
 
-    // Panic Room related values
-    int panicRoomId = 5;
+  // Panic Room related values
+  int panicRoomId = 5;
 
-	bool myContains(int input_num);
+  bool myContains(int input_num);
 
-    // GameMap size
-    unsigned int maxWidth;
-    unsigned int maxHeight;
-    float startX = 4000.0f;
-    float startY = 0.0f;
-    float startZ = 190.0f;
-    float interval = 700.0f;
+  // GameMap size
+  unsigned int maxWidth;
+  unsigned int maxHeight;
+  float startX = 4000.0f;
+  float startY = 0.0f;
+  float startZ = 190.0f;
+  float interval = 700.0f;
 
-    // For test and debugging
-    void PrintMap();
-    void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+  // For test and debugging
+  void PrintMap();
+  void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
 };
