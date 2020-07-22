@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include <algorithm>
+#include <cmath>
 
 #include "RobotControl.h"
 #include "Survivor.h"
@@ -108,32 +109,32 @@ void UPlayerStat::InitPlayerStat()
 	this->electricity = 100;
 }
 
-const int UPlayerStat::Food() const
+const double UPlayerStat::Food() const
 {
 	return this->food;
 }
 
-const int UPlayerStat::Water() const
+const double UPlayerStat::Water() const
 {
 	return this->water;
 }
 
-const int UPlayerStat::Mental() const
+const double UPlayerStat::Mental() const
 {
 	return this->mental;
 }
 
-const int UPlayerStat::Progress() const
+const double UPlayerStat::Progress() const
 {
 	return this->progress;
 }
 
-const int UPlayerStat::Electricity() const
+const double UPlayerStat::Electricity() const
 {
 	return this->electricity;
 }
 
-const int UPlayerStat::Food(const int diff)
+const double UPlayerStat::Food(const double diff)
 {
 	this->food += diff;
 	this->food = std::max(0, this->food);
@@ -141,28 +142,28 @@ const int UPlayerStat::Food(const int diff)
 	return this->food;
 }
 
-const int UPlayerStat::Water(const int diff)
+const double UPlayerStat::Water(const double diff)
 {
 	this->water += diff;
 	this->water = std::max(0, this->water);
 	this->water = std::min(this->water, this->max);
 	return this->water;
 }
-const int UPlayerStat::Mental(const int diff)
+const double UPlayerStat::Mental(const double diff)
 {
 	this->mental += diff;
 	this->mental = std::max(0, this->mental);
 	this->mental = std::min(this->mental, this->max);
 	return this->mental;
 }
-const int UPlayerStat::Progress(const int diff)
+const double UPlayerStat::Progress(const double diff)
 {
 	this->progress += diff;
 	this->progress = std::max(0, this->progress);
 	this->progress = std::min(this->progress, this->max);
 	return this->progress;
 }
-const int UPlayerStat::Electricity(const int diff)
+const double UPlayerStat::Electricity(const double diff)
 {
 	this->electricity += diff;
 	this->electricity = std::max(0, this->electricity);
@@ -172,19 +173,52 @@ const int UPlayerStat::Electricity(const int diff)
 
 void UPlayerStat::Consume()
 {
-	int foodPerTime = 1;
-	int waterMultiplier = 2;
+	double foodPerTime = 1;
+	double waterMultiplier = 2;
 	Food(-foodPerTime);
 	Water(-foodPerTime * waterMultiplier);
 }
 
+double UPlayerStat::MentalMultiplier()
+{
+	double foodMultiplier, waterMultiplier;
+	if (this->food < 30)
+	{
+		foodMultplier = (std::log(this->food + 1) / std::log(31.0)) - 1;
+	}
+	else if (this->food > 60)
+	{
+		foodMultiplier = std::log(this->food - 59) / std::log(41);
+	}
+	else
+	{
+		foodMultiplier = (this->food / 15) - 3;
+	}
+
+	if (this->water < 30)
+	{
+		waterMultiplier = (std::log(this->water + 1) / std::log(31.0)) - 1;
+	}
+	else if (this->food > 60)
+	{
+		waterMultiplier = std::log(this->water - 59) / std::log(41);
+	}
+	else
+	{
+		waterMultiplier = (this->water / 15) - 3;
+	}
+
+	return foodMultiplier + waterMultiplier;
+}
+
 void UPlayerStat::TimePass()
 {
+	double mentalMultiplier = MentalMupltiplier();
 	// Consume food and water
 	Consume();
 
 	// Change mental
-	int mentalDiff = 1 * mentalMultiplier;
+	double mentalDiff = 1 * mentalMultiplier;
 	Mental(mentalDiff);
 
 	// Consume electricity

@@ -77,32 +77,32 @@ public:
 	void InitPlayerStat();
 
 	// Getters
-	const int Food() const;
-	const int Water() const;
-	const int Mental() const;
-	const int Progress() const;
-	const int Electricity() const;
+	const double Food() const;
+	const double Water() const;
+	const double Mental() const;
+	const double Progress() const;
+	const double Electricity() const;
 
-	const int Food(const int diff);
-	const int Water(const int diff);
-	const int Mental(const int diff);
-	const int Progress(const int diff);
-	const int Electricity(const int diff);
+	const double Food(const double diff);
+	const double Water(const double diff);
+	const double Mental(const double diff);
+	const double Progress(const double diff);
+	const double Electricity(const double diff);
 
 	// Methods for playing game
 	void TimePass();
 
 private:
-	int max = 100;
-	int food;
-	int water;
-	int mental;
-	int progress;
-	int electricity;
+	double max = 100;
+	double food;
+	double water;
+	double mental;
+	double progress;
+	double electricity;
 
-	int mentalMultiplier;
 	int electricityUsage;
 
 	// Private methods for playing game
 	void Consume();
+	double MentalMultiplier();
 }
