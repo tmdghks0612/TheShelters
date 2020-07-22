@@ -25,11 +25,44 @@ AMonsterActor::AMonsterActor()
 	
 }
 
+void AMonsterActor::ChargePanicRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("monster is angry!"));
+	IsAngry = true;
+	FVector currentLocation = GetActorLocation();
+	chargeDirection = panicRoomLocation - currentLocation;
+	MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[1]->GetAnimBlueprintGeneratedClass());
+	return;
+}
+
+void AMonsterActor::EnterPanicRoom()
+{
+	UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
+	panicRoomLocation = GetActorLocation();
+	return;
+}
+
+bool AMonsterActor::IsDoorOpen()
+{
+	if (!(roomControl->IsBlocked(monsterId))) {
+		UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
+	}
+	return !(roomControl->IsBlocked(monsterId));
+}
+
+void AMonsterActor::InitMonsterActor(ARoomControl* _roomControl, int _monsterId)
+{
+	monsterId = _monsterId;
+	roomControl = _roomControl;
+	return;
+}
+
 // Called when the game starts or when spawned
 void AMonsterActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	panicRoomLocation = FVector(7500.0f, 200.0f, 170.0f);
 }
 
 
