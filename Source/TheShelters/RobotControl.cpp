@@ -16,6 +16,13 @@ void ARobotControl::BeginPlay()
 {
 	Super::BeginPlay();
     initMap();
+
+    FRotator rotator(0.0f, 0.0f, 0.0f);
+    FVector spawnLocation(1110, 150, 250);
+    FActorSpawnParameters spawnParams;
+    spawnParams.Owner = this;
+    Robot = GetWorld()->SpawnActor<ARobotActor>(spawnLocation, rotator, spawnParams);
+    
 }
 
 void ARobotControl::initMap()
@@ -25,6 +32,8 @@ void ARobotControl::initMap()
     route.RemoveAll([](int val) { return true; });
     route.Add(startLocation);
     visited[startLocation] = 1;
+    ToDestination = true;
+    CurrentIndex = 0;
 }
 
 // Called every frame
@@ -41,9 +50,9 @@ void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
     }
 }
 
-void ARobotControl::GiveAddress(TArray<ASurvivor*> _list)
+void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
 {
-    _list[0]->InitRobots(this);   
+    _List[0]->InitRobots(this);   
 }
 
 void ARobotControl::MapRight()
@@ -142,6 +151,49 @@ void ARobotControl::MapDown()
     PrintMap();
 }
 
+void ARobotControl::StartMoving()
+{
+    int LengthOfRoute = route.Num();
+    if (ToDestination)
+    {
+        CurrentIndex++;
+        RobotMoveTo(route[CurrentIndex]);
+        if (route[CurrentIndex] == route[LengthOfRoute])
+        {
+            ReachDestination();
+            ToDestination = false;
+        }
+    }
+    else if(!ToDestination)
+    {
+        CurrentIndex--;
+        RobotMoveTo(route[CurrentIndex]);
+        if (route[CurrentIndex] == route[0])
+        {
+            EndMovement();
+        }
+    }
+    
+}
+
+//make RobotActor to move to RoomIndex Room
+void ARobotControl::RobotMoveTo(int RoomIndex)
+{
+    Robot->CheckWorking();
+
+}
+
+//check resources at the destination index room. Start recall function
+void ARobotControl::ReachDestination()
+{
+
+}
+
+//going back to panicRoom
+void ARobotControl::EndMovement()
+{
+
+}
 void ARobotControl::PrintMap()
 {
     FString rou = FString();

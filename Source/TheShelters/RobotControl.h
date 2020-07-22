@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Survivor.h"
+#include "RobotActor.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
@@ -19,12 +20,24 @@ public:
 	UFUNCTION(BlueprintCallable)
     void RobotRouteSelect(TArray<UObject *> ShelterMap);
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<bool> RouteMap;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<UObject *> MapObject;
     
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TSubclassOf<class ARobotActor> RobotSpawn;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ARobotActor* Robot;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	int CurrentIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool ToDestination;
+
 	UFUNCTION()
 	void MapRight();
     UFUNCTION()
@@ -37,10 +50,17 @@ public:
     void initMap();
     UFUNCTION()
     void PrintMap();
+	UFUNCTION()
+	void StartMoving();
+	UFUNCTION()
+	void RobotMoveTo(int RoomIndex);
+	UFUNCTION()
+	void ReachDestination();
+	UFUNCTION()
+	void EndMovement();
 	
-
 	UFUNCTION(BlueprintCallable)
-    void GiveAddress(TArray<ASurvivor *> _list);
+    void GiveAddress(TArray<ASurvivor*> _List);
 
 protected:
 	// Called when the game starts or when spawned
@@ -50,6 +70,9 @@ protected:
 
 	TArray<int> route;
     TArray<int> visited;
+
+	//ARobotActor* Robot;
+	//monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams))
 
 public:	
 	// Called every frame

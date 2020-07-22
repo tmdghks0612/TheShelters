@@ -20,7 +20,7 @@ public:
 	ASurvivor();
 
 	UFUNCTION(BlueprintCallable)
-	void CameraChange();
+	void InitiateMap();
 
 	UFUNCTION(BlueprintCallable)
     void InitRobots(ARobotControl* _Robot);
@@ -33,6 +33,8 @@ public:
     void RobotMapUp();
     UFUNCTION()
     void RobotMapDown();
+	UFUNCTION()
+	void RobotStart();
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -49,6 +51,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TArray<ARobotControl *> lists;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool RFlag = false;
+
 
 
 protected:
