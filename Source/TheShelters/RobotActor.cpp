@@ -32,7 +32,6 @@ ARobotActor::ARobotActor()
 void ARobotActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

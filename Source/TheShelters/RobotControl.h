@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Survivor.h"
 #include "RobotActor.h"
+#include "RoomControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
@@ -38,6 +39,12 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool ToDestination;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool isMoving = false;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ARoomControl* RoomControl;
+
 	UFUNCTION()
 	void MapRight();
     UFUNCTION()
@@ -51,14 +58,20 @@ public:
     UFUNCTION()
     void PrintMap();
 	UFUNCTION()
-	void StartMoving();
-	UFUNCTION()
 	void RobotMoveTo(int RoomIndex);
 	UFUNCTION()
 	void ReachDestination();
 	UFUNCTION()
 	void EndMovement();
+	UFUNCTION()
+	void SetMove();
+
+	UFUNCTION(BlueprintCallable)
+	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
 	
+	UFUNCTION(BlueprintCallable)
+	void StartMoving();
+
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
 

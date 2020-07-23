@@ -151,27 +151,37 @@ void ARobotControl::MapDown()
     PrintMap();
 }
 
+void ARobotControl::SetMove()
+{
+    isMoving = true;
+}
+
 void ARobotControl::StartMoving()
 {
-    int LengthOfRoute = route.Num();
-    if (ToDestination)
+    UE_LOG(LogTemp, Warning, TEXT("MovingCheck"), currentLocation);
+    if (isMoving)
     {
-        CurrentIndex++;
-        RobotMoveTo(route[CurrentIndex]);
-        if (route[CurrentIndex] == route[LengthOfRoute])
+        int LengthOfRoute = route.Num();
+        if (ToDestination)
         {
-            ReachDestination();
-            ToDestination = false;
+            CurrentIndex++;
+            RobotMoveTo(route[CurrentIndex]);
+            if (route[CurrentIndex] == route[LengthOfRoute-1])
+            {
+                ReachDestination();
+                ToDestination = false;
+            }
         }
-    }
-    else if(!ToDestination)
-    {
-        CurrentIndex--;
-        RobotMoveTo(route[CurrentIndex]);
-        if (route[CurrentIndex] == route[0])
+        else if (!ToDestination)
         {
-            EndMovement();
+            CurrentIndex--;
+            RobotMoveTo(route[CurrentIndex]);
+            if (route[CurrentIndex] == route[0])
+            {
+                EndMovement();
+            }
         }
+        UE_LOG(LogTemp, Warning, TEXT("CurrentLocation is %d"), route[CurrentIndex]);
     }
     
 }
@@ -179,20 +189,21 @@ void ARobotControl::StartMoving()
 //make RobotActor to move to RoomIndex Room
 void ARobotControl::RobotMoveTo(int RoomIndex)
 {
-    Robot->CheckWorking();
-
+    Robot->SetActorLocation(FVector(RoomIndex%10 * 100, RoomIndex/10 * 100, 200));
 }
 
 //check resources at the destination index room. Start recall function
 void ARobotControl::ReachDestination()
 {
-
+    UE_LOG(LogTemp, Warning, TEXT("Arrival"));
 }
 
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
-
+    isMoving = false;
+    initMap();
+    UE_LOG(LogTemp, Warning, TEXT("Return"));
 }
 void ARobotControl::PrintMap()
 {
@@ -222,4 +233,10 @@ void ARobotControl::PrintMap()
         rou += FString::Format(TEXT("{0} "), args);
     }
     UE_LOG(LogTemp, Warning, TEXT("%s"), *rou);
+}
+
+void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
+{
+    RoomControl = _RoomControl[0];
+    UE_LOG(LogTemp, Warning, TEXT("Got Information"));
 }

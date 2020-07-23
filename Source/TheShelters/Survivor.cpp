@@ -74,7 +74,7 @@ void ASurvivor::InitiateMap()
 void ASurvivor::RobotStart()
 {
 	RFlag = false;
-	Robot->StartMoving();
+	Robot->SetMove();
 }
 
 void ASurvivor::InitRobots(ARobotControl *_Robot)
