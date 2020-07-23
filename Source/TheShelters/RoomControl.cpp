@@ -41,6 +41,9 @@ bool ARoomControl::MyContains(int input_num)
             }
             col_count++;
         }
+		if (input_num == panicRoomId) {
+			return true;
+		}
     }
     return false;
 }
@@ -158,7 +161,7 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomA
         FRotator rotator(0.0f, 0.0f, 0.0f);
         int row = CCTVRoomNum[i] / maxWidth;
         int col = CCTVRoomNum[i] % maxWidth;
-        FVector spawnLocation(startX + col * interval, startY + row * interval + 200.0f, startZ);
+        FVector spawnLocation(startX + col * interval, startY + row * interval, startZ);
 
         _RoomActors[i]->SetActorLocation(spawnLocation);
     }
@@ -348,7 +351,7 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             spawnParams.Owner = this;
 
             FRotator rotator(0.0f, 0.0f, 0.0f);
-            FVector spawnLocation(startX + x * interval, startY + y * interval, startZ);
+            FVector spawnLocation(startX + x * interval, startY + y * interval + 200.0f, startZ);
 
             monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
 			monsterActors[nextMonsterId-1]->InitMonsterActor(this, nextMonsterId);
@@ -383,7 +386,8 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             Door door = GameMap[it.Value]->GetDoor(d);
 
             if (door.connectedRoom == nullptr || door.status == Close ||
-                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
+                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0||
+				door.connectedRoom->RoomId() == panicRoomId)
             {
                 return false;
             }

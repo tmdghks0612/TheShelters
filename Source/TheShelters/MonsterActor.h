@@ -21,6 +21,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChargePanicRoom();
 
+	void RestoreAngry();
+
 	UFUNCTION(BlueprintCallable)
 	void EnterPanicRoom();
 
