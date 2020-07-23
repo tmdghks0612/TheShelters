@@ -23,33 +23,31 @@ public:
 	void CameraChange();
 
 	UFUNCTION(BlueprintCallable)
-    void InitRobots(ARobotControl* _Robot);
+	void InitRobots(ARobotControl *_Robot);
 
 	UFUNCTION()
-    void RobotMapRight();
-    UFUNCTION()
-    void RobotMapLeft();
-    UFUNCTION()
-    void RobotMapUp();
-    UFUNCTION()
-    void RobotMapDown();
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
-	USpringArmComponent* SpringArmComp;
+	void RobotMapRight();
+	UFUNCTION()
+	void RobotMapLeft();
+	UFUNCTION()
+	void RobotMapUp();
+	UFUNCTION()
+	void RobotMapDown();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
-	UCameraComponent* CameraComp;
+	USpringArmComponent *SpringArmComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	UCameraComponent *CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	UStaticMeshComponent* MeshComp;
+	UStaticMeshComponent *MeshComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    ARobotControl* Robot = nullptr;
+	ARobotControl *Robot = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    TArray<ARobotControl *> lists;
-
+	TArray<ARobotControl *> lists;
 
 protected:
 	// Called when the game starts or when spawned
@@ -60,9 +58,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	float BaseTurnRate;
 
-public:	
-
+public:
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 };
