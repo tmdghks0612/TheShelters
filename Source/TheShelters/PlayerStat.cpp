@@ -111,7 +111,7 @@ const double UPlayerStat::MentalMultiplier() const
 		waterMultiplier = (this->water / 15) - 3;
 	}
 
-	return foodMultiplier + waterMultiplier;
+	return round((foodMultiplier + waterMultiplier) * 100.0) / 100.0;
 }
 
 void UPlayerStat::EndTurn()

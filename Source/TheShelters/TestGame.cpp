@@ -102,5 +102,13 @@ void ARoomControl::TestScenario()
 	result = playerStat->Mental() == 54;
 	PrintTestMessage(TEXT("PlayerStatEndTurn"), 3, result);
 
-	UE_LOG(LogTemp, Warning, TEXT("SUCCESS: %d FAIL: %d"), testResult[true], testResult[false])
+	playerStat->EndTurn();
+	result = playerStat->Food() == 98;
+	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 1, result);
+	result = playerStat->Water() == 96;
+	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 2, result);
+	result = playerStat->Mental() == 57.98;
+	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 3, result);
+
+	UE_LOG(LogTemp, Warning, TEXT("***[SUCCESS: %d FAIL: %d]"), testResult[true], testResult[false])
 }
