@@ -61,48 +61,4 @@ protected:
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
-
-private:
-	unsigned int playerStat;
 };
-
-UCLASS()
-class THESHELTERS_API UPlayerStat : public UObject
-{
-	GENERATED_BODY()
-public:
-	// Constructors and Initializers
-	UPlayerStat();
-	~UPlayerStat();
-	void InitPlayerStat();
-
-	// Getters
-	const double Food() const;
-	const double Water() const;
-	const double Mental() const;
-	const double Progress() const;
-	const double Electricity() const;
-
-	const double Food(const double diff);
-	const double Water(const double diff);
-	const double Mental(const double diff);
-	const double Progress(const double diff);
-	const double Electricity(const double diff);
-
-	// Methods for playing game
-	void TimePass();
-
-private:
-	double max = 100;
-	double food;
-	double water;
-	double mental;
-	double progress;
-	double electricity;
-
-	int electricityUsage;
-
-	// Private methods for playing game
-	void Consume();
-	double MentalMultiplier();
-}
