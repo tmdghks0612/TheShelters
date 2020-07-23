@@ -55,6 +55,10 @@ public:
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
+
+  // Check if monster can enter panic room
+  bool IsBlocked(int _monsterId);
+
   // Functions to find something in GameMap
   URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
   URoom *FindRoomById(const int roomId);
@@ -102,7 +106,8 @@ private:
   // Panic Room related values
   int panicRoomId = 5;
 
-  bool myContains(int input_num);
+  bool MyContains(int input_num);
+  bool IsNextPanicRoom(int roomNumber);
 
   // GameMap size
   unsigned int maxWidth;
