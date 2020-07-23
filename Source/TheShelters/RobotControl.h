@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Survivor.h"
+#include "RobotAniminstance.h"
+#include "RobotActor.h"
+#include "RobotPawn.h"
+#include "RoomControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
@@ -19,12 +23,33 @@ public:
 	UFUNCTION(BlueprintCallable)
     void RobotRouteSelect(TArray<UObject *> ShelterMap);
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<bool> RouteMap;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere);
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<UObject *> MapObject;
     
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ARobotPawn> RobotSpawn;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ARobotPawn* Robot;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	int CurrentIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool ToDestination;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	bool isMoving = false;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ARoomControl* RoomControl;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URobotAniminstance* Anim;
+
 	UFUNCTION()
 	void MapRight();
     UFUNCTION()
@@ -37,10 +62,23 @@ public:
     void initMap();
     UFUNCTION()
     void PrintMap();
-	
+	UFUNCTION()
+	void RobotMoveTo(int RoomIndex);
+	UFUNCTION()
+	void ReachDestination();
+	UFUNCTION()
+	void EndMovement();
+	UFUNCTION()
+	void SetMove();
 
 	UFUNCTION(BlueprintCallable)
-    void GiveAddress(TArray<ASurvivor *> _list);
+	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
+	
+	UFUNCTION(BlueprintCallable)
+	bool StartMoving();
+
+	UFUNCTION(BlueprintCallable)
+    void GiveAddress(TArray<ASurvivor*> _List);
 
 protected:
 	// Called when the game starts or when spawned
