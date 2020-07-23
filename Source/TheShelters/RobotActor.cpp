@@ -10,20 +10,38 @@ ARobotActor::ARobotActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	if (!RobotSkeletalMesh) {
+		
 		UE_LOG(LogTemp, Warning, TEXT("Robot SkeletalMesh Assigned"));
 
 		Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 		RootComponent = Root;
 
 		RobotSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RobotSkeletalMesh"));
-		RobotSkeletalMeshComponent->AttachTo(Root);
-
-		RobotSkeletalMeshComponent->SetSkeletalMesh(RobotSkeletalMesh, true);
+		RobotSkeletalMeshComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("No Assigned RobotSkeletalMesh"));
 	}
 
+	RobotSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ROBOT_ANIM(TEXT("/Game/RobotBP/RobotAnimBP.RobotAnimBP_C"));
+	if (ROBOT_ANIM.Succeeded())
+	{
+		RobotSkeletalMeshComponent->SetAnimInstanceClass(ROBOT_ANIM.Class);
+	}
+
+	if (RobotSkeletalMeshComponent->GetAnimInstance() == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Anim not exist"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Anim exist"));	
+	}
+
+	//Animinstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
+	
 }
 
 
@@ -41,9 +59,18 @@ void ARobotActor::Tick(float DeltaTime)
 
 }
 
+void ARobotActor::SetMovement(bool _Move)
+{
+	auto RobotAniminstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
+	if (nullptr != RobotAniminstance)
+	{
+		RobotAniminstance->SetMovement(_Move);
+	}
+}
+
 int ARobotActor::CheckWorking()
 {
-	UE_LOG(LogTemp, Warning, TEXT("It's on"));
+	
 	return 1;
 }
 

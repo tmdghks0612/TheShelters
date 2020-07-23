@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Survivor.h"
+#include "RobotAniminstance.h"
 #include "RobotActor.h"
+#include "RobotPawn.h"
 #include "RoomControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
@@ -27,11 +29,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<UObject *> MapObject;
     
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TSubclassOf<class ARobotActor> RobotSpawn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ARobotPawn> RobotSpawn;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	ARobotActor* Robot;
+	ARobotPawn* Robot;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	int CurrentIndex = 0;
@@ -44,6 +46,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ARoomControl* RoomControl;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URobotAniminstance* Anim;
 
 	UFUNCTION()
 	void MapRight();
@@ -70,7 +75,7 @@ public:
 	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
 	
 	UFUNCTION(BlueprintCallable)
-	void StartMoving();
+	bool StartMoving();
 
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
@@ -83,9 +88,6 @@ protected:
 
 	TArray<int> route;
     TArray<int> visited;
-
-	//ARobotActor* Robot;
-	//monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams))
 
 public:	
 	// Called every frame

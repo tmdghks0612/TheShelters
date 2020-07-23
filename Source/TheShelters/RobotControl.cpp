@@ -21,8 +21,8 @@ void ARobotControl::BeginPlay()
     FVector spawnLocation(1110, 150, 250);
     FActorSpawnParameters spawnParams;
     spawnParams.Owner = this;
-    Robot = GetWorld()->SpawnActor<ARobotActor>(spawnLocation, rotator, spawnParams);
-    
+    Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
+    UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 }
 
 void ARobotControl::initMap()
@@ -154,11 +154,11 @@ void ARobotControl::MapDown()
 void ARobotControl::SetMove()
 {
     isMoving = true;
+    Robot->SetMovement(true);
 }
 
-void ARobotControl::StartMoving()
+bool ARobotControl::StartMoving()
 {
-    UE_LOG(LogTemp, Warning, TEXT("MovingCheck"), currentLocation);
     if (isMoving)
     {
         int LengthOfRoute = route.Num();
@@ -184,6 +184,7 @@ void ARobotControl::StartMoving()
         UE_LOG(LogTemp, Warning, TEXT("CurrentLocation is %d"), route[CurrentIndex]);
     }
     
+    return true;
 }
 
 //make RobotActor to move to RoomIndex Room
@@ -201,6 +202,7 @@ void ARobotControl::ReachDestination()
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
+    Robot->SetMovement(false);
     isMoving = false;
     initMap();
     UE_LOG(LogTemp, Warning, TEXT("Return"));

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "RobotAniminstance.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "RobotActor.generated.h"
@@ -15,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	ARobotActor();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URobotAniminstance* Animinstance;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,13 +30,20 @@ public:
 	UFUNCTION()
 	int CheckWorking();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UFUNCTION()
+	void SetMovement(bool _Move);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotRoot")
 	USceneComponent* Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotActor")
 	USkeletalMesh* RobotSkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* RobotSkeletalMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAnimBlueprint* AnimationBP;
+
 
 };
