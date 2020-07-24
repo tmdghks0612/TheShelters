@@ -55,16 +55,29 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("TurnView", IE_Pressed, this, &ASurvivor::TurnView);
-	PlayerInputComponent->BindAction("CameraChangeToMap", IE_Pressed, this, &ASurvivor::CameraChange);
+    PlayerInputComponent->BindAction("CameraChangeToMap", IE_Pressed, this, &ASurvivor::InitiateMap);
 
 	PlayerInputComponent->BindAction("MapRight", IE_Pressed, this, &ASurvivor::RobotMapRight);
-	PlayerInputComponent->BindAction("MapLeft", IE_Pressed, this, &ASurvivor::RobotMapLeft);
-	PlayerInputComponent->BindAction("MapUp", IE_Pressed, this, &ASurvivor::RobotMapUp);
-	PlayerInputComponent->BindAction("MapDown", IE_Pressed, this, &ASurvivor::RobotMapDown);
+    PlayerInputComponent->BindAction("MapLeft", IE_Pressed, this, &ASurvivor::RobotMapLeft);
+    PlayerInputComponent->BindAction("MapUp", IE_Pressed, this, &ASurvivor::RobotMapUp);
+    PlayerInputComponent->BindAction("MapDown", IE_Pressed, this, &ASurvivor::RobotMapDown);
+	PlayerInputComponent->BindAction("Enter", IE_Pressed, this, &ASurvivor::RobotStart);
+
 }
 
-void ASurvivor::CameraChange()
+//Change Camera angle to infront of map + initiate flag for mapping
+void ASurvivor::InitiateMap()
 {
+
+	RFlag = true;
+}
+
+//finish deciding route. 
+void ASurvivor::RobotStart()
+{
+	RFlag = false;
+	Robot->SetMove();
+
 }
 
 void ASurvivor::InitRobots(ARobotControl *_Robot)
@@ -74,20 +87,31 @@ void ASurvivor::InitRobots(ARobotControl *_Robot)
 
 void ASurvivor::RobotMapRight()
 {
-	Robot->MapRight();
+	if(RFlag == true)
+		Robot->MapRight();
+
 }
 
 void ASurvivor::RobotMapLeft()
 {
-	Robot->MapLeft();
+
+	if(RFlag == true)
+		Robot->MapLeft();
+
 }
 
 void ASurvivor::RobotMapUp()
 {
-	Robot->MapUp();
+
+	if(RFlag == true)
+		Robot->MapUp();
+
 }
 
 void ASurvivor::RobotMapDown()
 {
-	Robot->MapDown();
+
+	if(RFlag == true)
+		Robot->MapDown();
 }
+

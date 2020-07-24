@@ -15,7 +15,7 @@ void ARoomControl::BeginPlay()
     Super::BeginPlay();
 }
 
-bool ARoomControl::myContains(int input_num)
+bool ARoomControl::MyContains(int input_num)
 {
     int row_count = 0;
     int col_count = 0;
@@ -41,9 +41,23 @@ bool ARoomControl::myContains(int input_num)
             }
             col_count++;
         }
+		if (input_num == panicRoomId) {
+			return true;
+		}
     }
     return false;
 }
+
+
+bool ARoomControl::IsNextPanicRoom(int roomNumber)
+{
+	if (roomNumber == panicRoomId-1 || roomNumber == panicRoomId+1 || roomNumber == panicRoomId+10) {
+		UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
+		return true;
+	}
+	return false;
+}
+
 void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
@@ -52,7 +66,7 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomA
         ZapPlanes.Add(_ZapPlanes[i]);
         int input_num = rand() % (maxWidth * maxHeight);
 
-        while (myContains(input_num))
+        while (MyContains(input_num))
         {
             input_num = rand() % (maxWidth * maxHeight);
         }
@@ -64,7 +78,7 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomA
         FRotator rotator(0.0f, 0.0f, 0.0f);
         int row = CCTVRoomNum[i] / maxWidth;
         int col = CCTVRoomNum[i] % maxWidth;
-        FVector spawnLocation(startX - col * interval, startY + row * interval, startZ);
+        FVector spawnLocation(startX + col * interval, startY + row * interval, startZ);
 
         _RoomActors[i]->SetActorLocation(spawnLocation);
     }
@@ -176,10 +190,44 @@ void ARoomControl::InitPanicRoom()
     panicRoom->InitPanicRoom(Close, Open, Close, Open, panicRoomId);
 }
 
+
 void ARoomControl::InitPlayerStat()
 {
     this->playerStat = NewObject<UPlayerStat>();
     this->playerStat->InitPlayerStat(100, 100, 50, 0, 100);
+}
+bool ARoomControl::IsBlocked(int _monsterId)
+{
+	Door door;
+	for (const TPair<int32, int32> &it : monsterLocations)
+	{
+		if (it.Key == _monsterId)
+		{
+			int roomNumber = it.Value;
+			
+			if (roomNumber == panicRoomId - 1) {
+				door = GameMap[panicRoomId]->GetDoor(Left);
+			}
+			else if (roomNumber == panicRoomId + 1) {
+				door = GameMap[panicRoomId]->GetDoor(Right);
+			}
+			else if (roomNumber == panicRoomId+10){
+				door = GameMap[panicRoomId]->GetDoor(Down);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("monster %d roomNumber error!"), _monsterId);
+				return false;
+			}
+			break;
+		}
+	}
+	if (door.status == Close) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
 }
 
 URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
@@ -220,7 +268,6 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
     newMonster->InitMonster(monsterType, nextMonsterId);
     monsters.Add(nextMonsterId, newMonster);
     monsterLocations.Add(nextMonsterId, roomId);
-    nextMonsterId++;
 
     if (MonsterSpawn[monsterType])
     {
@@ -231,11 +278,14 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             spawnParams.Owner = this;
 
             FRotator rotator(0.0f, 0.0f, 0.0f);
-            FVector spawnLocation(startX - x * interval, startY + y * interval, startZ);
+            FVector spawnLocation(startX + x * interval, startY + y * interval + 200.0f, startZ);
 
-            monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[0], spawnLocation, rotator, spawnParams));
+            monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
+			monsterActors[nextMonsterId-1]->InitMonsterActor(this, nextMonsterId);
         }
     }
+
+	nextMonsterId++;
 }
 
 void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
@@ -256,21 +306,36 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
     {
         if (it.Key == monsterId)
         {
+			if (monsterActors[monsterId - 1]->IsAngry) {
+				continue;
+			}
+
             Door door = GameMap[it.Value]->GetDoor(d);
 
             if (door.connectedRoom == nullptr || door.status == Close ||
-                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0)
+                GameMap[door.connectedRoom->RoomId()]->MonsterId() != 0||
+				door.connectedRoom->RoomId() == panicRoomId)
             {
                 return false;
             }
+
+			// when monster successfully moving to next room
             GameMap[it.Value]->DeleteMonster();
             monsterLocations[it.Key] = door.connectedRoom->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
+
+			// move matching monster to next room
             if (monsterActors[monsterId - 1])
             {
                 monsterActors[monsterId - 1]->SetActorLocation(FVector(
-                    startX - interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
+                startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth) + 200.0f, startZ));
             }
+
+			// if monster is next to panic room, charges to player
+			if (IsNextPanicRoom(it.Value)) {
+				UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
+				monsterActors[monsterId - 1]->ChargePanicRoom();
+			}
             break;
         }
     }

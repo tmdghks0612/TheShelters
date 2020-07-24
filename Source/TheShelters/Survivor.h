@@ -20,19 +20,22 @@ public:
 	ASurvivor();
 
 	UFUNCTION(BlueprintCallable)
-	void CameraChange();
+	void InitiateMap();
 
 	UFUNCTION(BlueprintCallable)
 	void InitRobots(ARobotControl *_Robot);
 
 	UFUNCTION()
-	void RobotMapRight();
+
+    void RobotMapRight();
+    UFUNCTION()
+    void RobotMapLeft();
+    UFUNCTION()
+    void RobotMapUp();
+    UFUNCTION()
+    void RobotMapDown();
 	UFUNCTION()
-	void RobotMapLeft();
-	UFUNCTION()
-	void RobotMapUp();
-	UFUNCTION()
-	void RobotMapDown();
+	void RobotStart();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent *SpringArmComp;
@@ -47,7 +50,10 @@ public:
 	ARobotControl *Robot = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<ARobotControl *> lists;
+    TArray<ARobotControl *> lists;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool RFlag = false;
 
 protected:
 	// Called when the game starts or when spawned
