@@ -113,8 +113,8 @@ private:
   unsigned int maxHeight;
   float startX = 4000.0f;
   float startY = 0.0f;
-  float startZ = 190.0f;
-  float interval = 700.0f;
+  float startZ = 200.0f;
+  float interval = 1000.0f;
 
   // Player related values
   UPlayerStat *playerStat;

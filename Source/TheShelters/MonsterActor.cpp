@@ -76,7 +76,7 @@ void AMonsterActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	panicRoomLocation = FVector(7500.0f, 200.0f, 170.0f);
+	panicRoomLocation = FVector(9000.0f, 0.0f, 200.0f);
 }
 
 
