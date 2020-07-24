@@ -83,11 +83,15 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	int startLocation = 0;
+	int startLocation = 5;
     int currentLocation;
 
 	TArray<int> route;
     TArray<int> visited;
+	float startX = 4000.0f;
+	float startY = 0.0f;
+	float startZ = 200.0f;
+	float interval = 1000.0f;
 
 public:	
 	// Called every frame

@@ -18,7 +18,7 @@ void ARobotControl::BeginPlay()
     initMap();
 
     FRotator rotator(0.0f, 0.0f, 0.0f);
-    FVector spawnLocation(1110, 150, 250);
+    FVector spawnLocation(7500, 100, 200);
     FActorSpawnParameters spawnParams;
     spawnParams.Owner = this;
     Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
@@ -190,7 +190,9 @@ bool ARobotControl::StartMoving()
 //make RobotActor to move to RoomIndex Room
 void ARobotControl::RobotMoveTo(int RoomIndex)
 {
-    Robot->SetActorLocation(FVector(RoomIndex%10 * 100, RoomIndex/10 * 100, 200));
+    int x = RoomIndex % 10;
+    int y = RoomIndex / 10;
+    Robot->SetActorLocation(FVector(startX + x * interval, startY + y * interval, startZ));
 }
 
 //check resources at the destination index room. Start recall function
