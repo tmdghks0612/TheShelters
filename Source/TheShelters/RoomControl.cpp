@@ -351,7 +351,7 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             spawnParams.Owner = this;
 
             FRotator rotator(0.0f, 0.0f, 0.0f);
-            FVector spawnLocation(startX + x * interval, startY + y * interval + 200.0f, startZ);
+            FVector spawnLocation(startX + x * interval, startY + y * interval, startZ);
 
             monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
 			monsterActors[nextMonsterId-1]->InitMonsterActor(this, nextMonsterId);
@@ -401,7 +401,7 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             if (monsterActors[monsterId - 1])
             {
                 monsterActors[monsterId - 1]->SetActorLocation(FVector(
-                startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth) + 200.0f, startZ));
+                startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
             }
 
 			// if monster is next to panic room, charges to player
