@@ -52,7 +52,7 @@ void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
 
 void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
 {
-    _List[0]->InitRobots(this);   
+    _List[0]->InitRobots(this);
 }
 
 void ARobotControl::MapRight()
