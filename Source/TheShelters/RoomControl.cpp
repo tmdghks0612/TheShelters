@@ -48,6 +48,7 @@ bool ARoomControl::MyContains(int input_num)
     return false;
 }
 
+
 bool ARoomControl::IsNextPanicRoom(int roomNumber)
 {
 	if (roomNumber == panicRoomId-1 || roomNumber == panicRoomId+1 || roomNumber == panicRoomId+10) {
@@ -55,90 +56,6 @@ bool ARoomControl::IsNextPanicRoom(int roomNumber)
 		return true;
 	}
 	return false;
-}
-
-void ARoomControl::PrintMap()
-{
-    for (unsigned int x = 0; x < maxHeight; x++)
-    {
-        FString line = FString();
-        for (unsigned int y = 0; y < maxWidth; y++)
-        {
-            int idx = x * maxWidth + y;
-            int32 monsterId = GameMap[idx]->MonsterId();
-            TArray<FStringFormatArg> args;
-            args.Add(FStringFormatArg(monsterId));
-            line += FString::Format(TEXT("{0} "), args);
-        }
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
-    }
-}
-
-void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
-{
-    FString line = FString();
-    TArray<FStringFormatArg> args;
-    args.Add(FStringFormatArg(testName));
-    args.Add(FStringFormatArg(num));
-    if (success)
-    {
-        line += FString::Format(TEXT("[{0}] TEST {1}: SUCCESS"), args);
-    }
-    else
-    {
-        line += FString::Format(TEXT("[{0}] TEST {1}: FAIL"), args);
-    }
-
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
-}
-
-void ARoomControl::TestScenario()
-{
-    bool result;
-
-    InitGame(10, 10);
-    result = this->panicRoomId == 5;
-    PrintTestMessage(TEXT("InitPanicRoom"), 1, result);
-
-    result = GameMap[5]->GetDoor(Left).status == Close;
-    PrintTestMessage(TEXT("InitPanicRoom"), 2, result);
-    result = GameMap[5]->GetDoor(Up).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 3, result);
-    result = GameMap[5]->GetDoor(Right).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 4, result);
-    result = GameMap[5]->GetDoor(Down).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 5, result);
-
-    result = GameMap[4]->GetDoor(Right).status == Close;
-    PrintTestMessage(TEXT("InitPanicRoom"), 6, result);
-    result = GameMap[6]->GetDoor(Left).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 7, result);
-    result = GameMap[15]->GetDoor(Up).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 8, result);
-
-    InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
-    InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
-
-    MoveMonster(1, Left);  // Monster 1: 0, 3
-    MoveMonster(2, Right); // Monster 2: 1, 4
-
-    // EXPECT
-    result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
-    PrintTestMessage(TEXT("MonsterMovement"), 1, result);
-
-    result = GameMap[13]->MonsterId() == 0 && GameMap[14]->MonsterId() == 2;
-    PrintTestMessage(TEXT("MonsterMovement"), 2, result);
-
-    URoom *room = FindRoomByLocation(3, 3);
-    room->CloseDoor(Left);
-    result = GameMap[33]->GetDoor(Left).status == Close;
-    PrintTestMessage(TEXT("CloseDoor"), 1, result);
-
-    result = GameMap[32]->GetDoor(Right).status == Close;
-    PrintTestMessage(TEXT("CloseDoor"), 2, result);
-
-	room = FindRoomByLocation(0, 5);
-	room->CloseDoor(Left);
 }
 
 void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
@@ -176,6 +93,8 @@ void ARoomControl::EndTurn()
             MoveMonster(it.Key, Direction(rand() % 4));
         }
     }
+
+    this->playerStat->EndTurn();
 }
 
 void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
@@ -185,6 +104,7 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
 
     this->InitRooms();
     this->InitPanicRoom();
+    this->InitPlayerStat();
 }
 
 void ARoomControl::InitRooms()
@@ -270,6 +190,12 @@ void ARoomControl::InitPanicRoom()
     panicRoom->InitPanicRoom(Close, Open, Close, Open, panicRoomId);
 }
 
+
+void ARoomControl::InitPlayerStat()
+{
+    this->playerStat = NewObject<UPlayerStat>();
+    this->playerStat->InitPlayerStat(100, 100, 50, 0, 100);
+}
 bool ARoomControl::IsBlocked(int _monsterId)
 {
 	Door door;
@@ -301,6 +227,7 @@ bool ARoomControl::IsBlocked(int _monsterId)
 	else {
 		return false;
 	}
+
 }
 
 URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)

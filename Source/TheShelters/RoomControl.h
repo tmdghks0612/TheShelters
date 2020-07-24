@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include <map>
-#include <vector>
-
 #include "MonsterActor.h"
+#include "PlayerStat.h"
 #include "Room.h"
 
 #include "CoreMinimal.h"
@@ -96,6 +94,7 @@ private:
   // Initializers
   void InitRooms();
   void InitPanicRoom(); // Must call after InitRooms
+  void InitPlayerStat();
 
   // Monster related values
   MonsterList monsters;
@@ -117,7 +116,11 @@ private:
   float startZ = 190.0f;
   float interval = 700.0f;
 
+  // Player related values
+  UPlayerStat *playerStat;
+
   // For test and debugging
+  TMap<bool, int32> testResult;
   void PrintMap();
   void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
 };
