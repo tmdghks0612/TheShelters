@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <algorithm>
+
+#include "Direction.h"
 #include "MonsterActor.h"
 #include "PlayerStat.h"
 #include "Room.h"
@@ -53,7 +56,6 @@ public:
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
-
   // Check if monster can enter panic room
   bool IsBlocked(int _monsterId);
 
@@ -101,6 +103,7 @@ private:
   MonsterLocationList monsterLocations;
   int nextMonsterId = 1;
   TArray<AMonsterActor *> monsterActors;
+  Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
 
   // Panic Room related values
   int panicRoomId = 5;
