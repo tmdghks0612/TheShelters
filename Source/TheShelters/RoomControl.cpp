@@ -97,7 +97,7 @@ void ARoomControl::EndTurn()
     this->playerStat->EndTurn();
 }
 
-void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
+void ARoomControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
 {
     maxHeight = m;
     maxWidth = n;
@@ -105,6 +105,7 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
     this->InitRooms();
     this->InitPanicRoom();
     this->InitPlayerStat();
+	this->InitMap(_LevelString);
 }
 
 void ARoomControl::InitRooms()
@@ -147,6 +148,68 @@ void ARoomControl::InitRooms()
             GameMap[i]->InitDoor(Right, room, Open);
         }
     }
+}
+
+void ARoomControl::InitMap(FString _LevelString)
+{
+	FString LevelString = FString(_LevelString);
+	TArray<FString> ParsedLines;
+	int row = 0;
+	LevelString.ParseIntoArray(ParsedLines, LINE_TERMINATOR, true);
+	UE_LOG(LogTemp, Warning, TEXT("parse complete"))
+	for (const FString &it : ParsedLines) {
+		TArray<FString> ParsedWords;
+		it.ParseIntoArray(ParsedWords, TEXT(" "), true);
+		// when reading row is up, down info
+		if (row%2 == 0) {
+			for (int i = 0; i < 10; ++i) {
+				
+				int currentRoomId = (row/2) * maxWidth + i;
+				DoorStatus currentDoorStatus;
+
+				// 1 means closed door
+				if (ParsedWords[i].Equals("1")) {
+					currentDoorStatus = Close;
+				}
+				else {
+					currentDoorStatus = Open;
+				}
+
+				
+				// close current room's UP door
+				GameMap[currentRoomId]->SetDoor(Up, currentDoorStatus);
+				// nullptr means door leads to map boundary, no need to change status
+				if (GameMap[currentRoomId]->GetDoor(Up).connectedRoom != nullptr) {
+					GameMap[currentRoomId]->GetDoor(Up).connectedRoom->SetDoor(Down, currentDoorStatus);
+				}
+			}
+		}
+		// when reading row is left, right info
+		else {
+			for (int i = 0; i < 10; ++i) {
+				//UE_LOG(LogTemp, Warning, TEXT("current pos: %s"), it[col])
+
+				int currentRoomId = (row/2) * maxWidth + i;
+				DoorStatus currentDoorStatus;
+				// 1 means closed door
+				if (ParsedWords[i].Equals("1")) {
+					currentDoorStatus = Close;
+				}
+				else {
+					currentDoorStatus = Open;
+				}
+				
+				// close current room's UP door
+				GameMap[currentRoomId]->SetDoor(Left, currentDoorStatus);
+				// nullptr means door leads to map boundary, no need to change status
+				if (GameMap[currentRoomId]->GetDoor(Left).connectedRoom != nullptr) {
+					GameMap[currentRoomId]->GetDoor(Left).connectedRoom->SetDoor(Right, currentDoorStatus);
+				}
+				
+			}
+		}
+		++row;
+	}
 }
 
 void ARoomControl::InitPanicRoom()

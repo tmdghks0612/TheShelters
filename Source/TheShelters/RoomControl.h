@@ -37,11 +37,11 @@ class THESHELTERS_API ARoomControl : public AActor
 public:
   // Constructors and Initializers
   ARoomControl();
-  void InitGame(const unsigned int m, const unsigned int n);
+  void InitGame(const unsigned int m, const unsigned int n, FString _LevelString);
 
   // Blueprint Callable Functions
   UFUNCTION(BlueprintCallable)
-  void TestScenario(); // For test
+  void TestScenario(FString _LevelString); // For test
   UFUNCTION(BlueprintCallable)
   void EndTurn();
   UFUNCTION(BlueprintCallable)
@@ -93,6 +93,7 @@ protected:
 private:
   // Initializers
   void InitRooms();
+  void InitMap(FString LevelString);
   void InitPanicRoom(); // Must call after InitRooms
   void InitPlayerStat();
 

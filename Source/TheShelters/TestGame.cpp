@@ -36,13 +36,13 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 	testResult[success] += 1;
 }
 
-void ARoomControl::TestScenario()
+void ARoomControl::TestScenario(FString _LevelString)
 {
 	bool result;
 	testResult.Add(true, 0);
 	testResult.Add(false, 0);
 
-	InitGame(10, 10);
+	InitGame(10, 10, _LevelString);
 	result = this->panicRoomId == 5;
 	PrintTestMessage(TEXT("InitPanicRoom"), 1, result);
 
@@ -109,6 +109,9 @@ void ARoomControl::TestScenario()
 	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 2, result);
 	result = playerStat->Mental() == 57.98;
 	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 3, result);
+
+	result = GameMap[77]->GetDoor(Right).status == Close;
+	PrintTestMessage(TEXT("LevelStringTest"), 2, result);
 
 	UE_LOG(LogTemp, Warning, TEXT("***[SUCCESS: %d FAIL: %d]"), testResult[true], testResult[false])
 }
