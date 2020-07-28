@@ -4,6 +4,7 @@
 
 #include <map>
 
+#include "Direction.h"
 #include "Monster.h"
 
 #include "CoreMinimal.h"
@@ -30,13 +31,6 @@ enum DoorStatus
 {
     Open,
     Close
-};
-enum Direction
-{
-    Left,
-    Up,
-    Right,
-    Down
 };
 
 typedef struct
@@ -75,7 +69,7 @@ class THESHELTERS_API URoom : public UObject
 {
     GENERATED_BODY()
 
-  public:
+public:
     // Constructors and Initializers
     URoom();
     ~URoom();
@@ -95,7 +89,7 @@ class THESHELTERS_API URoom : public UObject
 
     void Radiated();
 
-  private:
+private:
     // Default Room values
     int roomId;
 
@@ -116,7 +110,7 @@ UCLASS()
 class THESHELTERS_API UPanicRoom : public URoom
 {
     GENERATED_BODY()
-  public:
+public:
     UPanicRoom();
     ~UPanicRoom();
 

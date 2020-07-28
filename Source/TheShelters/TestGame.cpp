@@ -2,6 +2,7 @@
 
 void ARoomControl::PrintMap()
 {
+	UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
 	for (unsigned int x = 0; x < maxHeight; x++)
 	{
 		FString line = FString();
