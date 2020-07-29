@@ -14,6 +14,8 @@ void UMonster::InitMonster(MonsterType t, int id)
         armorpierce = false;
         speed = 1;
     }
+
+    prevDirection = NoDirection;
 }
 
 UMonster::UMonster()
@@ -36,4 +38,13 @@ const int UMonster::Speed() const
 const MonsterProperty UMonster::Property() const
 {
     return MakeTuple(radioactive, emp, armorpierce);
+}
+const Direction UMonster::PreviousDirection() const
+{
+    return prevDirection;
+}
+
+void UMonster::PreviousDirection(Direction d)
+{
+    prevDirection = d;
 }
