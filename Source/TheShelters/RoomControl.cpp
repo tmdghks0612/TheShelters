@@ -13,6 +13,7 @@ ARoomControl::ARoomControl()
 void ARoomControl::BeginPlay()
 {
     Super::BeginPlay();
+    UE_LOG(LogTemp, Warning, TEXT("1"));
 }
 
 bool ARoomControl::MyContains(int input_num)

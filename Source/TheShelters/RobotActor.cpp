@@ -25,10 +25,15 @@ ARobotActor::ARobotActor()
 
 	RobotSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> ROBOT_ANIM(TEXT("/Game/RobotBP/RobotAnimBP.RobotAnimBP_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ROBOT_ANIM(TEXT("/Game/RobotBP/RobotAnimationBP.RobotAnimationBP_C"));
 	if (ROBOT_ANIM.Succeeded())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Anim In"));
 		RobotSkeletalMeshComponent->SetAnimInstanceClass(ROBOT_ANIM.Class);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Anim Failed"));
 	}
 
 	if (RobotSkeletalMeshComponent->GetAnimInstance() == nullptr)

@@ -22,15 +22,16 @@ ARobotPawn::ARobotPawn()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("No Assigned RobotSkeletalMesh"));
 	}
-
+	
 	RobotSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> ROBOT_ANIM(TEXT("/Game/RobotBP/RobotAnimBP.RobotAnimBP_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ROBOT_ANIM(TEXT("/Game/RobotBP/RobotAnimationBP.RobotAnimationBP_C"));
 	if (ROBOT_ANIM.Succeeded())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ROBOT_ANIM Succeed"));
 		RobotSkeletalMeshComponent->SetAnimInstanceClass(ROBOT_ANIM.Class);
+		//RobotSkeletalMeshComponent->SetAnimClass(ROBOT_ANIM.Class);
 	}
-
 }
 
 // Called when the game starts or when spawned
@@ -38,7 +39,7 @@ void ARobotPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	isMoving = false;
-	
+	RobotAnimInstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
 }
 
 // Called every frame
@@ -56,12 +57,21 @@ void ARobotPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ARobotPawn::SetMovement(bool _Move)
 {
-	auto RobotAnimInstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
+
 	if (nullptr != RobotAnimInstance)
 	{
 		RobotAnimInstance->SetMovement(_Move);
 	}
 	isMoving = _Move;
+}
+
+void ARobotPawn::SetArrival(bool _isArrived)
+{
+	if (RobotAnimInstance != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TestforArrival2"));
+		RobotAnimInstance->SetArrival(_isArrived);
+	}
 }
 
 bool ARobotPawn::GetMovement()
