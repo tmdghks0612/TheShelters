@@ -6,17 +6,17 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
-#include "PlayerStat.generated.h"
+#include "SurvivorStat.generated.h"
 
 UCLASS()
-class THESHELTERS_API UPlayerStat : public UObject
+class THESHELTERS_API USurvivorStat : public UObject
 {
 	GENERATED_BODY()
 public:
 	// Constructors and Initializers
-	UPlayerStat();
-	~UPlayerStat();
-	void InitPlayerStat(double _food, double _water, double _mental, double _progress, double _electricity);
+	USurvivorStat();
+	~USurvivorStat();
+	void InitSurvivorStat(double _food, double _water, double _mental, double _progress, double _electricity);
 
 	// Getters
 	const double &Food() const;
