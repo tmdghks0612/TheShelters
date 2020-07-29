@@ -139,7 +139,14 @@ void ARoomControl::EndTurn()
         } while (!success);
     }
 
-    this->playerStat->EndTurn();
+    survivorStat->EndTurn();
+
+    int mentality = survivorStat->Mental();
+    if (!eventFlag["DefaultEvent"] && mentality < 100)
+    {
+        eventFlag["DefaultEvent"] = true;
+        UE_LOG(LogTemp, Warning, TEXT("************************EVENT CALL"));
+    }
 }
 
 void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
@@ -147,9 +154,11 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
     maxHeight = m;
     maxWidth = n;
 
+    eventFlag.Add("DefaultEvent", false);
+
     this->InitRooms();
     this->InitPanicRoom();
-    this->InitPlayerStat();
+    this->InitSurvivorStat();
 }
 
 void ARoomControl::InitRooms()
@@ -235,10 +244,10 @@ void ARoomControl::InitPanicRoom()
     panicRoom->InitPanicRoom(Close, Open, Close, Open, panicRoomId);
 }
 
-void ARoomControl::InitPlayerStat()
+void ARoomControl::InitSurvivorStat()
 {
-    this->playerStat = NewObject<UPlayerStat>();
-    this->playerStat->InitPlayerStat(100, 100, 50, 0, 100);
+    this->survivorStat = NewObject<USurvivorStat>();
+    this->survivorStat->InitSurvivorStat(100, 100, 50, 0, 100);
 }
 bool ARoomControl::IsBlocked(int _monsterId)
 {

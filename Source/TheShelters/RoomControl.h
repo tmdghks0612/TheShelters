@@ -6,7 +6,7 @@
 
 #include "Direction.h"
 #include "MonsterActor.h"
-#include "PlayerStat.h"
+#include "SurvivorStat.h"
 #include "Room.h"
 
 #include "CoreMinimal.h"
@@ -96,7 +96,7 @@ private:
   // Initializers
   void InitRooms();
   void InitPanicRoom(); // Must call after InitRooms
-  void InitPlayerStat();
+  void InitSurvivorStat();
 
   // Monster related values
   MonsterList monsters;
@@ -119,8 +119,11 @@ private:
   float startZ = 200.0f;
   float interval = 1000.0f;
 
+  // Event flag
+  TMap<FString, bool> eventFlag;
+
   // Player related values
-  UPlayerStat *playerStat;
+  USurvivorStat *survivorStat;
 
   // For test and debugging
   TMap<bool, int32> testResult;
