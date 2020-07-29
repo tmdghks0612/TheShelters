@@ -355,6 +355,11 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
     {
         if (it.Key == monsterId)
         {
+            if (d == NoDirection)
+            {
+                monsters[it.Key]->PreviousDirection(NoDirection);
+                return true;
+            }
             if (monsterActors[monsterId - 1]->IsAngry)
             {
                 continue;
