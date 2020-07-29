@@ -13,7 +13,7 @@ ARoomActor::ARoomActor()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
-
+	
 }
 
 void ARoomActor::RoomMeshRandomize()
