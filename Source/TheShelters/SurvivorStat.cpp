@@ -83,7 +83,7 @@ const int &USurvivorStat::Hunger(const int diff)
 	return hunger;
 }
 
-const int &USurvivorStat::Hunger(const int diff)
+const int &USurvivorStat::Thirst(const int diff)
 {
 	StatSetter(thirst, diff, max);
 	return thirst;
@@ -91,7 +91,9 @@ const int &USurvivorStat::Hunger(const int diff)
 
 const double &USurvivorStat::Mental(const double diff)
 {
-	StatSetter(mental, diff, max);
+	mental += diff;
+	mental = std::max(0.0, mental);
+	mental = std::min(mental, static_cast<double>(max));
 	return mental;
 }
 

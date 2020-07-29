@@ -63,7 +63,7 @@ public:
 	void EndTurn();
 
 private:
-	double max = 100;
+	int max = 100;
 	int food;
 	int water;
 	int electricity;

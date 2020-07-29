@@ -122,8 +122,7 @@ void ARoomControl::EndTurn()
             {Right, 6},
             {Up, 6},
             {Down, 6},
-            {NoDirection, 1}
-        };
+            {NoDirection, 1}};
 
         weights[monsters[it.Key]->PreviousDirection()] = 1;
 
@@ -247,7 +246,7 @@ void ARoomControl::InitPanicRoom()
 void ARoomControl::InitSurvivorStat()
 {
     this->survivorStat = NewObject<USurvivorStat>();
-    this->survivorStat->InitSurvivorStat(100, 100, 50, 0, 100);
+    this->survivorStat->InitSurvivorStat(100, 100, 100, 100, 100, 50, 100);
 }
 bool ARoomControl::IsBlocked(int _monsterId)
 {
@@ -402,7 +401,7 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
                 monsterActors[monsterId - 1]->ChargePanicRoom();
             }
 
-            Direction prev = static_cast<Direction>((d+2) % 4);
+            Direction prev = static_cast<Direction>((d + 2) % 4);
             monsters[it.Key]->PreviousDirection(prev);
             break;
         }
