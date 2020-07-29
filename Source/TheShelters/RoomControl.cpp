@@ -139,13 +139,22 @@ void ARoomControl::EndTurn()
         } while (!success);
     }
 
-    this->survivorStat->EndTurn();
+    survivorStat->EndTurn();
+
+    int mentality = survivorStat->Mental();
+    if (!eventFlag["DefaultEvent"] && mentality < 100)
+    {
+        eventFlag["DefaultEvent"] = true;
+        UE_LOG(LogTemp, Warning, TEXT("************************EVENT CALL"));
+    }
 }
 
 void ARoomControl::InitGame(const unsigned int m, const unsigned int n)
 {
     maxHeight = m;
     maxWidth = n;
+
+    eventFlag.Add("DefaultEvent", false);
 
     this->InitRooms();
     this->InitPanicRoom();

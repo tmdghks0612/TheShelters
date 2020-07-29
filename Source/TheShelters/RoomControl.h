@@ -119,6 +119,9 @@ private:
   float startZ = 200.0f;
   float interval = 1000.0f;
 
+  // Event flag
+  TMap<FString, bool> eventFlag;
+
   // Player related values
   USurvivorStat *survivorStat;
 
