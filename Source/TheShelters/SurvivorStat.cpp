@@ -1,25 +1,52 @@
 #include "SurvivorStat.h"
 
+#define StatSetter(x, y, z)       \
+	{                             \
+		(x) += (y);               \
+		(x) = std::max(0, (x));   \
+		(x) = std::min((x), (z)); \
+	}
+
 USurvivorStat::USurvivorStat() {}
 USurvivorStat::~USurvivorStat() {}
 
-void USurvivorStat::InitSurvivorStat(double _food, double _water, double _mental, double _progress, double _electricity)
+void USurvivorStat::InitSurvivorStat() {}
+void USurvivorStat::InitSurvivorStat(int _food, int _water, int _elec, int _hunger, int _thirst, int _mental, int _progress)
 {
 	this->food = _food;
 	this->water = _water;
+	this->electricity = _elec;
+
+	this->hunger = _hunger;
+	this->thirst = _thirst;
 	this->mental = _mental;
+
 	this->progress = _progress;
-	this->electricity = _electricity;
 }
 
-const double &USurvivorStat::Food() const
+const int &USurvivorStat::Food() const
 {
 	return this->food;
 }
 
-const double &USurvivorStat::Water() const
+const int &USurvivorStat::Water() const
 {
 	return this->water;
+}
+
+const int &USurvivorStat::Electricity() const
+{
+	return this->electricity;
+}
+
+const int &USurvivorStat::Hunger() const
+{
+	return this->hunger;
+}
+
+const int &USurvivorStat::Thirst() const
+{
+	return this->thirst;
 }
 
 const double &USurvivorStat::Mental() const
@@ -27,91 +54,91 @@ const double &USurvivorStat::Mental() const
 	return this->mental;
 }
 
-const double &USurvivorStat::Progress() const
+const int &USurvivorStat::Progress() const
 {
 	return this->progress;
 }
 
-const double &USurvivorStat::Electricity() const
+const int &USurvivorStat::Food(const int diff)
 {
-	return this->electricity;
+	StatSetter(food, diff, max);
+	return food;
 }
 
-const double &USurvivorStat::Food(const double diff)
+const int &USurvivorStat::Water(const int diff)
 {
-	this->food += diff;
-	this->food = std::max(0.0, this->food);
-	this->food = std::min(this->food, this->max);
-	return this->food;
+	StatSetter(water, diff, max);
+	return water;
 }
 
-const double &USurvivorStat::Water(const double diff)
+const int &USurvivorStat::Electricity(const int diff)
 {
-	this->water += diff;
-	this->water = std::max(0.0, this->water);
-	this->water = std::min(this->water, this->max);
-	return this->water;
+	StatSetter(electricity, diff, max);
+	return electricity;
 }
+
+const int &USurvivorStat::Hunger(const int diff)
+{
+	StatSetter(hunger, diff, max);
+	return hunger;
+}
+
+const int &USurvivorStat::Hunger(const int diff)
+{
+	StatSetter(thirst, diff, max);
+	return thirst;
+}
+
 const double &USurvivorStat::Mental(const double diff)
 {
-	this->mental += diff;
-	this->mental = std::max(0.0, this->mental);
-	this->mental = std::min(this->mental, this->max);
-	return this->mental;
+	StatSetter(mental, diff, max);
+	return mental;
 }
-const double &USurvivorStat::Progress(const double diff)
+
+const int &USurvivorStat::Progress(const int diff)
 {
-	this->progress += diff;
-	this->progress = std::max(0.0, this->progress);
-	this->progress = std::min(this->progress, this->max);
-	return this->progress;
-}
-const double &USurvivorStat::Electricity(const double diff)
-{
-	this->electricity += diff;
-	this->electricity = std::max(0.0, this->electricity);
-	this->electricity = std::min(this->electricity, this->max);
-	return this->electricity;
+	StatSetter(progress, diff, max);
+	return progress;
 }
 
 void USurvivorStat::Consume()
 {
-	double foodPerTime = 1;
-	double waterMultiplier = 2;
-	Food(-foodPerTime);
-	Water(-foodPerTime * waterMultiplier);
+	int hungerPerTime = 1;
+	int thirstMultiplier = 2;
+	Food(-hungerPerTime);
+	Water(-hungerPerTime * thirstMultiplier);
 }
 
 const double USurvivorStat::MentalMultiplier() const
 {
-	double foodMultiplier, waterMultiplier;
-	if (this->food < 30)
+	double hungerMultiplier, thirstMultiplier;
+	if (this->hunger < 30)
 	{
-		foodMultiplier = (std::log(this->food + 1) / std::log(31.0)) - 2;
+		hungerMultiplier = (std::log(this->hunger + 1) / std::log(31.0)) - 2;
 	}
-	else if (this->food > 60)
+	else if (this->hunger > 60)
 	{
-		foodMultiplier = std::log(this->food - 59) / std::log(41) + 1;
-	}
-	else
-	{
-		foodMultiplier = (this->food / 15) - 3;
-	}
-
-	if (this->water < 30)
-	{
-		waterMultiplier = (std::log(this->water + 1) / std::log(31.0)) - 2;
-	}
-	else if (this->food > 60)
-	{
-		waterMultiplier = std::log(this->water - 59) / std::log(41) + 1;
+		hungerMultiplier = std::log(this->hunger - 59) / std::log(41) + 1;
 	}
 	else
 	{
-		waterMultiplier = (this->water / 15) - 3;
+		hungerMultiplier = (this->hunger / 15) - 3;
 	}
 
-	return round((foodMultiplier + waterMultiplier) * 100.0) / 100.0;
+	if (this->thirst < 30)
+	{
+		thirstMultiplier = (std::log(this->thirst + 1) / std::log(31.0)) - 2;
+	}
+	else if (this->hunger > 60)
+	{
+		thirstMultiplier = std::log(this->thirst - 59) / std::log(41) + 1;
+	}
+	else
+	{
+		thirstMultiplier = (this->thirst / 15) - 3;
+	}
+
+	return round((hungerMultiplier + thirstMultiplier) * 100.0) / 100.0;
 }
 
 void USurvivorStat::EndTurn()
