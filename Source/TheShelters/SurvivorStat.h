@@ -8,6 +8,24 @@
 
 #include "SurvivorStat.generated.h"
 
+/* << USurvivorStat : UObject >>
+ * Constructor:
+ * - Default Constructor
+ * Initializer:
+ * - InitSurvivorStat
+ * Property:
+ * - Food
+ * - Water
+ * - Mental
+ * - Progress
+ * - Electricity
+ * 
+ * Description:
+ * Food is for hunger stat and water is for thirst stat. Survivor can use
+ * food resource and water resource to increase corresponding stats.
+ * Mental stat is not shown to Survivor but it will trigger some events.
+ * Electricty is 
+ */
 UCLASS()
 class THESHELTERS_API USurvivorStat : public UObject
 {
@@ -16,33 +34,47 @@ public:
 	// Constructors and Initializers
 	USurvivorStat();
 	~USurvivorStat();
-	void InitSurvivorStat(double _food, double _water, double _mental, double _progress, double _electricity);
+	void InitSurvivorStat();
+	void InitSurvivorStat(int _food, int _water, int _elec, int _hunger, int _thirst, int _mental, int _progress);
 
 	// Getters
-	const double &Food() const;
-	const double &Water() const;
-	const double &Mental() const;
-	const double &Progress() const;
-	const double &Electricity() const;
+	const int &Food() const;
+	const int &Water() const;
+	const int &Electricity() const;
 
-	const double &Food(const double diff);
-	const double &Water(const double diff);
+	const int &Hunger() const;
+	const int &Thirst() const;
+	const double &Mental() const;
+
+	const int &Progress() const;
+
+	// Setters
+	const int &Food(const int diff);
+	const int &Water(const int diff);
+	const int &Electricity(const int diff);
+
+	const int &Hunger(const int diff);
+	const int &Thirst(const int diff);
 	const double &Mental(const double diff);
-	const double &Progress(const double diff);
-	const double &Electricity(const double diff);
+
+	const int &Progress(const int diff);
 
 	// Methods for playing game
 	void EndTurn();
 
 private:
-	double max = 100;
-	double food;
-	double water;
-	double mental;
-	double progress;
-	double electricity;
+	int max = 100;
+	int food;
+	int water;
+	int electricity;
 
 	int electricityUsage;
+
+	int hunger;
+	int thirst;
+	double mental;
+
+	int progress;
 
 	// Private methods for playing game
 	void Consume();
