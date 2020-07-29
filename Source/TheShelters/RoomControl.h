@@ -5,10 +5,10 @@
 #include "MonsterActor.h"
 #include "PlayerStat.h"
 #include "Room.h"
+#include "DoorActor.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
 #include "RoomControl.generated.h"
 
 // key = monsterId, value = roomNum of the room monster is in
@@ -50,6 +50,8 @@ public:
   void SelectCCTV();
   UFUNCTION(BlueprintCallable)
   void RestoreZap(AActor *_ZapPlane);
+  UFUNCTION(BlueprintCallable)
+  void InitDoorMesh();
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -81,6 +83,8 @@ public:
   TArray<UBlueprint *> SpawnActor;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TArray<TSubclassOf<class ADoorActor>> DoorActor;
 
   // To show in blueprint
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -96,6 +100,8 @@ private:
   void InitMap(FString LevelString);
   void InitPanicRoom(); // Must call after InitRooms
   void InitPlayerStat();
+
+  
 
   // Monster related values
   MonsterList monsters;
