@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/PointLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "RoomActor.generated.h"
 
@@ -30,6 +31,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
 	UStaticMeshComponent* RoomMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomLight")
+	UPointLightComponent* RoomPointlightTest;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomLight")
+	TArray<UPointLightComponent*> RoomPointlights;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
     TArray<UStaticMesh *> RoomMeshVersions;
