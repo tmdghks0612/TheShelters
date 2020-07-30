@@ -6,6 +6,7 @@
 URobotAniminstance::URobotAniminstance()
 {
 	isMoving = false;
+	isArrived = false;
 }
 
 void URobotAniminstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -24,3 +25,7 @@ void URobotAniminstance::SetMovement(bool _isMoving)
 	isMoving = _isMoving;
 }
 
+void URobotAniminstance::SetArrival(bool _isArrived)
+{
+	isArrived = _isArrived;
+}

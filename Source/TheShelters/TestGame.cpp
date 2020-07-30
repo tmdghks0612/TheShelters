@@ -2,6 +2,7 @@
 
 void ARoomControl::PrintMap()
 {
+	UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
 	for (unsigned int x = 0; x < maxHeight; x++)
 	{
 		FString line = FString();
@@ -83,32 +84,32 @@ void ARoomControl::TestScenario(FString _LevelString)
 	result = GameMap[32]->GetDoor(Right).status == Close;
 	PrintTestMessage(TEXT("CloseDoor"), 2, result);
 
-	result = playerStat->Food() == 100;
-	PrintTestMessage(TEXT("InitPlayerStat"), 1, result);
-	result = playerStat->Water() == 100;
-	PrintTestMessage(TEXT("InitPlayerStat"), 2, result);
-	result = playerStat->Mental() == 50;
-	PrintTestMessage(TEXT("InitPlayerStat"), 3, result);
-	result = playerStat->Progress() == 0;
-	PrintTestMessage(TEXT("InitPlayerStat"), 4, result);
-	result = playerStat->Electricity() == 100;
-	PrintTestMessage(TEXT("InitPlayerStat"), 5, result);
+	result = survivorStat->Food() == 100;
+	PrintTestMessage(TEXT("InitSurvivorStat"), 1, result);
+	result = survivorStat->Water() == 100;
+	PrintTestMessage(TEXT("InitSurvivorStat"), 2, result);
+	result = survivorStat->Mental() == 50;
+	PrintTestMessage(TEXT("InitSurvivorStat"), 3, result);
+	result = survivorStat->Progress() == 0;
+	PrintTestMessage(TEXT("InitSurvivorStat"), 4, result);
+	result = survivorStat->Electricity() == 100;
+	PrintTestMessage(TEXT("InitSurvivorStat"), 5, result);
 
-	playerStat->EndTurn();
-	result = playerStat->Food() == 99;
-	PrintTestMessage(TEXT("PlayerStatEndTurn"), 1, result);
-	result = playerStat->Water() == 98;
-	PrintTestMessage(TEXT("PlayerStatEndTurn"), 2, result);
-	result = playerStat->Mental() == 54;
-	PrintTestMessage(TEXT("PlayerStatEndTurn"), 3, result);
+	survivorStat->EndTurn();
+	result = survivorStat->Food() == 99;
+	PrintTestMessage(TEXT("SurvivorStatEndTurn"), 1, result);
+	result = survivorStat->Water() == 98;
+	PrintTestMessage(TEXT("SurvivorStatEndTurn"), 2, result);
+	result = survivorStat->Mental() == 54;
+	PrintTestMessage(TEXT("SurvivorStatEndTurn"), 3, result);
 
-	playerStat->EndTurn();
-	result = playerStat->Food() == 98;
-	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 1, result);
-	result = playerStat->Water() == 96;
-	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 2, result);
-	result = playerStat->Mental() == 57.98;
-	PrintTestMessage(TEXT("PlayerStatSecondEndTurn"), 3, result);
+	survivorStat->EndTurn();
+	result = survivorStat->Food() == 98;
+	PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 1, result);
+	result = survivorStat->Water() == 96;
+	PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 2, result);
+	result = survivorStat->Mental() == 57.98;
+	PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);
 
 	result = GameMap[77]->GetDoor(Right).status == Close;
 	PrintTestMessage(TEXT("LevelStringTest"), 2, result);

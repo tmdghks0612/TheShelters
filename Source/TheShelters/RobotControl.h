@@ -52,24 +52,37 @@ public:
 
 	UFUNCTION()
 	void MapRight();
-    UFUNCTION()
+    
+	UFUNCTION()
     void MapLeft();
-    UFUNCTION()
+    
+	UFUNCTION()
     void MapUp();
-    UFUNCTION()
+    
+	UFUNCTION()
     void MapDown();
-    UFUNCTION()
+    
+	UFUNCTION()
     void initMap();
-    UFUNCTION()
+    
+	UFUNCTION()
     void PrintMap();
+	
 	UFUNCTION()
 	void RobotMoveTo(int RoomIndex);
+	
 	UFUNCTION()
 	void ReachDestination();
+	
 	UFUNCTION()
 	void EndMovement();
+	
 	UFUNCTION()
 	void SetMove();
+
+	UFUNCTION()
+	void DetectMonster();
+
 
 	UFUNCTION(BlueprintCallable)
 	void FindRoomControl(TArray<ARoomControl*> _RoomControl);

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Direction.h"
+
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
@@ -10,7 +12,7 @@
 // MonsterType determines MonsterProperty values and movement speed
 enum MonsterType
 {
-    DefaultMonster
+  DefaultMonster
 };
 
 // MonsterProperty <radioactive, emp, armorpierce>
@@ -40,31 +42,35 @@ typedef TTuple<bool, bool, bool> MonsterProperty;
 UCLASS()
 class THESHELTERS_API UMonster : public UObject
 {
-    GENERATED_BODY()
+  GENERATED_BODY()
 
-  public:
-    // Constructors and Initializers
-    UMonster();
-    void InitMonster(MonsterType t, int id);
+public:
+  // Constructors and Initializers
+  UMonster();
+  void InitMonster(MonsterType t, int id);
 
-    // Getters and Setters
-    const int MonsterId() const;
-    const MonsterType Type() const;
-    const int Speed() const;
-    const MonsterProperty Property() const;
+  // Getters and Setters
+  const int MonsterId() const;
+  const MonsterType Type() const;
+  const int Speed() const;
+  const MonsterProperty Property() const;
+  const Direction PreviousDirection() const;
+  void PreviousDirection(Direction d);
 
-  protected:
-  private:
-    UPROPERTY(EditAnywhere)
-    // Default Monster values
-    int monsterId;
-    MonsterType monsterType;
+protected:
+private:
+  UPROPERTY(EditAnywhere)
+  // Default Monster values
+  int monsterId;
+  MonsterType monsterType;
 
-    // Monster Properties
-    bool radioactive;
-    bool emp;
-    bool armorpierce;
+  // Monster Properties
+  bool radioactive;
+  bool emp;
+  bool armorpierce;
 
-    // Monster movement speed
-    int speed;
+  // Monster movement speed
+  int speed;
+
+  Direction prevDirection;
 };
