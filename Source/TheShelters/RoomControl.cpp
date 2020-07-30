@@ -270,57 +270,6 @@ void ARoomControl::InitDoorMesh()
 	for (int i = 0; i < 12; ++i)
 	{
 		SpawnDoorMesh(CCTVRoomNum[i]);
-		/*currentRoomNum = CCTVRoomNum[i];
-
-		row = currentRoomNum / maxWidth;
-		col = currentRoomNum % maxWidth;
-		UE_LOG(LogTemp, Warning, TEXT("roomnum %d, coord [%d : %d]"), currentRoomNum, row, col);
-		FActorSpawnParameters spawnParams;
-		spawnParams.Owner = this;
-
-		FRotator rotatorLeft(0.0f, 0.0f, 0.0f);
-		FRotator rotatorUp(0.0f, 90.0f, 0.0f);
-		
-		Door currentDoor;
-		FVector spawnLocationUp(startX + col * interval, startY + row * interval - 375.0f, startZ);
-		currentDoor = GameMap[currentRoomNum]->GetDoor(Up);
-		if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
-
-			world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
-		}
-		else {
-			world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationUp, rotatorUp, spawnParams);
-		}
-
-		FVector spawnLocationLeft(startX + col * interval - 375.0f, startY + row * interval, startZ);
-		currentDoor = GameMap[currentRoomNum]->GetDoor(Left);
-		if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
-
-			world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationLeft, rotatorLeft, spawnParams);
-		}
-		else {
-			world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationLeft, rotatorLeft, spawnParams);
-		}
-
-		FVector spawnLocationRight(startX + col * interval + 375.0f, startY + row * interval, startZ);
-		currentDoor = GameMap[currentRoomNum]->GetDoor(Right);
-		if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
-
-			world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationRight, rotatorLeft, spawnParams);
-		}
-		else {
-			world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationRight, rotatorLeft, spawnParams);
-		}
-
-		FVector spawnLocationDown(startX + col * interval, startY + row * interval + 375.0f, startZ);
-		currentDoor = GameMap[currentRoomNum]->GetDoor(Down);
-		if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
-
-			world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationDown, rotatorUp, spawnParams);
-		}
-		else {
-			world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationDown, rotatorUp, spawnParams);
-		}*/
 	}
 
 	int visibleRoomSize = VisibleRoomNum.Num();
