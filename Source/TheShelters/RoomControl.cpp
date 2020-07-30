@@ -213,19 +213,10 @@ void ARoomControl::InitMap(FString _LevelString)
 
 void ARoomControl::InitDoorMesh()
 {
-	int currentRoomNum;
-	int row, col;
-	UWorld *world = GetWorld();
-	if (!world) {
-		UE_LOG(LogTemp, Warning, TEXT("World not existing!"))
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("World exists!"))
-	}
-
 	for (int i = 0; i < 12; ++i)
 	{
-		currentRoomNum = CCTVRoomNum[i];
+		SpawnDoorMesh(CCTVRoomNum[i]);
+		/*currentRoomNum = CCTVRoomNum[i];
 
 		row = currentRoomNum / maxWidth;
 		col = currentRoomNum % maxWidth;
@@ -275,7 +266,13 @@ void ARoomControl::InitDoorMesh()
 		}
 		else {
 			world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationDown, rotatorUp, spawnParams);
-		}
+		}*/
+	}
+
+	int visibleRoomSize = VisibleRoomNum.Num();
+	for (int i = 0; i < visibleRoomSize; ++i)
+	{
+		SpawnDoorMesh(VisibleRoomNum[i]);
 	}
 }
 
@@ -325,6 +322,152 @@ void ARoomControl::InitPlayerStat()
 {
     this->playerStat = NewObject<UPlayerStat>();
     this->playerStat->InitPlayerStat(100, 100, 50, 0, 100);
+}
+
+void ARoomControl::SpawnRoomMesh(int roomNum)
+{
+	int row = roomNum / maxWidth;
+	int col = roomNum % maxWidth;
+	FActorSpawnParameters spawnParams;
+	spawnParams.Owner = this;
+
+	FRotator rotator(0.0f, 0.0f, 0.0f);
+
+	FVector spawnLocation(startX + col * interval, startY + row * interval, startZ);
+	ARoomActor* roomActor = GetWorld()->SpawnActor<ARoomActor>(RoomActor, spawnLocation, rotator, spawnParams);
+	roomActor->RoomMeshRandomize();
+
+}
+
+void ARoomControl::SpawnDoorMesh(int roomNum)
+{
+	UWorld* world = GetWorld();
+	int row = roomNum / maxWidth;
+	int col = roomNum % maxWidth;
+	UE_LOG(LogTemp, Warning, TEXT("roomnum %d, coord [%d : %d]"), roomNum, row, col);
+	FActorSpawnParameters spawnParams;
+	spawnParams.Owner = this;
+
+	FRotator rotatorLeft(0.0f, 0.0f, 0.0f);
+	FRotator rotatorUp(0.0f, 90.0f, 0.0f);
+
+	Door currentDoor;
+	FVector spawnLocationUp(startX + col * interval, startY + row * interval - 375.0f, startZ);
+	currentDoor = GameMap[roomNum]->GetDoor(Up);
+	if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
+
+		world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
+	}
+	else {
+		world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationUp, rotatorUp, spawnParams);
+	}
+
+	FVector spawnLocationLeft(startX + col * interval - 375.0f, startY + row * interval, startZ);
+	currentDoor = GameMap[roomNum]->GetDoor(Left);
+	if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
+
+		world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationLeft, rotatorLeft, spawnParams);
+	}
+	else {
+		world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationLeft, rotatorLeft, spawnParams);
+	}
+
+	FVector spawnLocationRight(startX + col * interval + 375.0f, startY + row * interval, startZ);
+	currentDoor = GameMap[roomNum]->GetDoor(Right);
+	if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
+
+		world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationRight, rotatorLeft, spawnParams);
+	}
+	else {
+		world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationRight, rotatorLeft, spawnParams);
+	}
+
+	FVector spawnLocationDown(startX + col * interval, startY + row * interval + 375.0f, startZ);
+	currentDoor = GameMap[roomNum]->GetDoor(Down);
+	if (currentDoor.connectedRoom != nullptr && currentDoor.status == Open) {
+
+		world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationDown, rotatorUp, spawnParams);
+	}
+	else {
+		world->SpawnActor<ADoorActor>(DoorActor[1], spawnLocationDown, rotatorUp, spawnParams);
+	}
+}
+
+// calculate and add visible room numbers
+void ARoomControl::InitVisibleRoom()
+{
+
+	// Left side visible rooms
+	URoom* currentRoom = GameMap[panicRoomId - 1];
+	Door currentDoor = currentRoom->GetDoor(Left);
+	int currentRoomNum = panicRoomId - 1;
+
+	UE_LOG(LogTemp, Warning, TEXT("visible rooms"));
+
+	while(1){
+
+		// spawn room if cctv has not spawned room for current room
+		if (!CCTVRoomNum.Contains(currentRoomNum)) {
+			SpawnRoomMesh(currentRoomNum);
+			VisibleRoomNum.Add(currentRoomNum);
+		}
+		if (currentRoom == nullptr || currentDoor.connectedRoom == nullptr || currentDoor.status == Close) {
+			break;
+		}
+		
+		currentRoom = currentDoor.connectedRoom;
+		currentDoor = currentRoom->GetDoor(Left);
+		
+		currentRoomNum--;
+
+	}
+	
+	currentRoom = GameMap[panicRoomId+10];
+	currentDoor = currentRoom->GetDoor(Down);
+	currentRoomNum = panicRoomId+10;
+
+	while (1) {
+
+		// spawn room if cctv has not spawned room for current room
+		if (!CCTVRoomNum.Contains(currentRoomNum)) {
+			SpawnRoomMesh(currentRoomNum);
+			VisibleRoomNum.Add(currentRoomNum);
+		}
+		if (currentRoom == nullptr || currentDoor.connectedRoom == nullptr || currentDoor.status == Close) {
+			break;
+		}
+		
+		currentRoom = currentDoor.connectedRoom;
+		currentDoor = currentRoom->GetDoor(Down);
+		
+		currentRoomNum += 10;
+
+	}
+	
+	currentRoom = GameMap[panicRoomId + 1];
+	currentDoor = currentRoom->GetDoor(Right);
+	currentRoomNum = panicRoomId + 1;
+
+	while (1) {
+
+		// spawn room if cctv has not spawned room for current room
+		if (!CCTVRoomNum.Contains(currentRoomNum)) {
+			UE_LOG(LogTemp, Warning, TEXT("visible room Right %d"), currentRoomNum);
+			SpawnRoomMesh(currentRoomNum);
+			VisibleRoomNum.Add(currentRoomNum);
+		}
+		if (currentRoom == nullptr || currentDoor.connectedRoom == nullptr || currentDoor.status == Close) {
+			break;
+		}
+		
+		currentRoom = currentDoor.connectedRoom;
+		currentDoor = currentRoom->GetDoor(Right);
+		
+		currentRoomNum++;
+
+	}
+
+	
 }
 bool ARoomControl::IsBlocked(int _monsterId)
 {

@@ -5,6 +5,7 @@
 #include "MonsterActor.h"
 #include "PlayerStat.h"
 #include "Room.h"
+#include "RoomActor.h"
 #include "DoorActor.h"
 
 #include "CoreMinimal.h"
@@ -52,6 +53,8 @@ public:
   void RestoreZap(AActor *_ZapPlane);
   UFUNCTION(BlueprintCallable)
   void InitDoorMesh();
+  UFUNCTION(BlueprintCallable)
+  void InitVisibleRoom();
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -78,6 +81,8 @@ public:
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
   TArray<int32> CCTVRoomNum;
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+  TArray<int32> VisibleRoomNum;
+  UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
   TArray<AActor *> ZapPlanes;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<UBlueprint *> SpawnActor;
@@ -85,6 +90,8 @@ public:
   TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<TSubclassOf<class ADoorActor>> DoorActor;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TSubclassOf<class ARoomActor> RoomActor;
 
   // To show in blueprint
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -101,7 +108,9 @@ private:
   void InitPanicRoom(); // Must call after InitRooms
   void InitPlayerStat();
 
-  
+  // spawn room mesh for visible rooms
+  void SpawnRoomMesh(int roomNum);
+  void SpawnDoorMesh(int roomNum);
 
   // Monster related values
   MonsterList monsters;
