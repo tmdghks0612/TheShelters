@@ -69,7 +69,6 @@ void ARobotPawn::SetArrival(bool _isArrived)
 {
 	if (RobotAnimInstance != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TestforArrival2"));
 		RobotAnimInstance->SetArrival(_isArrived);
 	}
 }

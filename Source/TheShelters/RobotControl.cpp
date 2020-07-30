@@ -249,5 +249,5 @@ void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
 
 void ARobotControl::DetectMonster()
 {
-
+    ToDestination = false;
 }
