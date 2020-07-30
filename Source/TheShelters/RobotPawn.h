@@ -36,6 +36,9 @@ public:
 	UFUNCTION()
 	bool GetMovement();
 
+	UFUNCTION()
+	void SetArrival(bool _isArrived);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotRoot")
 	USceneComponent* Root;
 
@@ -44,5 +47,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* RobotSkeletalMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URobotAniminstance* RobotAnimInstance;
 
 };

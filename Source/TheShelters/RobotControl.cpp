@@ -18,7 +18,7 @@ void ARobotControl::BeginPlay()
     initMap();
 
     FRotator rotator(0.0f, 0.0f, 0.0f);
-    FVector spawnLocation(7500, 100, 200);
+    FVector spawnLocation(9000, 0, 200);
     FActorSpawnParameters spawnParams;
     spawnParams.Owner = this;
     Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
@@ -174,6 +174,7 @@ bool ARobotControl::StartMoving()
         }
         else if (!ToDestination)
         {
+            Robot->SetArrival(false);
             CurrentIndex--;
             RobotMoveTo(route[CurrentIndex]);
             if (route[CurrentIndex] == route[0])
@@ -199,6 +200,7 @@ void ARobotControl::RobotMoveTo(int RoomIndex)
 void ARobotControl::ReachDestination()
 {
     UE_LOG(LogTemp, Warning, TEXT("Arrival"));
+    Robot->SetArrival(true);
 }
 
 //going back to panicRoom
@@ -243,4 +245,9 @@ void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
 {
     RoomControl = _RoomControl[0];
     UE_LOG(LogTemp, Warning, TEXT("Got Information"));
+}
+
+void ARobotControl::DetectMonster()
+{
+    ToDestination = false;
 }
