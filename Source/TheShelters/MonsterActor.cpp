@@ -22,7 +22,8 @@ AMonsterActor::AMonsterActor()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("monster skeletal mesh absent"));
 	}
-	
+	MonsterSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());	
 }
 
 void AMonsterActor::ChargePanicRoom()
@@ -34,9 +35,11 @@ void AMonsterActor::ChargePanicRoom()
 	IsAngry = true;
 	FVector currentLocation = GetActorLocation();
 	chargeDirection = panicRoomLocation - currentLocation;
-	MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[1]->GetAnimBlueprintGeneratedClass());
+	
+	//MonsterAnimInstance->SetAngry(isAngry);
 
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonsterActor::RestoreAngry, 5.0f, false);
+	
 	/*TimerDel.BindUFunction(this, FName("RestoreAngry"));
 	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);*/
 	return;
@@ -46,7 +49,7 @@ void AMonsterActor::RestoreAngry()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
 	IsAngry = false;
-	MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());
+	//MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());
 }
 
 void AMonsterActor::EnterPanicRoom()

@@ -17,7 +17,7 @@ ARoomActor::ARoomActor()
 }
 
 void ARoomActor::RoomMeshRandomize()
-{
+{	
 	if (RoomMeshVersions.Num() > 0) {
 		UE_LOG(LogTemp, Warning, TEXT("room actor available!"));
 
@@ -31,6 +31,7 @@ void ARoomActor::RoomMeshRandomize()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("no available room version!"));
 	}
+	
 }
 
 

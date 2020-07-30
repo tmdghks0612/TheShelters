@@ -5,12 +5,12 @@
 #include "RoomControl.h"
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "MonsterActor.generated.h"
 
 UCLASS()
-class THESHELTERS_API AMonsterActor : public AActor
+class THESHELTERS_API AMonsterActor : public APawn
 {
 	GENERATED_BODY()
 	
