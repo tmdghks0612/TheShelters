@@ -561,7 +561,7 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             FVector spawnLocation(startX + x * interval, startY + y * interval, startZ);
 
             monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
-            monsterActors[nextMonsterId - 1]->InitMonsterActor(this, nextMonsterId);
+            monsterActors[nextMonsterId - 1]->InitMonsterActor(this, nextMonsterId, monsterType);
         }
     }
 
@@ -613,14 +613,15 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             // move matching monster to next room
             if (monsterActors[monsterId - 1])
             {
-                monsterActors[monsterId - 1]->SetActorLocation(FVector(
-                    startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
+				//monsterActors[monsterId - 1]->SetActorLocation(FVector(startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
+                monsterActors[monsterId - 1]->MoveTo(FVector(startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
             }
 
             // if monster is next to panic room, charges to player
             if (IsNextPanicRoom(it.Value))
             {
                 UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
+				monsterActors[monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth), startY + interval * (panicRoomId / maxWidth), startZ));
                 monsterActors[monsterId - 1]->ChargePanicRoom();
             }
 
