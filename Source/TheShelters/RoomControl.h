@@ -147,4 +147,9 @@ private:
   TMap<bool, int32> testResult;
   void PrintMap();
   void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+
+ public:
+  // Get/Set functions
+  UFUNCTION(BlueprintCallable)
+  TArray<int32> GetCCTVRoomNum();
 };
