@@ -23,6 +23,7 @@ public:
 	void ChargePanicRoom();
 
 	void RestoreAngry();
+	void ActiveAngry();
 
 	UFUNCTION(BlueprintCallable)
 	void EnterPanicRoom();
@@ -30,9 +31,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDoorOpen();
 
+	UFUNCTION(BlueprintCallable)
+	void StopCharge();
+	
+	UFUNCTION(BlueprintCallable)
+	int GetMonsterId();
+
 	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId, int _monsterType);
 	void MoveTo(FVector destination);
-	void StopCharge();
 
 protected:
 	// Called when the game starts or when spawned
@@ -61,7 +67,10 @@ public:
 	bool IsMoving = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float velocity = 0.5f;
+	bool IsCharge = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float velocity = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ChargeDelay = 2.0f;
