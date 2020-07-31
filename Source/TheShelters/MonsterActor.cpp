@@ -81,7 +81,7 @@ void AMonsterActor::ActiveAngry()
 
 void AMonsterActor::EnterPanicRoom()
 {
-	UE_LOG(LogTemp, Warning, TEXT("monster entered panic room! Game Over"));
+	//UE_LOG(LogTemp, Warning, TEXT("monster entered panic room! Game Over"));
 	destination = GetActorLocation();
 	return;
 }

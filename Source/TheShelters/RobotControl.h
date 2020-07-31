@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URobotAniminstance* Anim;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray <AMonsterActor*> Monsters;
+
 	UFUNCTION()
 	void MapRight();
     
@@ -93,6 +96,9 @@ public:
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
 
+	UFUNCTION(BlueprintCallable)
+	void GetMonsters(TArray<AMonsterActor*> _Monsters);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -105,6 +111,7 @@ protected:
 	float startY = 0.0f;
 	float startZ = 200.0f;
 	float interval = 1000.0f;
+	bool MonsterCheck;
 
 public:	
 	// Called every frame
