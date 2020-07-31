@@ -5,7 +5,6 @@
 #include <map>
 
 #include "Direction.h"
-#include "Monster.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"

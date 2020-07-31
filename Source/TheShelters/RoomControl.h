@@ -22,7 +22,7 @@ class AMonsterActor;
 // key = monsterId, value = roomNum of the room monster is in
 typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = UMonster class instance
-typedef TMap<int32, UMonster *> MonsterList;
+typedef TMap<int32, AMonsterActor *> MonsterList;
 
 /* << ARoomControl : AActor >>
  * Constructor:
@@ -71,7 +71,7 @@ public:
   // Functions to find something in GameMap
   URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
   URoom *FindRoomById(const int roomId);
-  UMonster *FindMonsterById(const unsigned int id);
+  AMonsterActor *FindMonsterById(const unsigned int id);
 
   // Monster's behavior
   // Monsters will be created when inserted
