@@ -8,10 +8,11 @@
 #include "MonsterActor.h"
 #include "SurvivorStat.h"
 #include "Room.h"
+#include "RoomActor.h"
+#include "DoorActor.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
 #include "RoomControl.generated.h"
 
 // key = monsterId, value = roomNum of the room monster is in
@@ -40,11 +41,11 @@ class THESHELTERS_API ARoomControl : public AActor
 public:
   // Constructors and Initializers
   ARoomControl();
-  void InitGame(const unsigned int m, const unsigned int n);
+  void InitGame(const unsigned int m, const unsigned int n, FString _LevelString);
 
   // Blueprint Callable Functions
   UFUNCTION(BlueprintCallable)
-  void TestScenario(); // For test
+  void TestScenario(FString _LevelString); // For test
   UFUNCTION(BlueprintCallable)
   void EndTurn();
   UFUNCTION(BlueprintCallable)
@@ -53,6 +54,10 @@ public:
   void SelectCCTV();
   UFUNCTION(BlueprintCallable)
   void RestoreZap(AActor *_ZapPlane);
+  UFUNCTION(BlueprintCallable)
+  void InitDoorMesh();
+  UFUNCTION(BlueprintCallable)
+  void InitVisibleRoom();
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -78,11 +83,17 @@ public:
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
   TArray<int32> CCTVRoomNum;
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+  TArray<int32> VisibleRoomNum;
+  UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
   TArray<AActor *> ZapPlanes;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<UBlueprint *> SpawnActor;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<TSubclassOf<class AMonsterActor>> MonsterSpawn;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TArray<TSubclassOf<class ADoorActor>> DoorActor;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  TSubclassOf<class ARoomActor> RoomActor;
 
   // To show in blueprint
   UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -95,8 +106,13 @@ protected:
 private:
   // Initializers
   void InitRooms();
+  void InitMap(FString LevelString);
   void InitPanicRoom(); // Must call after InitRooms
   void InitSurvivorStat();
+
+  // spawn room mesh for visible rooms
+  void SpawnRoomMesh(int roomNum);
+  void SpawnDoorMesh(int roomNum);
 
   // Monster related values
   MonsterList monsters;

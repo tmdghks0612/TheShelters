@@ -13,7 +13,7 @@ ARoomActor::ARoomActor()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
-
+	
 }
 
 void ARoomActor::RoomMeshRandomize()
@@ -27,20 +27,6 @@ void ARoomActor::RoomMeshRandomize()
 		int version = rand() % RoomMeshVersions.Num();
 		StaticComps[0]->SetStaticMesh(RoomMeshVersions[version]);
 
-		/*
-		Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-		RootComponent = Root;
-
-		RoomMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RoomMesh"));
-		RoomMeshComponent->AttachTo(Root);
-
-		int version = rand() % RoomMeshVersions.Num();
-		RoomMeshComponent->SetStaticMesh(RoomMeshVersions[version]);
-
-		ZapPlaneComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ZapPlane"));
-		ZapPlaneComponent->AttachTo(Root);
-
-		ZapPlaneComponent->SetStaticMesh(ZapPlaneMesh);*/
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("no available room version!"));

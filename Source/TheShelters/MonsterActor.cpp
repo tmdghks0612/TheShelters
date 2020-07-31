@@ -44,14 +44,14 @@ void AMonsterActor::ChargePanicRoom()
 
 void AMonsterActor::RestoreAngry()
 {
-	UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
+	//UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
 	IsAngry = false;
 	MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());
 }
 
 void AMonsterActor::EnterPanicRoom()
 {
-	UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
+	//UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
 	panicRoomLocation = GetActorLocation();
 	return;
 }
@@ -59,7 +59,7 @@ void AMonsterActor::EnterPanicRoom()
 bool AMonsterActor::IsDoorOpen()
 {
 	if (!(roomControl->IsBlocked(monsterId))) {
-		UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
+		//UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
 	}
 	return !(roomControl->IsBlocked(monsterId));
 }

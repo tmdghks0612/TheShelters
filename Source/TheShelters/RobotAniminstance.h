@@ -22,8 +22,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMovement(bool _isMoving);
 
+	UFUNCTION(BlueprintCallable)
+	void SetArrival(bool _isArrived);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	bool isMoving;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	bool isArrived;
+
 
 private:
 	
