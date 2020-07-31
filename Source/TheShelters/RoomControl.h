@@ -58,6 +58,8 @@ public:
   void InitDoorMesh();
   UFUNCTION(BlueprintCallable)
   void InitVisibleRoom();
+  UFUNCTION(BlueprintCallable)
+  bool CheckPanicRoom(int _monsterId);
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 

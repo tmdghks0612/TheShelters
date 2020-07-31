@@ -3,6 +3,7 @@
 #pragma once
 
 #include "RoomControl.h"
+#include "MonsterAnimInstance.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
@@ -22,6 +23,7 @@ public:
 	void ChargePanicRoom();
 
 	void RestoreAngry();
+	void ActiveAngry();
 
 	UFUNCTION(BlueprintCallable)
 	void EnterPanicRoom();
@@ -29,7 +31,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDoorOpen();
 
-	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId);
+	UFUNCTION(BlueprintCallable)
+	void StopCharge();
+	
+	UFUNCTION(BlueprintCallable)
+	int GetMonsterId();
+
+	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId, int _monsterType);
+	void MoveTo(FVector destination);
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,17 +47,9 @@ protected:
 	class ARoomControl* roomControl;
 
 	int monsterId;
+	int monsterType;
 
 public:	
-	DECLARE_EVENT(AMonsterActor, FonAngry)
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
-	void onAngry();
-
-	DECLARE_EVENT(AMonsterActor, FonCancelAngry)
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
-	void onCancleAngry();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterRoot")
 	USceneComponent* Root;
@@ -58,12 +59,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* MonsterSkeletalMeshComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
-	TArray<UAnimBlueprint *> AnimationBPs;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsAngry = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsMoving = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsCharge = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float velocity = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ChargeDelay = 2.0f;
@@ -72,6 +79,12 @@ public:
 	FVector chargeDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector panicRoomLocation;
+	FVector destination;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector chargeLocation;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMonsterAnimInstance* MonsterAnimInstance;
 };
