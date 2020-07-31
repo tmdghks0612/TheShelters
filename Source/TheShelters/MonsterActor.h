@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "RoomControl.h"
+#include "MonsterActor.fwd.h"
+#include "RoomControl.fwd.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -13,8 +14,8 @@ UCLASS()
 class THESHELTERS_API AMonsterActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMonsterActor();
 
@@ -29,17 +30,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDoorOpen();
 
-	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId);
+	void InitMonsterActor(ARoomControl *_roomControl, int _monsterId);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	class ARoomControl* roomControl;
+	ARoomControl *roomControl;
 
 	int monsterId;
 
-public:	
+public:
 	DECLARE_EVENT(AMonsterActor, FonAngry)
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
@@ -51,13 +52,13 @@ public:
 	void onCancleAngry();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterRoot")
-	USceneComponent* Root;
+	USceneComponent *Root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterActor")
-	USkeletalMesh* MonsterSkeletalMesh;
+	USkeletalMesh *MonsterSkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USkeletalMeshComponent* MonsterSkeletalMeshComponent;
+	USkeletalMeshComponent *MonsterSkeletalMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
 	TArray<UAnimBlueprint *> AnimationBPs;
@@ -73,5 +74,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector panicRoomLocation;
-
 };

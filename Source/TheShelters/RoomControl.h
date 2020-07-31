@@ -4,8 +4,10 @@
 
 #include <algorithm>
 
+#include "RoomControl.fwd.h"
+#include "MonsterActor.fwd.h"
+
 #include "Direction.h"
-#include "MonsterActor.h"
 #include "SurvivorStat.h"
 #include "Room.h"
 #include "RoomActor.h"
@@ -14,6 +16,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "RoomControl.generated.h"
+
+class AMonsterActor;
 
 // key = monsterId, value = roomNum of the room monster is in
 typedef TMap<int32, int32> MonsterLocationList;
