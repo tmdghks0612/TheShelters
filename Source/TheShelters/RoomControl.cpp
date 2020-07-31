@@ -134,7 +134,6 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n,
   eventFlag.Add("DefaultEvent", false);
 
   this->InitRooms();
-  this->InitPanicRoom();
   this->InitSurvivorStat();
   this->InitMap(_LevelString);
 }
@@ -242,42 +241,6 @@ void ARoomControl::InitDoorMesh() {
   for (int i = 0; i < visibleRoomSize; ++i) {
     SpawnDoorMesh(VisibleRoomNum[i]);
   }
-}
-
-void ARoomControl::InitPanicRoom() {
-  // Get Panic Room Id
-
-  UE_LOG(LogTemp, Warning, TEXT("panic room id: %d"), this->panicRoomId);
-  UPanicRoom *panicRoom = NewObject<UPanicRoom>();
-  panicRoom->InitRoom(panicRoomId);
-  GameMap[panicRoomId] = panicRoom;
-
-  int x = panicRoomId / maxWidth;
-  int y = panicRoomId % maxHeight;
-  URoom *room;
-
-  if (x != 0) {
-    room = FindRoomByLocation(x - 1, y);
-    GameMap[panicRoomId]->InitDoor(Up, room, Open);
-    GameMap[(x - 1) * maxWidth + y]->InitDoor(Down, panicRoom, Open);
-  }
-  if (x != (maxHeight - 1)) {
-    room = FindRoomByLocation(x + 1, y);
-    GameMap[panicRoomId]->InitDoor(Down, room, Open);
-    GameMap[(x + 1) * maxWidth + y]->InitDoor(Up, panicRoom, Open);
-  }
-  if (y != 0) {
-    room = FindRoomByLocation(x, y - 1);
-    GameMap[panicRoomId]->InitDoor(Left, room, Open);
-    GameMap[x * maxWidth + (y - 1)]->InitDoor(Right, panicRoom, Open);
-  }
-  if (y != (maxWidth - 1)) {
-    room = FindRoomByLocation(x, y + 1);
-    GameMap[panicRoomId]->InitDoor(Right, room, Open);
-    GameMap[x * maxWidth + (y + 1)]->InitDoor(Left, panicRoom, Open);
-  }
-
-  panicRoom->InitPanicRoom(Close, Open, Close, Open, panicRoomId);
 }
 
 void ARoomControl::InitSurvivorStat() {
