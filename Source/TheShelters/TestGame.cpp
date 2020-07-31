@@ -1,7 +1,6 @@
 #include "MonsterActor.h"
 #include "RoomControl.h"
 
-
 void ARoomControl::PrintMap()
 {
     UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
@@ -46,24 +45,6 @@ void ARoomControl::TestScenario(FString _LevelString)
     testResult.Add(false, 0);
 
     InitGame(10, 10, _LevelString);
-    result = this->panicRoomId == 5;
-    PrintTestMessage(TEXT("InitPanicRoom"), 1, result);
-
-    result = GameMap[5]->GetDoor(Left).status == Close;
-    PrintTestMessage(TEXT("InitPanicRoom"), 2, result);
-    result = GameMap[5]->GetDoor(Up).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 3, result);
-    result = GameMap[5]->GetDoor(Right).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 4, result);
-    result = GameMap[5]->GetDoor(Down).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 5, result);
-
-    result = GameMap[4]->GetDoor(Right).status == Close;
-    PrintTestMessage(TEXT("InitPanicRoom"), 6, result);
-    result = GameMap[6]->GetDoor(Left).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 7, result);
-    result = GameMap[15]->GetDoor(Up).status == Open;
-    PrintTestMessage(TEXT("InitPanicRoom"), 8, result);
 
     InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
@@ -90,25 +71,29 @@ void ARoomControl::TestScenario(FString _LevelString)
     PrintTestMessage(TEXT("InitSurvivorStat"), 1, result);
     result = survivorStat->Water() == 100;
     PrintTestMessage(TEXT("InitSurvivorStat"), 2, result);
-    result = survivorStat->Mental() == 50;
+    result = survivorStat->Hunger() == 100;
     PrintTestMessage(TEXT("InitSurvivorStat"), 3, result);
-    result = survivorStat->Progress() == 0;
+    result = survivorStat->Thirst() == 100;
     PrintTestMessage(TEXT("InitSurvivorStat"), 4, result);
-    result = survivorStat->Electricity() == 100;
+    result = survivorStat->Mental() == 50;
     PrintTestMessage(TEXT("InitSurvivorStat"), 5, result);
+    result = survivorStat->Progress() == 100;
+    PrintTestMessage(TEXT("InitSurvivorStat"), 6, result);
+    result = survivorStat->Electricity() == 100;
+    PrintTestMessage(TEXT("InitSurvivorStat"), 7, result);
 
     survivorStat->EndTurn();
-    result = survivorStat->Food() == 99;
+    result = survivorStat->Hunger() == 99;
     PrintTestMessage(TEXT("SurvivorStatEndTurn"), 1, result);
-    result = survivorStat->Water() == 98;
+    result = survivorStat->Thirst() == 98;
     PrintTestMessage(TEXT("SurvivorStatEndTurn"), 2, result);
     result = survivorStat->Mental() == 54;
     PrintTestMessage(TEXT("SurvivorStatEndTurn"), 3, result);
 
     survivorStat->EndTurn();
-    result = survivorStat->Food() == 98;
+    result = survivorStat->Hunger() == 98;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 1, result);
-    result = survivorStat->Water() == 96;
+    result = survivorStat->Thirst() == 96;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 2, result);
     result = survivorStat->Mental() == 57.98;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);
