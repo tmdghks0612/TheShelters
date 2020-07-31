@@ -37,6 +37,7 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 	testResult[success] += 1;
 }
 
+
 void ARoomControl::TestScenario(FString _LevelString)
 {
 	bool result;

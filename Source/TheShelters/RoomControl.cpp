@@ -705,3 +705,13 @@ void ARoomControl::SelectCCTV()
         }
     }
 }
+
+// Get functions
+
+TArray<int32> ARoomControl::GetCCTVRoomNum()
+{
+	return CCTVRoomNum;
+}
+
+
+// Set functions
