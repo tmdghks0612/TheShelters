@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MonsterActor.h"
+#include "Monster.h"
 #include "RoomControl.h"
 
 // Sets default values
-AMonsterActor::AMonsterActor()
+AMonster::AMonster()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
@@ -27,7 +27,7 @@ AMonsterActor::AMonsterActor()
     }
 }
 
-void AMonsterActor::ChargePanicRoom()
+void AMonster::ChargePanicRoom()
 {
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
@@ -38,27 +38,27 @@ void AMonsterActor::ChargePanicRoom()
     chargeDirection = panicRoomLocation - currentLocation;
     MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[1]->GetAnimBlueprintGeneratedClass());
 
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonsterActor::RestoreAngry, 5.0f, false);
+    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::RestoreAngry, 5.0f, false);
     /*TimerDel.BindUFunction(this, FName("RestoreAngry"));
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);*/
     return;
 }
 
-void AMonsterActor::RestoreAngry()
+void AMonster::RestoreAngry()
 {
     // UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
     IsAngry = false;
     MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());
 }
 
-void AMonsterActor::EnterPanicRoom()
+void AMonster::EnterPanicRoom()
 {
     // UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
     panicRoomLocation = GetActorLocation();
     return;
 }
 
-bool AMonsterActor::IsDoorOpen()
+bool AMonster::IsDoorOpen()
 {
     if (!(roomControl->IsBlocked(id)))
     {
@@ -67,7 +67,7 @@ bool AMonsterActor::IsDoorOpen()
     return !(roomControl->IsBlocked(id));
 }
 
-void AMonsterActor::InitMonsterActor(ARoomControl *_roomControl, int _monsterId)
+void AMonster::InitMonsterActor(ARoomControl *_roomControl, int _monsterId)
 {
     id = _monsterId;
     roomControl = _roomControl;
@@ -75,14 +75,14 @@ void AMonsterActor::InitMonsterActor(ARoomControl *_roomControl, int _monsterId)
 }
 
 // Called when the game starts or when spawned
-void AMonsterActor::BeginPlay()
+void AMonster::BeginPlay()
 {
     Super::BeginPlay();
 
     panicRoomLocation = FVector(9000.0f, 0.0f, 200.0f);
 }
 
-void AMonsterActor::InitMonster(MonsterType t, int _id)
+void AMonster::InitMonster(MonsterType t, int _id)
 {
     id = _id;
 
@@ -97,32 +97,32 @@ void AMonsterActor::InitMonster(MonsterType t, int _id)
     prevDirection = NoDirection;
 }
 
-const int AMonsterActor::MonsterId() const
+const int AMonster::MonsterId() const
 {
     return id;
 }
 
-const MonsterType AMonsterActor::Type() const
+const MonsterType AMonster::Type() const
 {
     return type;
 }
 
-const int AMonsterActor::Speed() const
+const int AMonster::Speed() const
 {
     return speed;
 }
 
-const MonsterProperty AMonsterActor::Property() const
+const MonsterProperty AMonster::Property() const
 {
     return MakeTuple(radioactive, emp, armorpierce);
 }
 
-const Direction AMonsterActor::PreviousDirection() const
+const Direction AMonster::PreviousDirection() const
 {
     return prevDirection;
 }
 
-void AMonsterActor::PreviousDirection(Direction d)
+void AMonster::PreviousDirection(Direction d)
 {
     prevDirection = d;
 }

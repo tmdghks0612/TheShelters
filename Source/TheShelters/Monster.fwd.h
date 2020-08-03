@@ -1,4 +1,4 @@
 #pragma once
 
-class AMonsterActor;
+class AMonster;
 enum MonsterType;

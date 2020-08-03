@@ -147,7 +147,6 @@ const double USurvivorStat::MentalMultiplier() const
         thirstMultiplier = (this->thirst / 15.0) - 3;
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("*** %.2f"), round((hungerMultiplier + thirstMultiplier) * 100.0) / 100.0);
     return round((hungerMultiplier + thirstMultiplier) * 100.0) / 100.0;
 }
 
