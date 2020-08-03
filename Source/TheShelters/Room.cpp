@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Room.h"
+#include "Door.h"
 
 // Default Constructor
 URoom::URoom()
@@ -20,17 +21,10 @@ void URoom::InitRoom(int num)
     roomStatus = Peaceful;
 	isKnown = false;
 
-    doors = std::map<Direction, Door>();
-    doors[Left] = {nullptr, Open};
-    doors[Right] = {nullptr, Open};
-    doors[Up] = {nullptr, Open};
-    doors[Down] = {nullptr, Open};
-}
-
-void URoom::InitDoor(const Direction d, URoom *connectedRoom, DoorStatus s)
-{
-    doors[d].connectedRoom = connectedRoom;
-    doors[d].status = s;
+    doors[Left] = nullptr;
+    doors[Right] = nullptr;
+    doors[Up] = nullptr;
+    doors[Down] = nullptr;
 }
 
 // Getters and Setters
@@ -42,26 +36,28 @@ const int URoom::MonsterId() const
 {
     return monsterId;
 }
-const Door URoom::GetDoor(const Direction d)
+ADoor *URoom::GetDoor(const Direction d)
 {
     return doors[d];
 }
-
-void URoom::SetDoor(const Direction d, const DoorStatus status)
+URoom *URoom::BeyondDoor(const Direction d)
 {
-    doors[d].status = status;
+    return doors[d]->GetBeyond(this);
+}
+
+void URoom::SetDoor(const Direction d, ADoor *door)
+{
+    doors[d] = door;
 }
 void URoom::OpenDoor(const Direction d)
 {
-    SetDoor(d, Open);
-    Direction oppositeDirection = static_cast<Direction>((d + 2) % 4);
-    doors[d].connectedRoom->SetDoor(oppositeDirection, Open);
+    if (doors[d])
+        doors[d]->Open();
 }
 void URoom::CloseDoor(const Direction d)
 {
-    SetDoor(d, Close);
-    Direction oppositeDirection = static_cast<Direction>((d + 2) % 4);
-    doors[d].connectedRoom->SetDoor(oppositeDirection, Close);
+    if (doors[d])
+        doors[d]->Close();
 }
 
 void URoom::InsertMonster(int newMonsterId)

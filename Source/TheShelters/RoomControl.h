@@ -8,10 +8,12 @@
 #include "RoomControl.fwd.h"
 
 #include "Direction.h"
+#include "Door.h"
 #include "DoorActor.h"
 #include "Room.h"
 #include "RoomActor.h"
 #include "SurvivorStat.h"
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
