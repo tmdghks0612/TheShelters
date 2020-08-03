@@ -36,6 +36,7 @@ ARobotPawn::ARobotPawn()
 	}
 	Destination = GetActorLocation();
 	speed = 8;
+	UpdateDestinationFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -53,14 +54,23 @@ void ARobotPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	Dir = Destination - GetActorLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Size of Dir is %f"), Dir.Size());
-	if (Dir.Size() > 10)
+	double len = sqrt(Dir.X * Dir.X + Dir.Y * Dir.Y + Dir.Z * Dir.Z);
+	if (len > 8)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Inside condition"));
+		UpdateDestinationFlag = false;
 		temp = Dir;
 		temp.Normalize();
 		temp = temp * speed + GetActorLocation();
 		SetActorLocation(temp);
+		//SetActorRotation(temp.Rotation().Quaternion());
+	}
+	else
+	{
+		if (isMoving && UpdateDestinationFlag == false)
+		{
+			UpdateDestinationFlag = true;
+			RobotControl->StartMoving();
+		}
 	}
 }
 
@@ -72,9 +82,28 @@ void ARobotPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ARobotPawn::SetDestination(FVector _Destination)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Destination set"));
 	Destination = _Destination;
-	
+	Dir = Destination - GetActorLocation();
+	FRotator left(0, 90, 0);
+	FRotator right(0, -90, 0);
+	FRotator front(0, 0, 0);
+	FRotator back(0, 180, 0);
+	if (Dir.X < -500)
+	{
+		SetActorRotation(left);
+	}
+	else if (Dir.X > 500)
+	{
+		SetActorRotation(right);
+	}
+	else if (Dir.Y < -500)
+	{
+		SetActorRotation(back);
+	}
+	else if (Dir.Y > 500)
+	{
+		SetActorRotation(front);
+	}
 }
 
 void ARobotPawn::SetMovement(bool _Move)
@@ -93,6 +122,11 @@ void ARobotPawn::SetArrival(bool _isArrived)
 	{
 		RobotAnimInstance->SetArrival(_isArrived);
 	}
+}
+
+void ARobotPawn::SetRobotControl(ARobotControl* _RobotControl)
+{
+	RobotControl = _RobotControl;
 }
 
 bool ARobotPawn::GetMovement()

@@ -86,7 +86,6 @@ public:
 	UFUNCTION()
 	void DetectMonster();
 
-
 	UFUNCTION(BlueprintCallable)
 	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
 	
