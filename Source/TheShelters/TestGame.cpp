@@ -1,4 +1,4 @@
-#include "MonsterActor.h"
+#include "Monster.h"
 #include "RoomControl.h"
 
 void ARoomControl::PrintMap()
