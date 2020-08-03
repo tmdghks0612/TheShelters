@@ -21,10 +21,10 @@ void URoom::InitRoom(int num)
     roomStatus = Peaceful;
 	isKnown = false;
 
-    doors[Left] = nullptr;
-    doors[Right] = nullptr;
-    doors[Up] = nullptr;
-    doors[Down] = nullptr;
+    doors.Add(Left, nullptr);
+    doors.Add(Right, nullptr);
+    doors.Add(Up, nullptr);
+    doors.Add(Down, nullptr);
 }
 
 // Getters and Setters

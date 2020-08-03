@@ -320,7 +320,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
     FRotator rotatorUp(0.0f, 90.0f, 0.0f);
 
     FVector spawnLocationUp(startX + col * interval, startY + row * interval - 375.0f, startZ);
-    if (GameMap[roomNum]->BeyondDoor(Up) != nullptr && GameMap[roomNum]->GetDoor(Up)->Status() == DoorStatusOpen)
+    if (GameMap[roomNum]->GetDoor(Up) != nullptr && GameMap[roomNum]->GetDoor(Up)->Status() == DoorStatusOpen)
     {
 
         world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
@@ -331,7 +331,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
     }
 
     FVector spawnLocationLeft(startX + col * interval - 375.0f, startY + row * interval, startZ);
-    if (GameMap[roomNum]->BeyondDoor(Left) != nullptr && GameMap[roomNum]->GetDoor(Left)->Status() == DoorStatusOpen)
+    if (GameMap[roomNum]->GetDoor(Left) != nullptr && GameMap[roomNum]->GetDoor(Left)->Status() == DoorStatusOpen)
     {
 
         world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationLeft, rotatorLeft, spawnParams);
@@ -342,7 +342,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
     }
 
     FVector spawnLocationRight(startX + col * interval + 375.0f, startY + row * interval, startZ);
-    if (GameMap[roomNum]->BeyondDoor(Right) != nullptr && GameMap[roomNum]->GetDoor(Right)->Status() == DoorStatusOpen)
+    if (GameMap[roomNum]->GetDoor(Right) != nullptr && GameMap[roomNum]->GetDoor(Right)->Status() == DoorStatusOpen)
     {
 
         world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationRight, rotatorLeft, spawnParams);
@@ -353,7 +353,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
     }
 
     FVector spawnLocationDown(startX + col * interval, startY + row * interval + 375.0f, startZ);
-    if (GameMap[roomNum]->BeyondDoor(Down) != nullptr && GameMap[roomNum]->GetDoor(Down)->Status() == DoorStatusOpen)
+    if (GameMap[roomNum]->GetDoor(Down) != nullptr && GameMap[roomNum]->GetDoor(Down)->Status() == DoorStatusOpen)
     {
 
         world->SpawnActor<ADoorActor>(DoorActor[0], spawnLocationDown, rotatorUp, spawnParams);
