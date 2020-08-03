@@ -49,6 +49,9 @@ void ARoomControl::TestScenario(FString _LevelString)
     InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
+    result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;
+    PrintTestMessage(TEXT("InsertMonster"), 1, result);
+
     MoveMonster(1, Left);  // Monster 1: 0, 3
     MoveMonster(2, Right); // Monster 2: 1, 4
 
