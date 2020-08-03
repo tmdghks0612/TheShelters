@@ -20,6 +20,17 @@ typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = UMonster class instance
 typedef TMap<int32, UMonster *> MonsterList;
 
+
+USTRUCT(BlueprintType) 
+struct FResourceUI {
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(BlueprintReadOnly)
+	int32 resourceType;
+	UPROPERTY(BlueprintReadOnly)
+	int32 resourceSize;
+};
+
 /* << ARoomControl : AActor >>
  * Constructor:
  * - Default Constructor
@@ -60,6 +71,8 @@ public:
   void InitVisibleRoom();
   UFUNCTION(BlueprintCallable)
   bool CheckPanicRoom(int _monsterId);
+  UFUNCTION(BlueprintCallable)
+  TArray<FResourceUI> GetRoomResourceUI();
 
   void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -122,6 +135,18 @@ private:
   int nextMonsterId = 1;
   TArray<AMonsterActor *> monsterActors;
   Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
+
+  // Resource Room numbers
+  int maxFoodRoom = 3;
+  int maxWaterRoom = 3;
+  int maxElectricityRoom = 3;
+
+  TArray<int> foodRoomNum;
+  TArray<int> waterRoomNum;
+  TArray<int> electricityRoomNum;
+
+  // Special room minimum distance
+  int resourceRoomDistance = 5;
 
   // Panic Room related values
   int panicRoomId = 5;

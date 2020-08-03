@@ -173,7 +173,7 @@ void ARoomControl::InitRooms()
         GameMap.Add(NewRoom);
     }
 
-    // Connect all rooms
+    // Connect all rooms, set default resosurces
     for (int i = 0; i < size; i++)
     {
         // A idx is MaxWidth * x + y
@@ -201,7 +201,44 @@ void ARoomControl::InitRooms()
             room = FindRoomByLocation(x, y + 1);
             GameMap[i]->InitDoor(Right, room, Open);
         }
+
+		GameMap[i]->InitResources(None);
     }
+
+	int maxRoomNum = maxWidth * maxHeight;
+	// Set random resources
+	for (int i = 0; i < maxFoodRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Food);
+			foodRoomNum.Add(roomNum);
+		}
+	}
+
+	for (int i = 0; i < maxWaterRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Water);
+			waterRoomNum.Add(roomNum);
+		}
+	}
+
+	for (int i = 0; i < maxElectricityRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum) || electricityRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Electricity);
+			electricityRoomNum.Add(roomNum);
+		}
+	}
 }
 
 void ARoomControl::InitMap(FString _LevelString)
@@ -490,6 +527,51 @@ bool ARoomControl::CheckPanicRoom(int _monsterId)
 		}
 	}
 	return false;
+}
+
+// Returns resource type, resource size. resource type = 0 for not discovered or not known
+TArray<FResourceUI> ARoomControl::GetRoomResourceUI()
+{
+	TArray<FResourceUI> resourceArray;
+	URoom* currentRoom;
+	
+	int maxRoomNum = maxWidth * maxHeight;
+	for (int i = 0; i < maxRoomNum; ++i) {
+		currentRoom = GameMap[i];
+		FResourceUI currentResourceUI;
+
+		if (currentRoom->isDiscovered()) {
+
+			// find maximum resource type and its size
+			Resource currentResource = currentRoom->GetResources();
+			if (currentResource.food >= currentResource.water) {
+				if (currentResource.food >= currentResource.electricity) {
+					currentResourceUI.resourceType = 1;
+					currentResourceUI.resourceSize = currentResource.food;
+				}
+				else {
+					currentResourceUI.resourceType = 3;
+					currentResourceUI.resourceSize = currentResource.electricity;
+				}
+			}
+			else if (currentResource.water >= currentResource.electricity) {
+				currentResourceUI.resourceType = 2;
+				currentResourceUI.resourceSize = currentResource.water;
+			}
+			else {
+				currentResourceUI.resourceType = 3;
+				currentResourceUI.resourceSize = currentResource.electricity;
+			}
+		}
+		else {
+			// undiscovered room
+			currentResourceUI.resourceType = 0;
+			currentResourceUI.resourceSize = 0;
+		}
+		resourceArray.Add(currentResourceUI);
+	}
+	
+	return resourceArray;
 }
 
 bool ARoomControl::IsBlocked(int _monsterId)

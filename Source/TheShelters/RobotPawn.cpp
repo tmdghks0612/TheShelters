@@ -53,7 +53,6 @@ void ARobotPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	Dir = Destination - GetActorLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Size of Dir is %f"), Dir.Size());
 	if (Dir.Size() > 10)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Inside condition"));
