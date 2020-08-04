@@ -75,6 +75,7 @@ class THESHELTERS_API ARoomControl : public AActor
   void InitVisibleRoom();
   UFUNCTION(BlueprintCallable)
   bool CheckPanicRoom(int _monsterId);
+
   UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
 
@@ -82,6 +83,8 @@ class THESHELTERS_API ARoomControl : public AActor
 
     // Check if monster can enter panic room
     bool IsBlocked(int _monsterId);
+    //Check if Robot tries to access blocked room
+    bool IsRoomClosed(int roomNum, int direction); //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
 
     // Functions to find something in GameMap
     URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);

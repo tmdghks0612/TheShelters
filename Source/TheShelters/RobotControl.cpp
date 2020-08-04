@@ -22,6 +22,7 @@ void ARobotControl::BeginPlay()
     FActorSpawnParameters spawnParams;
     spawnParams.Owner = this;
     Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
+    Robot->SetRobotControl(this);
     UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 }
 
@@ -52,17 +53,9 @@ void ARobotControl::Tick(float DeltaTime)
             {
                 UE_LOG(LogTemp, Warning, TEXT("moving back"));
                 ToDestination = false;
+                StartMoving();
             }
         }
-        
-    }
-}
-
-void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
-{
-    for (int i= 0; i<100; i++)
-    {
-        MapObject.Add(ShelterMap[i]);
     }
 }
 
@@ -82,22 +75,25 @@ void ARobotControl::GetMonsters(TArray<AMonsterActor*> _Monsters)
 
 void ARobotControl::MapRight()
 {
-    if (currentLocation % 10 != 9)
+    if (RoomControl->IsRoomClosed(currentLocation, 2))
     {
-        if (visited[currentLocation + 1] == 0)
+        if (currentLocation % 10 != 9)
         {
-            currentLocation += 1;
-            visited[currentLocation] = 1;
-            route.Add(currentLocation);
-        }
-        else
-        {
-            if (route[route.Num() - 2] == (currentLocation + 1))
+            if (visited[currentLocation + 1] == 0)
             {
-                UE_LOG(LogTemp, Warning, TEXT("going backward"));
-                visited[currentLocation] = 0;
                 currentLocation += 1;
-                route.Pop();
+                visited[currentLocation] = 1;
+                route.Add(currentLocation);
+            }
+            else
+            {
+                if (route[route.Num() - 2] == (currentLocation + 1))
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("going backward"));
+                    visited[currentLocation] = 0;
+                    currentLocation += 1;
+                    route.Pop();
+                }
             }
         }
     }
@@ -106,22 +102,25 @@ void ARobotControl::MapRight()
 
 void ARobotControl::MapLeft()
 {
-    if (currentLocation % 10 != 0)
+    if (RoomControl->IsRoomClosed(currentLocation, 4))
     {
-        if (visited[currentLocation - 1] == 0)
+        if (currentLocation % 10 != 0)
         {
-            currentLocation -= 1;
-            visited[currentLocation] = 1;
-            route.Add(currentLocation);
-        }
-        else
-        {
-            if (route[route.Num()-2] == (currentLocation - 1))
+            if (visited[currentLocation - 1] == 0)
             {
-                UE_LOG(LogTemp, Warning, TEXT("going backward"));
-                visited[currentLocation] = 0;
                 currentLocation -= 1;
-                route.Pop();
+                visited[currentLocation] = 1;
+                route.Add(currentLocation);
+            }
+            else
+            {
+                if (route[route.Num() - 2] == (currentLocation - 1))
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("going backward"));
+                    visited[currentLocation] = 0;
+                    currentLocation -= 1;
+                    route.Pop();
+                }
             }
         }
     }
@@ -130,22 +129,25 @@ void ARobotControl::MapLeft()
 
 void ARobotControl::MapUp()
 {
-    if (currentLocation / 10 != 0)
+    if (RoomControl->IsRoomClosed(currentLocation, 1))
     {
-        if (visited[currentLocation - 10] == 0)
+        if (currentLocation / 10 != 0)
         {
-            currentLocation -= 10;
-            visited[currentLocation] = 1;
-            route.Add(currentLocation);
-        }
-        else //already visited
-        {
-            if (route[route.Num()-2] == (currentLocation - 10))
+            if (visited[currentLocation - 10] == 0)
             {
-                UE_LOG(LogTemp, Warning, TEXT("going backward"));
-                visited[currentLocation] = 0;
                 currentLocation -= 10;
-                route.Pop();
+                visited[currentLocation] = 1;
+                route.Add(currentLocation);
+            }
+            else //already visited
+            {
+                if (route[route.Num() - 2] == (currentLocation - 10))
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("going backward"));
+                    visited[currentLocation] = 0;
+                    currentLocation -= 10;
+                    route.Pop();
+                }
             }
         }
     }
@@ -154,22 +156,25 @@ void ARobotControl::MapUp()
 
 void ARobotControl::MapDown()
 {
-    if (currentLocation / 10 != 9)
+    if (RoomControl->IsRoomClosed(currentLocation, 3))
     {
-        if (visited[currentLocation + 10] == 0)
+        if (currentLocation / 10 != 9)
         {
-            currentLocation += 10;
-            visited[currentLocation] = 1;
-            route.Add(currentLocation);
-        }
-        else
-        {
-            if (route[route.Num() - 2] == (currentLocation + 10))
+            if (visited[currentLocation + 10] == 0)
             {
-                UE_LOG(LogTemp, Warning, TEXT("going backward"));
-                visited[currentLocation] = 0;
                 currentLocation += 10;
-                route.Pop();
+                visited[currentLocation] = 1;
+                route.Add(currentLocation);
+            }
+            else
+            {
+                if (route[route.Num() - 2] == (currentLocation + 10))
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("going backward"));
+                    visited[currentLocation] = 0;
+                    currentLocation += 10;
+                    route.Pop();
+                }
             }
         }
     }
@@ -181,6 +186,7 @@ void ARobotControl::SetMove()
     isMoving = true;
     Robot->SetMovement(true);
     MonsterCheck = true;
+    StartMoving();
 }
 
 bool ARobotControl::StartMoving()
@@ -188,31 +194,33 @@ bool ARobotControl::StartMoving()
     if (isMoving)
     {
         int LengthOfRoute = route.Num();
-        if (ToDestination)
+        if (LengthOfRoute > 1)
         {
-            CurrentIndex++;
-            RobotMoveTo(route[CurrentIndex]);
-            if (route[CurrentIndex] == route[LengthOfRoute-1])
+            if (ToDestination)
             {
-                ReachDestination();
-                ToDestination = false;
+                CurrentIndex++;
+                RobotMoveTo(route[CurrentIndex]);
+                if (route[CurrentIndex] == route[LengthOfRoute - 1])
+                {
+                    ReachDestination();
+                    ToDestination = false;
+                }
+            }
+            else if (!ToDestination)
+            {
+                Robot->SetArrival(false);
+                CurrentIndex--;
+                if (CurrentIndex < 0)
+                {
+                    CurrentIndex = 0;
+                }
+                RobotMoveTo(route[CurrentIndex]);
+                if (route[CurrentIndex] == route[0])
+                {
+                    EndMovement();
+                }
             }
         }
-        else if (!ToDestination)
-        {
-            Robot->SetArrival(false);
-            CurrentIndex--;
-            if (CurrentIndex < 0)
-            {
-                CurrentIndex = 0;
-            }
-            RobotMoveTo(route[CurrentIndex]);
-            if (route[CurrentIndex] == route[0])
-            {
-                EndMovement();
-            }
-        }
-        UE_LOG(LogTemp, Warning, TEXT("CurrentLocation is %d"), route[CurrentIndex]);
     }
     
     return true;
@@ -275,7 +283,6 @@ void ARobotControl::PrintMap()
 void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
 {
     RoomControl = _RoomControl[0];
-    UE_LOG(LogTemp, Warning, TEXT("Got Information"));
 }
 
 void ARobotControl::DetectMonster()

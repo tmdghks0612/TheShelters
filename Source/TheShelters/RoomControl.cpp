@@ -772,5 +772,33 @@ TArray<int32> ARoomControl::GetCCTVRoomNum()
 	return CCTVRoomNum;
 }
 
-
-// Set functions
+bool ARoomControl::IsRoomClosed(int roomNum, int direction) //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
+{
+    
+    Door door;
+    if (direction == 1)
+    {
+        door = GameMap[roomNum]->GetDoor(Up);
+    }
+    else if (direction == 2)
+    {
+        door = GameMap[roomNum]->GetDoor(Right);
+    }
+    else if (direction == 3)
+    {
+        door = GameMap[roomNum]->GetDoor(Down);
+    }
+    else if (direction == 4)
+    {
+        door = GameMap[roomNum]->GetDoor(Left);
+    }
+    
+    if (door.status == Close)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
