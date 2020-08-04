@@ -5,7 +5,6 @@
 #include <map>
 
 #include "Direction.h"
-#include "Monster.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -66,7 +65,6 @@ typedef struct
  * - Doors
  * - RoomStatus
  * - CCTV
- * - PanicRoomConnection
  *
  * Description:
  * A Room is a object which contains a monster and resource. It is
@@ -78,7 +76,7 @@ class THESHELTERS_API URoom : public UObject
 {
     GENERATED_BODY()
 
-public:
+  public:
     // Constructors and Initializers
     URoom();
     ~URoom();
@@ -102,7 +100,7 @@ public:
 
     void Radiated();
 
-private:
+  private:
     // Default Room values
     int roomId;
 
@@ -116,20 +114,4 @@ private:
     // Resource properties
 	int resourceThreshold = 5;
 	Resource resources;
-};
-
-/* << UPanicRoom : URoom >>
- *
- */
-UCLASS()
-class THESHELTERS_API UPanicRoom : public URoom
-{
-    GENERATED_BODY()
-public:
-    UPanicRoom();
-    ~UPanicRoom();
-
-    // left, right, up, down mean the door to close. If all false or true, it will randomly close door.
-    void InitPanicRoom(const DoorStatus left, const DoorStatus right, const DoorStatus up, const DoorStatus down,
-                       const int roomId);
 };

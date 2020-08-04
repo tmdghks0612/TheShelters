@@ -2,23 +2,26 @@
 
 #pragma once
 
+#include "Monster.fwd.h"
+#include "RoomControl.fwd.h"
+
 #include "Direction.h"
 
+#include "Components/SkeletalMeshComponent.h"
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-
+#include "GameFramework/Actor.h"
 #include "Monster.generated.h"
 
 // MonsterType determines MonsterProperty values and movement speed
 enum MonsterType
 {
-  DefaultMonster
+    DefaultMonster
 };
 
 // MonsterProperty <radioactive, emp, armorpierce>
 typedef TTuple<bool, bool, bool> MonsterProperty;
 
-/* << UMonster : UObject >>
+/* << AMonster : AActor >>
  * Constructor:
  * - Default Constructor
  * Initializer:
@@ -40,37 +43,84 @@ typedef TTuple<bool, bool, bool> MonsterProperty;
  * monster can break armor up and give fatal damage to the player.
  */
 UCLASS()
-class THESHELTERS_API UMonster : public UObject
+class THESHELTERS_API AMonster : public AActor
 {
-  GENERATED_BODY()
+    GENERATED_BODY()
 
-public:
-  // Constructors and Initializers
-  UMonster();
-  void InitMonster(MonsterType t, int id);
+  public:
+    // Sets default values for this actor's properties
+    AMonster();
 
-  // Getters and Setters
-  const int MonsterId() const;
-  const MonsterType Type() const;
-  const int Speed() const;
-  const MonsterProperty Property() const;
-  const Direction PreviousDirection() const;
-  void PreviousDirection(Direction d);
+    // Initializers
+    void InitMonsterActor(ARoomControl *_roomControl, int _monsterId);
+    void InitMonster(MonsterType t, int id);
 
-protected:
-private:
-  UPROPERTY(EditAnywhere)
-  // Default Monster values
-  int monsterId;
-  MonsterType monsterType;
+    // PanicRoom related methods
+    UFUNCTION(BlueprintCallable)
+    void ChargePanicRoom();
+    UFUNCTION(BlueprintCallable)
+    void EnterPanicRoom();
+    UFUNCTION(BlueprintCallable)
+    bool IsDoorOpen();
+    void RestoreAngry();
 
-  // Monster Properties
-  bool radioactive;
-  bool emp;
-  bool armorpierce;
+    // Event related methods
+    DECLARE_EVENT(AMonster, FonAngry)
+    UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
+    void OnAngry();
+    DECLARE_EVENT(AMonster, FonCancelAngry)
+    UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
+    void OnCancleAngry();
 
-  // Monster movement speed
-  int speed;
+    // Getters and Setters
+    const int MonsterId() const;
+    const MonsterType Type() const;
+    const int Speed() const;
+    const MonsterProperty Property() const;
+    const Direction PreviousDirection() const;
+    void PreviousDirection(Direction d);
 
-  Direction prevDirection;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterRoot")
+    USceneComponent *Root;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterActor")
+    USkeletalMesh *MonsterSkeletalMesh;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USkeletalMeshComponent *MonsterSkeletalMeshComponent;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
+    TArray<UAnimBlueprint *> AnimationBPs;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsAngry = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float ChargeDelay = 2.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector chargeDirection;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector panicRoomLocation;
+
+  protected:
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
+
+  private:
+    ARoomControl *roomControl;
+    // Default monster values
+    int id;
+    MonsterType type;
+
+    // Monster properties
+    bool radioactive;
+    bool emp;
+    bool armorpierce;
+
+    // Monster movement speed
+    int speed;
+
+    Direction prevDirection;
 };
