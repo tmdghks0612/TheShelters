@@ -21,9 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	ARobotControl();
 
-	UFUNCTION(BlueprintCallable)
-    void RobotRouteSelect(TArray<UObject *> ShelterMap);
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<bool> RouteMap;
 
@@ -54,49 +51,43 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray <AMonster*> Monsters;
 
+
+	//Get Input From survivor and make route for robot to move
 	UFUNCTION()
 	void MapRight();
-    
 	UFUNCTION()
     void MapLeft();
-    
 	UFUNCTION()
     void MapUp();
-    
 	UFUNCTION()
     void MapDown();
     
 	UFUNCTION()
     void initMap();
     
+	//code to check internal map. Not for gamer
 	UFUNCTION()
     void PrintMap();
 	
+	//general robot movement and search function
 	UFUNCTION()
 	void RobotMoveTo(int RoomIndex);
-	
 	UFUNCTION()
 	void ReachDestination();
-	
 	UFUNCTION()
 	void EndMovement();
-	
 	UFUNCTION()
 	void SetMove();
-
 	UFUNCTION()
 	void DetectMonster();
-
-
-	UFUNCTION(BlueprintCallable)
-	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
-	
 	UFUNCTION(BlueprintCallable)
 	bool StartMoving();
 
+	//survivor, monster, roomcontrol finder
+	UFUNCTION(BlueprintCallable)
+	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
-
 	UFUNCTION(BlueprintCallable)
 	void GetMonsters(TArray<AMonster*> _Monsters);
 
