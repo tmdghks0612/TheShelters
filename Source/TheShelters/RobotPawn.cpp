@@ -9,6 +9,8 @@ ARobotPawn::ARobotPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
+
 	if (!RobotSkeletalMesh) {
 
 		UE_LOG(LogTemp, Warning, TEXT("Robot SkeletalMesh Assigned"));
@@ -32,6 +34,9 @@ ARobotPawn::ARobotPawn()
 		RobotSkeletalMeshComponent->SetAnimInstanceClass(ROBOT_ANIM.Class);
 		//RobotSkeletalMeshComponent->SetAnimClass(ROBOT_ANIM.Class);
 	}
+	Destination = GetActorLocation();
+	speed = 8;
+	UpdateDestinationFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -40,19 +45,65 @@ void ARobotPawn::BeginPlay()
 	Super::BeginPlay();
 	isMoving = false;
 	RobotAnimInstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
+	Destination = GetActorLocation();
 }
 
 // Called every frame
 void ARobotPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	Dir = Destination - GetActorLocation();
+	double len = sqrt(Dir.X * Dir.X + Dir.Y * Dir.Y + Dir.Z * Dir.Z);
+	if (len > 8)
+	{
+		UpdateDestinationFlag = false;
+		temp = Dir;
+		temp.Normalize();
+		temp = temp * speed + GetActorLocation();
+		SetActorLocation(temp);
+		//SetActorRotation(temp.Rotation().Quaternion());
+	}
+	else
+	{
+		if (isMoving && UpdateDestinationFlag == false)
+		{
+			UpdateDestinationFlag = true;
+			RobotControl->StartMoving();
+		}
+	}
 }
 
 // Called to bind functionality to input
 void ARobotPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ARobotPawn::SetDestination(FVector _Destination)
+{
+	Destination = _Destination;
+	Dir = Destination - GetActorLocation();
+	FRotator left(0, 90, 0);
+	FRotator right(0, -90, 0);
+	FRotator front(0, 0, 0);
+	FRotator back(0, 180, 0);
+	if (Dir.X < -500)
+	{
+		SetActorRotation(left);
+	}
+	else if (Dir.X > 500)
+	{
+		SetActorRotation(right);
+	}
+	else if (Dir.Y < -500)
+	{
+		SetActorRotation(back);
+	}
+	else if (Dir.Y > 500)
+	{
+		SetActorRotation(front);
+	}
 }
 
 void ARobotPawn::SetMovement(bool _Move)
@@ -71,6 +122,11 @@ void ARobotPawn::SetArrival(bool _isArrived)
 	{
 		RobotAnimInstance->SetArrival(_isArrived);
 	}
+}
+
+void ARobotPawn::SetRobotControl(ARobotControl* _RobotControl)
+{
+	RobotControl = _RobotControl;
 }
 
 bool ARobotPawn::GetMovement()

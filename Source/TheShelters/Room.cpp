@@ -15,10 +15,10 @@ URoom::~URoom()
 void URoom::InitRoom(int num)
 {
     monsterId = 0;
-    roomType = Empty;
     roomId = num;
     cctv = false;
     roomStatus = Peaceful;
+	isKnown = Unknown;
 
     doors = std::map<Direction, Door>();
     doors[Left] = {nullptr, Open};
@@ -73,7 +73,45 @@ void URoom::DeleteMonster()
     monsterId = 0;
 }
 
+Resource URoom::GetResources()
+{
+	return resources;
+}
+
+void URoom::InitResources(RoomType _roomType)
+{
+	resources.food = rand() % resourceThreshold;
+	resources.water = rand() % resourceThreshold;
+	resources.electricity = rand() % resourceThreshold;
+
+/*
+	// test code
+	isKnown = Known;*/
+	if (_roomType == Food) {
+		// test code
+		isKnown = Known;
+		resources.food += resourceThreshold;
+	}
+	else if (_roomType == Water) {
+		// test code
+		isKnown = Known;
+		resources.water += resourceThreshold;
+
+	}
+	else if (_roomType == Electricity) {
+		// test code
+		isKnown = Known;
+		resources.electricity += resourceThreshold;
+	}
+}
+
+bool URoom::isDiscovered()
+{
+	return isKnown;
+}
+
 void URoom::Radiated()
 {
     UE_LOG(LogTemp, Warning, TEXT("radiated"));
 }
+

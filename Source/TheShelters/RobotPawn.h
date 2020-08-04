@@ -3,8 +3,10 @@
 #pragma once
 
 #include "RobotAniminstance.h"
+#include "RobotControl.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "RobotPawn.generated.h"
 
 UCLASS()
@@ -20,6 +22,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FVector Destination;
+	FVector Dir;
+	FVector temp;
+	float speed;
+	bool UpdateDestinationFlag;
+	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -27,8 +36,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+	void SetDestination(FVector _Destination);
+
 	UPROPERTY()
 	bool isMoving;
+
+	UPROPERTY(VisibleAnywhere, Category=Movement)
+	UFloatingPawnMovement* Movement;
 
 	UFUNCTION()
 	void SetMovement(bool _Move);
@@ -38,6 +53,9 @@ public:
 
 	UFUNCTION()
 	void SetArrival(bool _isArrived);
+
+	UFUNCTION()
+	void SetRobotControl(ARobotControl* _RobotControl);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotRoot")
 	USceneComponent* Root;
@@ -51,4 +69,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URobotAniminstance* RobotAnimInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ARobotControl* RobotControl;
 };

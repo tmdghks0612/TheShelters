@@ -38,6 +38,7 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
     testResult[success] += 1;
 }
 
+
 void ARoomControl::TestScenario(FString _LevelString)
 {
     bool result;
@@ -55,9 +56,8 @@ void ARoomControl::TestScenario(FString _LevelString)
     MoveMonster(1, Left);  // Monster 1: 0, 3
     MoveMonster(2, Right); // Monster 2: 1, 4
 
-    // EXPECT
-    result = GameMap[4]->MonsterId() == 0 && GameMap[3]->MonsterId() == 1;
-    PrintTestMessage(TEXT("MonsterMovement"), 1, result);
+	/*MoveMonster(1, Left);  // Monster 1: 0, 3
+	MoveMonster(2, Right); // Monster 2: 1, 4*/
 
     result = GameMap[13]->MonsterId() == 0 && GameMap[14]->MonsterId() == 2;
     PrintTestMessage(TEXT("MonsterMovement"), 2, result);
