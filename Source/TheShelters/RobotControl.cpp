@@ -59,14 +59,6 @@ void ARobotControl::Tick(float DeltaTime)
     }
 }
 
-void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
-{
-    for (int i= 0; i<100; i++)
-    {
-        MapObject.Add(ShelterMap[i]);
-    }
-}
-
 void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
 {
     _List[0]->InitRobots(this);
@@ -202,28 +194,31 @@ bool ARobotControl::StartMoving()
     if (isMoving)
     {
         int LengthOfRoute = route.Num();
-        if (ToDestination)
+        if (LengthOfRoute > 1)
         {
-            CurrentIndex++;
-            RobotMoveTo(route[CurrentIndex]);
-            if (route[CurrentIndex] == route[LengthOfRoute-1])
+            if (ToDestination)
             {
-                ReachDestination();
-                ToDestination = false;
+                CurrentIndex++;
+                RobotMoveTo(route[CurrentIndex]);
+                if (route[CurrentIndex] == route[LengthOfRoute - 1])
+                {
+                    ReachDestination();
+                    ToDestination = false;
+                }
             }
-        }
-        else if (!ToDestination)
-        {
-            Robot->SetArrival(false);
-            CurrentIndex--;
-            if (CurrentIndex < 0)
+            else if (!ToDestination)
             {
-                CurrentIndex = 0;
-            }
-            RobotMoveTo(route[CurrentIndex]);
-            if (route[CurrentIndex] == route[0])
-            {
-                EndMovement();
+                Robot->SetArrival(false);
+                CurrentIndex--;
+                if (CurrentIndex < 0)
+                {
+                    CurrentIndex = 0;
+                }
+                RobotMoveTo(route[CurrentIndex]);
+                if (route[CurrentIndex] == route[0])
+                {
+                    EndMovement();
+                }
             }
         }
     }
