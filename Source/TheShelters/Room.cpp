@@ -18,7 +18,7 @@ void URoom::InitRoom(int num)
     roomId = num;
     cctv = false;
     roomStatus = Peaceful;
-	isKnown = Unknown;
+	isKnown = false;
 
     doors = std::map<Direction, Door>();
     doors[Left] = {nullptr, Open};
@@ -89,18 +89,18 @@ void URoom::InitResources(RoomType _roomType)
 	isKnown = Known;*/
 	if (_roomType == Food) {
 		// test code
-		isKnown = Known;
+		isKnown = true;
 		resources.food += resourceThreshold;
 	}
 	else if (_roomType == Water) {
 		// test code
-		isKnown = Known;
+		isKnown = true;
 		resources.water += resourceThreshold;
 
 	}
 	else if (_roomType == Electricity) {
 		// test code
-		isKnown = Known;
+		isKnown = true;
 		resources.electricity += resourceThreshold;
 	}
 }
