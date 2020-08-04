@@ -34,12 +34,28 @@ void ARobotControl::initMap()
     visited[startLocation] = 1;
     ToDestination = true;
     CurrentIndex = 0;
+    MonsterCheck = false;
 }
 
 // Called every frame
 void ARobotControl::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    if (MonsterCheck)
+    {
+        int length = Monsters.Num();
+        for (int i = 0; i < length; i++)
+        {
+            FVector diff = Robot->GetActorLocation() - Monsters[i]->GetActorLocation();
+            float dist = sqrt(diff.X * diff.X + diff.Y * diff.Y + diff.Z * diff.Z);
+            if (dist < 1000 && ToDestination == true)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("moving back"));
+                ToDestination = false;
+            }
+        }
+        
+    }
 }
 
 void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
@@ -53,6 +69,15 @@ void ARobotControl::RobotRouteSelect(TArray<UObject *> ShelterMap)
 void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
 {
     _List[0]->InitRobots(this);
+}
+
+void ARobotControl::GetMonsters(TArray<AMonsterActor*> _Monsters)
+{
+    int length = _Monsters.Num();
+    for (int i = 0; i < length; i++)
+    {
+        Monsters.Add(_Monsters[i]);
+    }
 }
 
 void ARobotControl::MapRight()
@@ -155,6 +180,7 @@ void ARobotControl::SetMove()
 {
     isMoving = true;
     Robot->SetMovement(true);
+    MonsterCheck = true;
 }
 
 bool ARobotControl::StartMoving()
@@ -176,6 +202,10 @@ bool ARobotControl::StartMoving()
         {
             Robot->SetArrival(false);
             CurrentIndex--;
+            if (CurrentIndex < 0)
+            {
+                CurrentIndex = 0;
+            }
             RobotMoveTo(route[CurrentIndex]);
             if (route[CurrentIndex] == route[0])
             {
@@ -193,7 +223,8 @@ void ARobotControl::RobotMoveTo(int RoomIndex)
 {
     int x = RoomIndex % 10;
     int y = RoomIndex / 10;
-    Robot->SetActorLocation(FVector(startX + x * interval, startY + y * interval, startZ));
+    Robot->SetDestination(FVector(startX + x * interval, startY + y * interval, startZ));
+    //Robot->SetActorLocation(FVector(startX + x * interval, startY + y * interval, startZ));
 }
 
 //check resources at the destination index room. Start recall function

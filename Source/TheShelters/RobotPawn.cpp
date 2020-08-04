@@ -9,6 +9,8 @@ ARobotPawn::ARobotPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MOVEMENT"));
+
 	if (!RobotSkeletalMesh) {
 
 		UE_LOG(LogTemp, Warning, TEXT("Robot SkeletalMesh Assigned"));
@@ -32,6 +34,8 @@ ARobotPawn::ARobotPawn()
 		RobotSkeletalMeshComponent->SetAnimInstanceClass(ROBOT_ANIM.Class);
 		//RobotSkeletalMeshComponent->SetAnimClass(ROBOT_ANIM.Class);
 	}
+	Destination = GetActorLocation();
+	speed = 8;
 }
 
 // Called when the game starts or when spawned
@@ -40,19 +44,36 @@ void ARobotPawn::BeginPlay()
 	Super::BeginPlay();
 	isMoving = false;
 	RobotAnimInstance = Cast<URobotAniminstance>(RobotSkeletalMeshComponent->GetAnimInstance());
+	Destination = GetActorLocation();
 }
 
 // Called every frame
 void ARobotPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	Dir = Destination - GetActorLocation();
+	if (Dir.Size() > 10)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inside condition"));
+		temp = Dir;
+		temp.Normalize();
+		temp = temp * speed + GetActorLocation();
+		SetActorLocation(temp);
+	}
 }
 
 // Called to bind functionality to input
 void ARobotPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ARobotPawn::SetDestination(FVector _Destination)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Destination set"));
+	Destination = _Destination;
+	
 }
 
 void ARobotPawn::SetMovement(bool _Move)

@@ -24,6 +24,17 @@ typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = AMonster class instance
 typedef TMap<int32, AMonster *> MonsterList;
 
+
+USTRUCT(BlueprintType) 
+struct FResourceUI {
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(BlueprintReadOnly)
+	int32 resourceType;
+	UPROPERTY(BlueprintReadOnly)
+	int32 resourceSize;
+};
+
 /* << ARoomControl : AActor >>
  * Constructor:
  * - Default Constructor
@@ -47,21 +58,25 @@ class THESHELTERS_API ARoomControl : public AActor
     ARoomControl();
     void InitGame(const unsigned int m, const unsigned int n, FString _LevelString);
 
-    // Blueprint Callable Functions
-    UFUNCTION(BlueprintCallable)
-    void TestScenario(FString _LevelString); // For test
-    UFUNCTION(BlueprintCallable)
-    void EndTurn();
-    UFUNCTION(BlueprintCallable)
-    void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
-    UFUNCTION(BlueprintCallable)
-    void SelectCCTV();
-    UFUNCTION(BlueprintCallable)
-    void RestoreZap(AActor *_ZapPlane);
-    UFUNCTION(BlueprintCallable)
-    void InitDoorMesh();
-    UFUNCTION(BlueprintCallable)
-    void InitVisibleRoom();
+  // Blueprint Callable Functions
+  UFUNCTION(BlueprintCallable)
+  void TestScenario(FString _LevelString); // For test
+  UFUNCTION(BlueprintCallable)
+  void EndTurn();
+  UFUNCTION(BlueprintCallable)
+  void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
+  UFUNCTION(BlueprintCallable)
+  void SelectCCTV();
+  UFUNCTION(BlueprintCallable)
+  void RestoreZap(AActor *_ZapPlane);
+  UFUNCTION(BlueprintCallable)
+  void InitDoorMesh();
+  UFUNCTION(BlueprintCallable)
+  void InitVisibleRoom();
+  UFUNCTION(BlueprintCallable)
+  bool CheckPanicRoom(int _monsterId);
+  UFUNCTION(BlueprintCallable)
+  TArray<FResourceUI> GetRoomResourceUI();
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -125,8 +140,20 @@ class THESHELTERS_API ARoomControl : public AActor
     TArray<AMonster *> monsterActors;
     Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
 
-    // Panic Room related values
-    int panicRoomId = 5;
+  // Resource Room numbers
+  int maxFoodRoom = 3;
+  int maxWaterRoom = 3;
+  int maxElectricityRoom = 3;
+
+  TArray<int> foodRoomNum;
+  TArray<int> waterRoomNum;
+  TArray<int> electricityRoomNum;
+
+  // Special room minimum distance
+  int resourceRoomDistance = 5;
+
+  // Panic Room related values
+  int panicRoomId = 5;
 
     bool MyContains(int input_num);
     bool IsNextPanicRoom(int roomNumber);
@@ -145,8 +172,13 @@ class THESHELTERS_API ARoomControl : public AActor
     // Player related values
     USurvivorStat *survivorStat;
 
-    // For test and debugging
-    TMap<bool, int32> testResult;
-    void PrintMap();
-    void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+  // For test and debugging
+  TMap<bool, int32> testResult;
+  void PrintMap();
+  void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+
+ public:
+  // Get/Set functions
+  UFUNCTION(BlueprintCallable)
+  TArray<int32> GetCCTVRoomNum();
 };
