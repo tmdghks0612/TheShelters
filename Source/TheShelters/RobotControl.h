@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "Monster.h"
 
 #include "CoreMinimal.h"
 #include "Survivor.h"
@@ -51,7 +52,7 @@ public:
 	URobotAniminstance* Anim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray <AMonsterActor*> Monsters;
+	TArray <AMonster*> Monsters;
 
 	UFUNCTION()
 	void MapRight();
@@ -97,7 +98,7 @@ public:
     void GiveAddress(TArray<ASurvivor*> _List);
 
 	UFUNCTION(BlueprintCallable)
-	void GetMonsters(TArray<AMonsterActor*> _Monsters);
+	void GetMonsters(TArray<AMonster*> _Monsters);
 
 protected:
 	// Called when the game starts or when spawned

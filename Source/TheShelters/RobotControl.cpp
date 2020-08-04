@@ -71,7 +71,7 @@ void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
     _List[0]->InitRobots(this);
 }
 
-void ARobotControl::GetMonsters(TArray<AMonsterActor*> _Monsters)
+void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
 {
     int length = _Monsters.Num();
     for (int i = 0; i < length; i++)

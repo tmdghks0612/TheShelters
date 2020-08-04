@@ -5,11 +5,12 @@
 #include "Monster.fwd.h"
 #include "RoomControl.fwd.h"
 
+#include "MonsterAnimInstance.h"
 #include "Direction.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "Monster.generated.h"
 
 // MonsterType determines MonsterProperty values and movement speed
@@ -21,7 +22,7 @@ enum MonsterType
 // MonsterProperty <radioactive, emp, armorpierce>
 typedef TTuple<bool, bool, bool> MonsterProperty;
 
-/* << AMonster : AActor >>
+/* << AMonster : APawn>>
  * Constructor:
  * - Default Constructor
  * Initializer:
@@ -43,7 +44,8 @@ typedef TTuple<bool, bool, bool> MonsterProperty;
  * monster can break armor up and give fatal damage to the player.
  */
 UCLASS()
-class THESHELTERS_API AMonster : public AActor
+class THESHELTERS_API AMonster : public APawn
+
 {
     GENERATED_BODY()
 
@@ -52,25 +54,25 @@ class THESHELTERS_API AMonster : public AActor
     AMonster();
 
     // Initializers
-    void InitMonsterActor(ARoomControl *_roomControl, int _monsterId);
-    void InitMonster(MonsterType t, int id);
+	void InitMonster(MonsterType t, int _monsterId);
+	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId, MonsterType _monsterType);
+	void MoveTo(FVector destination);
 
     // PanicRoom related methods
-    UFUNCTION(BlueprintCallable)
-    void ChargePanicRoom();
-    UFUNCTION(BlueprintCallable)
-    void EnterPanicRoom();
-    UFUNCTION(BlueprintCallable)
-    bool IsDoorOpen();
-    void RestoreAngry();
+	UFUNCTION(BlueprintCallable)
+	void ChargePanicRoom();
 
-    // Event related methods
-    DECLARE_EVENT(AMonster, FonAngry)
-    UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
-    void OnAngry();
-    DECLARE_EVENT(AMonster, FonCancelAngry)
-    UFUNCTION(BlueprintImplementableEvent, Category = "BaseCharacter")
-    void OnCancleAngry();
+	void RestoreAngry();
+	void ActiveAngry();
+
+	UFUNCTION(BlueprintCallable)
+	void EnterPanicRoom();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDoorOpen();
+
+	UFUNCTION(BlueprintCallable)
+	void StopCharge();
 
     // Getters and Setters
     const int MonsterId() const;
@@ -89,20 +91,32 @@ class THESHELTERS_API AMonster : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     USkeletalMeshComponent *MonsterSkeletalMeshComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RoomMesh")
-    TArray<UAnimBlueprint *> AnimationBPs;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMonsterAnimInstance* MonsterAnimInstance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsAngry = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float ChargeDelay = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsMoving = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FVector chargeDirection;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsCharge = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FVector panicRoomLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float velocity = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ChargeDelay = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector chargeDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector destination;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector chargeLocation;
 
   protected:
     // Called when the game starts or when spawned
@@ -111,8 +125,8 @@ class THESHELTERS_API AMonster : public AActor
   private:
     ARoomControl *roomControl;
     // Default monster values
-    int id;
-    MonsterType type;
+    int monsterId;
+    MonsterType monsterType;
 
     // Monster properties
     bool radioactive;
