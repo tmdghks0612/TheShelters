@@ -25,66 +25,124 @@ AMonster::AMonster()
     {
         UE_LOG(LogTemp, Warning, TEXT("monster skeletal mesh absent"));
     }
+	MonsterSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	if (monsterType == DefaultMonster) {
+		static ConstructorHelpers::FClassFinder<UAnimInstance> GHOUL_ANIM(TEXT("/Game/MonsterBP/GhoulAnimationBP.GhoulAnimationBP_C"));
+		if (GHOUL_ANIM.Succeeded())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("GHOUL_ANIM Succeed"));
+			MonsterSkeletalMeshComponent->SetAnimInstanceClass(GHOUL_ANIM.Class);
+		}
+	}
 }
 
 void AMonster::ChargePanicRoom()
 {
-    FTimerDelegate TimerDel;
-    FTimerHandle TimerHandle;
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	UE_LOG(LogTemp, Warning, TEXT("monster is angry!"));
+	chargeLocation = GetActorLocation();
+	UE_LOG(LogTemp, Warning, TEXT("saving on %f %f"), chargeLocation.X, chargeLocation.Y);
+	IsAngry = true;
+	MonsterAnimInstance->SetAngry(true);
+	IsMoving = false;
+	MonsterAnimInstance->SetMovement(false);
 
-    UE_LOG(LogTemp, Warning, TEXT("monster is angry!"));
-    IsAngry = true;
-    FVector currentLocation = GetActorLocation();
-    chargeDirection = panicRoomLocation - currentLocation;
-    MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[1]->GetAnimBlueprintGeneratedClass());
-
-    GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::RestoreAngry, 5.0f, false);
-    /*TimerDel.BindUFunction(this, FName("RestoreAngry"));
-    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);*/
-    return;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::RestoreAngry, 5.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::ActiveAngry, ChargeDelay, false);
+	/*TimerDel.BindUFunction(this, FName("RestoreAngry"));
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);*/
+	return;
 }
 
 void AMonster::RestoreAngry()
 {
-    // UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
-    IsAngry = false;
-    MonsterSkeletalMeshComponent->SetAnimInstanceClass(AnimationBPs[0]->GetAnimBlueprintGeneratedClass());
+	//UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
+	IsAngry = false;
+	IsCharge = false;
+	MonsterAnimInstance->SetAngry(false);
+	StopCharge();
+	SetActorLocation(chargeLocation);
+	UE_LOG(LogTemp, Warning, TEXT("restore to %f %f"), chargeLocation.X, chargeLocation.Y);
+
+}
+
+void AMonster::ActiveAngry()
+{
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+
+	IsCharge = true;
+	MonsterAnimInstance->SetAngry(false);
+	MonsterAnimInstance->SetMovement(true);
+
 }
 
 void AMonster::EnterPanicRoom()
 {
     // UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
-    panicRoomLocation = GetActorLocation();
+	IsCharge = false;
+	IsMoving = false;
     return;
 }
 
 bool AMonster::IsDoorOpen()
 {
-    if (!(roomControl->IsBlocked(id)))
-    {
-        // UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
-    }
-    return !(roomControl->IsBlocked(id));
+	if (!(roomControl->IsBlocked(monsterId))) {
+		//UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
+	}
+	return !(roomControl->IsBlocked(monsterId));
 }
 
-void AMonster::InitMonsterActor(ARoomControl *_roomControl, int _monsterId)
+void AMonster::InitMonsterActor(ARoomControl *_roomControl, int _monsterId, MonsterType _monsterType)
 {
-    id = _monsterId;
-    roomControl = _roomControl;
-    return;
+	monsterId = _monsterId;
+	monsterType = _monsterType;
+	roomControl = _roomControl;
+	return;
+}
+
+void AMonster::MoveTo(FVector _destination)
+{
+	IsMoving = true;
+	destination = _destination;
+	chargeDirection = _destination - GetActorLocation();
+	UE_LOG(LogTemp, Warning, TEXT("move to %f %f"), chargeDirection.X, chargeDirection.Y);
+	if (!IsAngry) {
+		MonsterAnimInstance->SetMovement(true);
+	}
+}
+
+void AMonster::StopCharge()
+{
+	UE_LOG(LogTemp, Warning, TEXT("stopped!!"));
+	IsMoving = false;
+	IsCharge = false;
+	MonsterAnimInstance->SetMovement(false);
+
+	if (roomControl->CheckPanicRoom(monsterId)) {
+		ChargePanicRoom();
+	}
 }
 
 // Called when the game starts or when spawned
 void AMonster::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    panicRoomLocation = FVector(9000.0f, 0.0f, 200.0f);
+	destination = GetActorLocation();
+	MonsterAnimInstance = Cast<UMonsterAnimInstance>(MonsterSkeletalMeshComponent->GetAnimInstance());
+
+	if (MonsterAnimInstance == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("monster is null!"));
+	}
+
 }
 
-void AMonster::InitMonster(MonsterType t, int _id)
+void AMonster::InitMonster(MonsterType t, int _monsterId)
 {
-    id = _id;
+    monsterId = _monsterId;
 
     if (t == DefaultMonster)
     {
@@ -99,12 +157,12 @@ void AMonster::InitMonster(MonsterType t, int _id)
 
 const int AMonster::MonsterId() const
 {
-    return id;
+    return monsterId;
 }
 
 const MonsterType AMonster::Type() const
 {
-    return type;
+    return monsterType;
 }
 
 const int AMonster::Speed() const
