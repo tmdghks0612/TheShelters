@@ -5,7 +5,6 @@
 #include <map>
 
 #include "Direction.h"
-#include "Monster.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -13,15 +12,13 @@
 #include "Room.generated.h"
 class URoom;
 
-enum ResourceType
-{
-    Empty,
-    Electricity,
-    Water,
-    Food,
-    Metal,
-    Circuit
+enum RoomType {
+	None,
+	Food,
+	Water,
+	Electricity
 };
+
 enum RoomStatus
 {
     Peaceful,
@@ -32,6 +29,17 @@ enum DoorStatus
     Open,
     Close
 };
+enum KnownStatus {
+	Unknown,
+	Known
+};
+
+typedef struct
+{
+	unsigned int food;
+	unsigned int water;
+	unsigned int electricity;
+} Resource;
 
 typedef struct
 {
@@ -57,7 +65,6 @@ typedef struct
  * - Doors
  * - RoomStatus
  * - CCTV
- * - PanicRoomConnection
  *
  * Description:
  * A Room is a object which contains a monster and resource. It is
@@ -69,7 +76,7 @@ class THESHELTERS_API URoom : public UObject
 {
     GENERATED_BODY()
 
-public:
+  public:
     // Constructors and Initializers
     URoom();
     ~URoom();
@@ -87,9 +94,13 @@ public:
     void InsertMonster(int newMonsterId);
     void DeleteMonster();
 
+	Resource GetResources();
+	void InitResources(RoomType _roomType);
+	bool isDiscovered();
+
     void Radiated();
 
-private:
+  private:
     // Default Room values
     int roomId;
 
@@ -97,24 +108,10 @@ private:
     bool cctv;
     int monsterId; // 0 means no monster
     RoomStatus roomStatus;
+	KnownStatus isKnown;
     std::map<Direction, Door> doors;
 
-    // Room Properties
-    ResourceType roomType;
-};
-
-/* << UPanicRoom : URoom >>
- *
- */
-UCLASS()
-class THESHELTERS_API UPanicRoom : public URoom
-{
-    GENERATED_BODY()
-public:
-    UPanicRoom();
-    ~UPanicRoom();
-
-    // left, right, up, down mean the door to close. If all false or true, it will randomly close door.
-    void InitPanicRoom(const DoorStatus left, const DoorStatus right, const DoorStatus up, const DoorStatus down,
-                       const int roomId);
+    // Resource properties
+	int resourceThreshold = 5;
+	Resource resources;
 };
