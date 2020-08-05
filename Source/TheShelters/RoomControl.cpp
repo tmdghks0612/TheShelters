@@ -120,7 +120,7 @@ void ARoomControl::EndTurn()
     // Move monsters in map
     for (const TPair<int32, int32> &it : monsterLocations)
     {
-        TMap<Direction, int32> weights = {{Left, 6}, {Right, 6}, {Up, 6}, {Down, 6}, {NoDirection, 1}};
+        TMap<Direction, int32> weights = { {Left, 6}, {Right, 6}, {Up, 6}, {Down, 6}, {NoDirection, 1} };
 
         weights[monsters[it.Key]->PreviousDirection()] = 1;
 
@@ -134,6 +134,7 @@ void ARoomControl::EndTurn()
                 weights[moveDirection] = 0;
             }
         } while (!success);
+        
     }
 
     survivorStat->EndTurn();
