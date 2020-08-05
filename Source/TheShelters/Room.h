@@ -91,8 +91,11 @@ class THESHELTERS_API URoom : public UObject
     void DeleteMonster();
 
 	Resource GetResources();
+    void SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity);
 	void InitResources(RoomType _roomType);
 	bool isDiscovered();
+
+    void SetisKnown(bool _check);
 
     void Radiated();
 

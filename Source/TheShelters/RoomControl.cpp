@@ -771,6 +771,33 @@ TArray<int32> ARoomControl::GetCCTVRoomNum()
 	return CCTVRoomNum;
 }
 
+int ARoomControl::ResourceCheckByRobot(int RoomId, int Type)
+{
+    if (Type == 1)
+    {
+        return GameMap[RoomId]->GetResources().food;
+    }
+    else if (Type == 2)
+    {
+        return GameMap[RoomId]->GetResources().water;
+    }
+    else if (Type == 3)
+    {
+        return GameMap[RoomId]->GetResources().electricity;
+    }
+    return 0;
+}
+
+void ARoomControl::SetRoomResources(int RoomId, int food, int water, int electricity)
+{
+    GameMap[RoomId]->SetResources(food, water, electricity);
+}
+
+void ARoomControl::RobotCheck(int RoomId)
+{
+    GameMap[RoomId]->SetisKnown(true);
+}
+
 bool ARoomControl::IsRoomClosed(int roomNum, int direction) //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
 {
     
