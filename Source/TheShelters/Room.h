@@ -12,11 +12,12 @@
 #include "Room.generated.h"
 class URoom;
 
-enum RoomType {
-	None,
-	Food,
-	Water,
-	Electricity
+enum RoomType
+{
+    None,
+    Food,
+    Water,
+    Electricity
 };
 
 enum RoomStatus
@@ -25,16 +26,11 @@ enum RoomStatus
     Dangerous
 };
 
-enum KnownStatus {
-	Unknown,
-	Known
-};
-
 typedef struct
 {
-	unsigned int food;
-	unsigned int water;
-	unsigned int electricity;
+    unsigned int food;
+    unsigned int water;
+    unsigned int electricity;
 } Resource;
 
 typedef struct
@@ -84,9 +80,9 @@ class THESHELTERS_API URoom : public UObject
     void InsertMonster(int newMonsterId);
     void DeleteMonster();
 
-	Resource GetResources();
-	void InitResources(RoomType _roomType);
-	bool isDiscovered();
+    Resource GetResources();
+    void InitResources(RoomType _roomType);
+    bool isDiscovered();
 
     void Radiated();
 
@@ -98,10 +94,10 @@ class THESHELTERS_API URoom : public UObject
     bool cctv;
     int monsterId; // 0 means no monster
     RoomStatus roomStatus;
-	KnownStatus isKnown;
-    std::map<Direction, Door> doors;
+    bool isKnown;
+    TMap<Direction, ADoor *> doors;
 
     // Resource properties
-	int resourceThreshold = 5;
-	Resource resources;
+    int resourceThreshold = 5;
+    Resource resources;
 };
