@@ -117,7 +117,6 @@ Direction ARoomControl::ChooseWeightedRandomDirection(TMap<Direction, int32> wei
 
 void ARoomControl::EndTurn()
 {
-    return;
     // Move monsters in map
     for (const TPair<int32, int32> &it : monsterLocations)
     {
@@ -641,7 +640,7 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             FRotator rotator(0.0f, 0.0f, 0.0f);
             FVector spawnLocation(startX + col * interval, startY + row * interval, startZ);
 
-            monsterActors.Add(world->SpawnActor<AMonsterActor>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
+            monsterActors.Add(world->SpawnActor<AMonster>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
             monsterActors[nextMonsterId - 1]->InitMonsterActor(this, nextMonsterId, monsterType);
         }
     }

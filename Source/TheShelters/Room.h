@@ -29,10 +29,6 @@ enum DoorStatus
     Open,
     Close
 };
-enum KnownStatus {
-	Unknown,
-	Known
-};
 
 typedef struct
 {
@@ -108,7 +104,7 @@ class THESHELTERS_API URoom : public UObject
     bool cctv;
     int monsterId; // 0 means no monster
     RoomStatus roomStatus;
-	KnownStatus isKnown;
+	bool isKnown;
     std::map<Direction, Door> doors;
 
     // Resource properties
