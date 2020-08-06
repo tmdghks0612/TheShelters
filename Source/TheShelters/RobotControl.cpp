@@ -73,6 +73,11 @@ void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
     }
 }
 
+TArray<int> ARobotControl::GetVisited()
+{
+	return visited;
+}
+
 void ARobotControl::MapLeft()
 {
     if (RoomControl->IsRoomClosed(currentLocation, 2))
@@ -302,6 +307,8 @@ void ARobotControl::PrintMap()
         rou += FString::Format(TEXT("{0} "), args);
     }
     UE_LOG(LogTemp, Warning, TEXT("%s"), *rou);
+
+	PrintUI.Broadcast();
 }
 
 void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
