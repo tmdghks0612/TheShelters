@@ -78,6 +78,8 @@ class THESHELTERS_API ARoomControl : public AActor
 
   UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
+  UFUNCTION(BlueprintCallable)
+  TArray<int> GetDoorUI();
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -167,7 +169,7 @@ class THESHELTERS_API ARoomControl : public AActor
     float startX = 4000.0f;
     float startY = 0.0f;
     float startZ = 200.0f;
-    float interval = 1000.0f;
+    float interval = 1400.0f;
 
     // Event flag
     TMap<FString, bool> eventFlag;
@@ -184,10 +186,17 @@ class THESHELTERS_API ARoomControl : public AActor
   // Get/Set functions
   UFUNCTION(BlueprintCallable)
   TArray<int32> GetCCTVRoomNum();
+
   UFUNCTION()
   int ResourceCheckByRobot(int RoomId, int Type);
   UFUNCTION()
   void SetRoomResources(int RoomId, int food, int water, int electricity);
   UFUNCTION()
   void RobotCheck(int RoomId);
+
+  UFUNCTION(BlueprintCallable)
+  int GetMaxWidth();
+  UFUNCTION(BlueprintCallable)
+  int GetMaxHeight();
+
 };
