@@ -98,11 +98,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	int startLocation = 5;
+	int startLocation = 5; // panic room location
     int currentLocation;
 
 	Resource RoomResources;
 	Resource LoadedResources;
+	Resource PanicRoomResources;
 	TArray<int> SearchData;
 	TArray<int> route;
     TArray<int> visited;

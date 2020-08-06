@@ -183,10 +183,13 @@ void ARobotControl::MapUp()
 
 void ARobotControl::SetMove()
 {
-    isMoving = true;
-    Robot->SetMovement(true);
-    MonsterCheck = true;
-    StartMoving();
+    if (isMoving == false)
+    {
+        isMoving = true;
+        Robot->SetMovement(true);
+        MonsterCheck = true;
+        StartMoving();
+    }
 }
 
 bool ARobotControl::StartMoving()
@@ -210,6 +213,11 @@ bool ARobotControl::StartMoving()
             }
             else if (!ToDestination)
             {
+                if (route[CurrentIndex] == route[0])
+                {
+                    EndMovement();
+                    return true;
+                }
                 Robot->SetArrival(false);
                 CurrentIndex--;
                 if (CurrentIndex < 0)
@@ -217,10 +225,6 @@ bool ARobotControl::StartMoving()
                     CurrentIndex = 0;
                 }
                 RobotMoveTo(route[CurrentIndex]);
-                if (route[CurrentIndex] == route[0])
-                {
-                    EndMovement();
-                }
             }
         }
     }
@@ -262,10 +266,21 @@ void ARobotControl::ReachDestination()
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
+    PanicRoomResources.food = RoomControl->ResourceCheckByRobot(startLocation, 1);
+    PanicRoomResources.water = RoomControl->ResourceCheckByRobot(startLocation, 2);
+    PanicRoomResources.electricity = RoomControl->ResourceCheckByRobot(startLocation, 3);
+    PanicRoomResources.food += LoadedResources.food;
+    PanicRoomResources.water += LoadedResources.water;
+    PanicRoomResources.electricity += LoadedResources.electricity;
+
+    UE_LOG(LogTemp, Warning, TEXT("Resource status(Food: %d Water: %d Elect: %d"), PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
+
+    RoomControl->SetRoomResources(startLocation, PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
+
     Robot->SetMovement(false);
     isMoving = false;
     initMap();
-    UE_LOG(LogTemp, Warning, TEXT("Return"));
+    
     int searchLength = SearchData.Num();
     for (int i = 0; i < searchLength; i++)
     {
@@ -277,10 +292,10 @@ void ARobotControl::EndMovement()
 void ARobotControl::PrintMap()
 {
     FString rou = FString();
-    for (unsigned int x = 0; x < 10; x++)
+    for (int x = 9; x >= 0; x--)
     {
         FString line = FString();
-        for (unsigned int y = 0; y < 10; y++)
+        for (int y = 9; y >= 0; y--)
         {
             int idx = x * 10 + y;
 
