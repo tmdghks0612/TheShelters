@@ -109,7 +109,7 @@ protected:
 	float startX = 4000.0f;
 	float startY = 0.0f;
 	float startZ = 200.0f;
-	float interval = 1000.0f;
+	float interval = 1400.0f;
 	bool MonsterCheck;
 
 public:	

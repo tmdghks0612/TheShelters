@@ -18,7 +18,7 @@ void ARobotControl::BeginPlay()
     initMap();
 
     FRotator rotator(0.0f, 0.0f, 0.0f);
-    FVector spawnLocation(9000, 0, 200);
+    FVector spawnLocation(11000, 0, 200);
     FActorSpawnParameters spawnParams;
     spawnParams.Owner = this;
     Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
