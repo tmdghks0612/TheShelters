@@ -24,7 +24,7 @@ void ARobotControl::BeginPlay()
     Robot = GetWorld()->SpawnActor<ARobotPawn>(RobotSpawn, spawnLocation, rotator, spawnParams);
     Robot->SetRobotControl(this);
     UE_LOG(LogTemp, Warning, TEXT("Spawned"));
-}
+}    
 
 void ARobotControl::initMap()
 {
@@ -73,7 +73,7 @@ void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
     }
 }
 
-void ARobotControl::MapRight()
+void ARobotControl::MapLeft()
 {
     if (RoomControl->IsRoomClosed(currentLocation, 2))
     {
@@ -100,7 +100,7 @@ void ARobotControl::MapRight()
     PrintMap();
 }
 
-void ARobotControl::MapLeft()
+void ARobotControl::MapRight()
 {
     if (RoomControl->IsRoomClosed(currentLocation, 4))
     {
@@ -127,7 +127,7 @@ void ARobotControl::MapLeft()
     PrintMap();
 }
 
-void ARobotControl::MapUp()
+void ARobotControl::MapDown()
 {
     if (RoomControl->IsRoomClosed(currentLocation, 1))
     {
@@ -154,7 +154,7 @@ void ARobotControl::MapUp()
     PrintMap();
 }
 
-void ARobotControl::MapDown()
+void ARobotControl::MapUp()
 {
     if (RoomControl->IsRoomClosed(currentLocation, 3))
     {
@@ -200,11 +200,13 @@ bool ARobotControl::StartMoving()
             {
                 CurrentIndex++;
                 RobotMoveTo(route[CurrentIndex]);
+                ResourceSearch(route[CurrentIndex]);
                 if (route[CurrentIndex] == route[LengthOfRoute - 1])
                 {
                     ReachDestination();
                     ToDestination = false;
                 }
+                
             }
             else if (!ToDestination)
             {
@@ -226,6 +228,17 @@ bool ARobotControl::StartMoving()
     return true;
 }
 
+void ARobotControl::ResourceSearch(int RoomId)
+{
+    RoomResources.food = RoomControl->ResourceCheckByRobot(RoomId,1);
+    RoomResources.water = RoomControl->ResourceCheckByRobot(RoomId, 2);
+    RoomResources.electricity = RoomControl->ResourceCheckByRobot(RoomId, 3);
+
+
+    UE_LOG(LogTemp, Warning, TEXT("Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
+    SearchData.Add(RoomId);
+}
+
 //make RobotActor to move to RoomIndex Room
 void ARobotControl::RobotMoveTo(int RoomIndex)
 {
@@ -238,7 +251,11 @@ void ARobotControl::RobotMoveTo(int RoomIndex)
 //check resources at the destination index room. Start recall function
 void ARobotControl::ReachDestination()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Arrival"));
+    LoadedResources.food = RoomResources.food;
+    LoadedResources.water = RoomResources.water;
+    LoadedResources.electricity = RoomResources.electricity;
+    UE_LOG(LogTemp, Warning, TEXT("Reach Destination. Gain Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
+    RoomControl->SetRoomResources(route[CurrentIndex],0, 0, 0);
     Robot->SetArrival(true);
 }
 
@@ -249,6 +266,13 @@ void ARobotControl::EndMovement()
     isMoving = false;
     initMap();
     UE_LOG(LogTemp, Warning, TEXT("Return"));
+    int searchLength = SearchData.Num();
+    for (int i = 0; i < searchLength; i++)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SearchData from %d room"), SearchData[i]);
+        RoomControl->RobotCheck(SearchData[i]);
+    }
+    SearchData.Empty();
 }
 void ARobotControl::PrintMap()
 {

@@ -12,6 +12,8 @@
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
+
+
 UCLASS()
 class THESHELTERS_API ARobotControl : public AActor
 {
@@ -82,6 +84,8 @@ public:
 	void DetectMonster();
 	UFUNCTION(BlueprintCallable)
 	bool StartMoving();
+	UFUNCTION()
+	void ResourceSearch(int RoomId);
 
 	//survivor, monster, roomcontrol finder
 	UFUNCTION(BlueprintCallable)
@@ -97,6 +101,9 @@ protected:
 	int startLocation = 5;
     int currentLocation;
 
+	Resource RoomResources;
+	Resource LoadedResources;
+	TArray<int> SearchData;
 	TArray<int> route;
     TArray<int> visited;
 	float startX = 4000.0f;
