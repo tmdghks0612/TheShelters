@@ -11,19 +11,9 @@
 #include "Room.generated.h"
 class URoom;
 
-enum RoomType
-{
-    None,
-    Food,
-    Water,
-    Electricity
-};
+UENUM() enum class RoomType { None, Food, Water, Electricity };
 
-enum RoomStatus
-{
-    Peaceful,
-    Dangerous
-};
+UENUM() enum class RoomStatus { Peaceful, Dangerous };
 
 typedef struct
 {

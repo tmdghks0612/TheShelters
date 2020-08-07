@@ -1,4 +1,4 @@
 #pragma once
 
 class ADoor;
-enum DoorStatus;
+UENUM() enum class DoorStatus;

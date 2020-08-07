@@ -1,4 +1,4 @@
 #pragma once
 
 class AMonster;
-enum MonsterType;
+UENUM() enum class MonsterType;

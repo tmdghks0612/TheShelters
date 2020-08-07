@@ -3,14 +3,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Door.generated.h"
 
-class URoom;
-
-UENUM()
-enum DoorStatus
-{
-    DoorStatusOpen,
-    DoorStatusClose
-};
+UENUM() enum class DoorStatus { Open, Close };
 
 UCLASS()
 class THESHELTERS_API ADoor : public AStaticMeshActor
