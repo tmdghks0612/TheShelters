@@ -1,7 +1,7 @@
 #include "Monster.h"
-#include "RoomControl.h"
+#include "LevelControl.h"
 
-void ARoomControl::PrintMap()
+void ALevelControl::PrintMap()
 {
     UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
     for (unsigned int x = 0; x < maxHeight; x++)
@@ -19,7 +19,7 @@ void ARoomControl::PrintMap()
     }
 }
 
-void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
+void ALevelControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
 {
     FString line = FString();
     TArray<FStringFormatArg> args;
@@ -39,7 +39,7 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 }
 
 
-void ARoomControl::TestScenario(FString _LevelString)
+void ALevelControl::TestScenario(FString _LevelString)
 {
     bool result;
     testResult.Add(true, 0);

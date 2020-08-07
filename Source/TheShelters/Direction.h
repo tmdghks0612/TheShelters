@@ -1,5 +1,6 @@
 #pragma once
 
+UENUM()
 enum Direction
 {
 	Left,

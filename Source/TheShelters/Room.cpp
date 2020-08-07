@@ -74,6 +74,14 @@ Resource URoom::GetResources()
 	return resources;
 }
 
+void URoom::SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity)
+{
+    UE_LOG(LogTemp, Warning, TEXT("SetResources"));
+    resources.food = _food;
+    resources.water = _water;
+    resources.electricity = _electricity;
+}
+
 void URoom::InitResources(RoomType _roomType)
 {
 	resources.food = rand() % resourceThreshold;
@@ -104,6 +112,11 @@ void URoom::InitResources(RoomType _roomType)
 bool URoom::isDiscovered()
 {
 	return isKnown;
+}
+
+void URoom::SetisKnown(bool _check)
+{
+    isKnown = _check;
 }
 
 void URoom::Radiated()
