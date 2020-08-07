@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <map>
-
 #include "Direction.h"
+#include "Door.fwd.h"
+#include "Room.fwd.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -12,11 +12,12 @@
 #include "Room.generated.h"
 class URoom;
 
-enum RoomType {
-	None,
-	Food,
-	Water,
-	Electricity
+enum RoomType
+{
+    None,
+    Food,
+    Water,
+    Electricity
 };
 
 enum RoomStatus
@@ -24,17 +25,12 @@ enum RoomStatus
     Peaceful,
     Dangerous
 };
-enum DoorStatus
-{
-    Open,
-    Close
-};
 
 typedef struct
 {
-	unsigned int food;
-	unsigned int water;
-	unsigned int electricity;
+    unsigned int food;
+    unsigned int water;
+    unsigned int electricity;
 } Resource;
 
 typedef struct
@@ -42,12 +38,6 @@ typedef struct
     unsigned int x;
     unsigned int y;
 } Location;
-
-typedef struct
-{
-    URoom *connectedRoom;
-    DoorStatus status;
-} Door;
 
 /* << URoom : UObject >>
  * Constructor:
@@ -77,22 +67,22 @@ class THESHELTERS_API URoom : public UObject
     URoom();
     ~URoom();
     void InitRoom(const int num);
-    void InitDoor(const Direction d, URoom *connectedRoom, DoorStatus s);
 
     // Getters and Setters
     const int RoomId() const;
     const int MonsterId() const;
-    const Door GetDoor(const Direction d);
+    ADoor *GetDoor(const Direction d);
+    URoom *BeyondDoor(const Direction d);
 
-    void SetDoor(const Direction d, const DoorStatus s);
+    void SetDoor(const Direction d, ADoor *door);
     void OpenDoor(const Direction d);
     void CloseDoor(const Direction d);
     void InsertMonster(int newMonsterId);
     void DeleteMonster();
 
-	Resource GetResources();
-	void InitResources(RoomType _roomType);
-	bool isDiscovered();
+    Resource GetResources();
+    void InitResources(RoomType _roomType);
+    bool isDiscovered();
 
     void Radiated();
 
@@ -104,10 +94,10 @@ class THESHELTERS_API URoom : public UObject
     bool cctv;
     int monsterId; // 0 means no monster
     RoomStatus roomStatus;
-	bool isKnown;
-    std::map<Direction, Door> doors;
+    bool isKnown;
+    TMap<Direction, ADoor *> doors;
 
     // Resource properties
-	int resourceThreshold = 5;
-	Resource resources;
+    int resourceThreshold = 5;
+    Resource resources;
 };
