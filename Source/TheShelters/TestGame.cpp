@@ -64,10 +64,10 @@ void ALevelControl::TestScenario(FString _LevelString)
 
     URoom *room = FindRoomByLocation(3, 3);
     room->CloseDoor(Left);
-    result = GameMap[33]->GetDoor(Left).status == Close;
+    result = GameMap[33]->GetDoor(Left)->Status() == DoorStatusClose;
     PrintTestMessage(TEXT("CloseDoor"), 1, result);
 
-    result = GameMap[32]->GetDoor(Right).status == Close;
+    result = GameMap[32]->GetDoor(Right)->Status() == DoorStatusClose;
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 
     result = survivorStat->Food() == 100;
@@ -101,7 +101,7 @@ void ALevelControl::TestScenario(FString _LevelString)
     result = survivorStat->Mental() == 57.98;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);
 
-    result = GameMap[77]->GetDoor(Right).status == Close;
+    result = GameMap[77]->GetDoor(Right)->Status() == DoorStatusClose;
     PrintTestMessage(TEXT("LevelStringTest"), 2, result);
 
     UE_LOG(LogTemp, Warning, TEXT("***[SUCCESS: %d FAIL: %d]"), testResult[true], testResult[false])
