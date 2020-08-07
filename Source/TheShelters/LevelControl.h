@@ -5,7 +5,7 @@
 #include <algorithm>
 
 #include "Monster.fwd.h"
-#include "RoomControl.fwd.h"
+#include "LevelControl.fwd.h"
 
 #include "Direction.h"
 #include "DoorActor.h"
@@ -15,7 +15,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "RoomControl.generated.h"
+#include "LevelControl.generated.h"
 
 class AMonster;
 
@@ -35,7 +35,7 @@ struct FResourceUI {
 	int32 resourceSize;
 };
 
-/* << ARoomControl : AActor >>
+/* << ALevelControl : AActor >>
  * Constructor:
  * - Default Constructor
  * Initializer:
@@ -49,13 +49,13 @@ struct FResourceUI {
  *
  */
 UCLASS()
-class THESHELTERS_API ARoomControl : public AActor
+class THESHELTERS_API ALevelControl : public AActor
 {
     GENERATED_BODY()
 
   public:
     // Constructors and Initializers
-    ARoomControl();
+    ALevelControl();
     void InitGame(const unsigned int m, const unsigned int n, FString _LevelString);
 
   // Blueprint Callable Functions

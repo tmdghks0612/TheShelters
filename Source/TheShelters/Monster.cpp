@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Monster.h"
-#include "RoomControl.h"
+#include "LevelControl.h"
 
 // Sets default values
 AMonster::AMonster()
@@ -89,17 +89,17 @@ void AMonster::EnterPanicRoom()
 
 bool AMonster::IsDoorOpen()
 {
-	if (!(roomControl->IsBlocked(monsterId))) {
+	if (!(LevelControl->IsBlocked(monsterId))) {
 		//UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
 	}
-	return !(roomControl->IsBlocked(monsterId));
+	return !(LevelControl->IsBlocked(monsterId));
 }
 
-void AMonster::InitMonsterActor(ARoomControl *_roomControl, int _monsterId, MonsterType _monsterType)
+void AMonster::InitMonsterActor(ALevelControl *_LevelControl, int _monsterId, MonsterType _monsterType)
 {
 	monsterId = _monsterId;
 	monsterType = _monsterType;
-	roomControl = _roomControl;
+	LevelControl = _LevelControl;
 	return;
 }
 
@@ -121,7 +121,7 @@ void AMonster::StopCharge()
 	IsCharge = false;
 	MonsterAnimInstance->SetMovement(false);
 
-	if (roomControl->CheckPanicRoom(monsterId)) {
+	if (LevelControl->CheckPanicRoom(monsterId)) {
 		ChargePanicRoom();
 	}
 }

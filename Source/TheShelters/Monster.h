@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Monster.fwd.h"
-#include "RoomControl.fwd.h"
+#include "LevelControl.fwd.h"
 
 #include "MonsterAnimInstance.h"
 #include "Direction.h"
@@ -55,7 +55,7 @@ class THESHELTERS_API AMonster : public APawn
 
     // Initializers
 	void InitMonster(MonsterType t, int _monsterId);
-	void InitMonsterActor(class ARoomControl* _roomControl, int _monsterId, MonsterType _monsterType);
+	void InitMonsterActor(class ALevelControl* _LevelControl, int _monsterId, MonsterType _monsterType);
 	void MoveTo(FVector destination);
 
     // PanicRoom related methods
@@ -123,7 +123,7 @@ class THESHELTERS_API AMonster : public APawn
     virtual void BeginPlay() override;
 
   private:
-    ARoomControl *roomControl;
+    ALevelControl *LevelControl;
     // Default monster values
     int monsterId;
     MonsterType monsterType;

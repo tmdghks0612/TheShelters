@@ -75,7 +75,7 @@ void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
 
 void ARobotControl::MapLeft()
 {
-    if (RoomControl->IsRoomClosed(currentLocation, 2))
+    if (LevelControl->IsRoomClosed(currentLocation, 2))
     {
         if (currentLocation % 10 != 9)
         {
@@ -102,7 +102,7 @@ void ARobotControl::MapLeft()
 
 void ARobotControl::MapRight()
 {
-    if (RoomControl->IsRoomClosed(currentLocation, 4))
+    if (LevelControl->IsRoomClosed(currentLocation, 4))
     {
         if (currentLocation % 10 != 0)
         {
@@ -129,7 +129,7 @@ void ARobotControl::MapRight()
 
 void ARobotControl::MapDown()
 {
-    if (RoomControl->IsRoomClosed(currentLocation, 1))
+    if (LevelControl->IsRoomClosed(currentLocation, 1))
     {
         if (currentLocation / 10 != 0)
         {
@@ -156,7 +156,7 @@ void ARobotControl::MapDown()
 
 void ARobotControl::MapUp()
 {
-    if (RoomControl->IsRoomClosed(currentLocation, 3))
+    if (LevelControl->IsRoomClosed(currentLocation, 3))
     {
         if (currentLocation / 10 != 9)
         {
@@ -234,9 +234,9 @@ bool ARobotControl::StartMoving()
 
 void ARobotControl::ResourceSearch(int RoomId)
 {
-    RoomResources.food = RoomControl->ResourceCheckByRobot(RoomId,1);
-    RoomResources.water = RoomControl->ResourceCheckByRobot(RoomId, 2);
-    RoomResources.electricity = RoomControl->ResourceCheckByRobot(RoomId, 3);
+    RoomResources.food = LevelControl->ResourceCheckByRobot(RoomId,1);
+    RoomResources.water = LevelControl->ResourceCheckByRobot(RoomId, 2);
+    RoomResources.electricity = LevelControl->ResourceCheckByRobot(RoomId, 3);
 
 
     UE_LOG(LogTemp, Warning, TEXT("Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
@@ -259,23 +259,23 @@ void ARobotControl::ReachDestination()
     LoadedResources.water = RoomResources.water;
     LoadedResources.electricity = RoomResources.electricity;
     UE_LOG(LogTemp, Warning, TEXT("Reach Destination. Gain Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
-    RoomControl->SetRoomResources(route[CurrentIndex],0, 0, 0);
+    LevelControl->SetRoomResources(route[CurrentIndex],0, 0, 0);
     Robot->SetArrival(true);
 }
 
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
-    PanicRoomResources.food = RoomControl->ResourceCheckByRobot(startLocation, 1);
-    PanicRoomResources.water = RoomControl->ResourceCheckByRobot(startLocation, 2);
-    PanicRoomResources.electricity = RoomControl->ResourceCheckByRobot(startLocation, 3);
+    PanicRoomResources.food = LevelControl->ResourceCheckByRobot(startLocation, 1);
+    PanicRoomResources.water = LevelControl->ResourceCheckByRobot(startLocation, 2);
+    PanicRoomResources.electricity = LevelControl->ResourceCheckByRobot(startLocation, 3);
     PanicRoomResources.food += LoadedResources.food;
     PanicRoomResources.water += LoadedResources.water;
     PanicRoomResources.electricity += LoadedResources.electricity;
 
     UE_LOG(LogTemp, Warning, TEXT("Resource status(Food: %d Water: %d Elect: %d"), PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
 
-    RoomControl->SetRoomResources(startLocation, PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
+    LevelControl->SetRoomResources(startLocation, PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
 
     Robot->SetMovement(false);
     isMoving = false;
@@ -285,7 +285,7 @@ void ARobotControl::EndMovement()
     for (int i = 0; i < searchLength; i++)
     {
         UE_LOG(LogTemp, Warning, TEXT("SearchData from %d room"), SearchData[i]);
-        RoomControl->RobotCheck(SearchData[i]);
+        LevelControl->RobotCheck(SearchData[i]);
     }
     SearchData.Empty();
 }
@@ -319,9 +319,9 @@ void ARobotControl::PrintMap()
     UE_LOG(LogTemp, Warning, TEXT("%s"), *rou);
 }
 
-void ARobotControl::FindRoomControl(TArray<ARoomControl*> _RoomControl)
+void ARobotControl::FindLevelControl(TArray<ALevelControl*> _LevelControl)
 {
-    RoomControl = _RoomControl[0];
+    LevelControl = _LevelControl[0];
 }
 
 void ARobotControl::DetectMonster()

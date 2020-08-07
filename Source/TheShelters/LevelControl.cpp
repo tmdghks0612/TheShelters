@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "RoomControl.h"
+#include "LevelControl.h"
 #include "Monster.h"
 
 // Sets default values
-ARoomControl::ARoomControl()
+ALevelControl::ALevelControl()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
@@ -12,13 +12,13 @@ ARoomControl::ARoomControl()
 }
 
 // Called when the game starts or when spawned
-void ARoomControl::BeginPlay()
+void ALevelControl::BeginPlay()
 {
     Super::BeginPlay();
     UE_LOG(LogTemp, Warning, TEXT("1"));
 }
 
-bool ARoomControl::MyContains(int input_num)
+bool ALevelControl::MyContains(int input_num)
 {
     int row_count = 0;
     int col_count = 0;
@@ -52,7 +52,7 @@ bool ARoomControl::MyContains(int input_num)
     return false;
 }
 
-bool ARoomControl::IsNextPanicRoom(int roomNumber)
+bool ALevelControl::IsNextPanicRoom(int roomNumber)
 {
     if (roomNumber == panicRoomId - 1 || roomNumber == panicRoomId + 1 || roomNumber == panicRoomId + 10)
     {
@@ -62,7 +62,7 @@ bool ARoomControl::IsNextPanicRoom(int roomNumber)
     return false;
 }
 
-void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
+void ALevelControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
     for (int i = 0; i < 12; ++i)
@@ -88,7 +88,7 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomA
     }
 }
 
-Direction ARoomControl::ChooseWeightedRandomDirection(TMap<Direction, int32> weights)
+Direction ALevelControl::ChooseWeightedRandomDirection(TMap<Direction, int32> weights)
 {
     // Calculate cumulative sum of weights
     int32 total = 0;
@@ -115,7 +115,7 @@ Direction ARoomControl::ChooseWeightedRandomDirection(TMap<Direction, int32> wei
     return NoDirection;
 }
 
-void ARoomControl::EndTurn()
+void ALevelControl::EndTurn()
 {
     // Move monsters in map
     for (const TPair<int32, int32> &it : monsterLocations)
@@ -165,7 +165,7 @@ void ARoomControl::EndTurn()
     }
 }
 
-void ARoomControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
+void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
 {
     maxHeight = m;
     maxWidth = n;
@@ -177,7 +177,7 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n, FString 
     this->InitMap(_LevelString);
 }
 
-void ARoomControl::InitRooms()
+void ALevelControl::InitRooms()
 {
     int size = maxHeight * maxWidth;
 
@@ -256,7 +256,7 @@ void ARoomControl::InitRooms()
 	}
 }
 
-void ARoomControl::InitMap(FString _LevelString)
+void ALevelControl::InitMap(FString _LevelString)
 {
     FString LevelString = FString(_LevelString);
     TArray<FString> ParsedLines;
@@ -327,7 +327,7 @@ void ARoomControl::InitMap(FString _LevelString)
     }
 }
 
-void ARoomControl::InitDoorMesh()
+void ALevelControl::InitDoorMesh()
 {
     for (int i = 0; i < 12; ++i)
     {
@@ -341,13 +341,13 @@ void ARoomControl::InitDoorMesh()
     }
 }
 
-void ARoomControl::InitSurvivorStat()
+void ALevelControl::InitSurvivorStat()
 {
     this->survivorStat = NewObject<USurvivorStat>();
     this->survivorStat->InitSurvivorStat(100, 100, 100, 100, 100, 50, 100);
 }
 
-void ARoomControl::SpawnRoomMesh(int roomNum)
+void ALevelControl::SpawnRoomMesh(int roomNum)
 {
     int row = roomNum / maxWidth;
     int col = roomNum % maxWidth;
@@ -361,7 +361,7 @@ void ARoomControl::SpawnRoomMesh(int roomNum)
     roomActor->RoomMeshRandomize();
 }
 
-void ARoomControl::SpawnDoorMesh(int roomNum)
+void ALevelControl::SpawnDoorMesh(int roomNum)
 {
     UWorld *world = GetWorld();
     int row = roomNum / maxWidth;
@@ -424,7 +424,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
 }
 
 // calculate and add visible room numbers
-void ARoomControl::InitVisibleRoom()
+void ALevelControl::InitVisibleRoom()
 {
 
     // Left side visible rooms
@@ -503,7 +503,7 @@ void ARoomControl::InitVisibleRoom()
         currentRoomNum++;
     }
 }
-bool ARoomControl::CheckPanicRoom(int _monsterId)
+bool ALevelControl::CheckPanicRoom(int _monsterId)
 {
 	for (const TPair<int32, int32> &it : monsterLocations)
 	{
@@ -525,7 +525,7 @@ bool ARoomControl::CheckPanicRoom(int _monsterId)
 }
 
 // Returns resource type, resource size. resource type = 0 for not discovered or not known
-TArray<FResourceUI> ARoomControl::GetRoomResourceUI()
+TArray<FResourceUI> ALevelControl::GetRoomResourceUI()
 {
 	TArray<FResourceUI> ResourceArray;
 	URoom* currentRoom;
@@ -569,7 +569,7 @@ TArray<FResourceUI> ARoomControl::GetRoomResourceUI()
 	return ResourceArray;
 }
 
-TArray<int> ARoomControl::GetDoorUI()
+TArray<int> ALevelControl::GetDoorUI()
 {
 	TArray<int> DoorArray;
 	int currentRoomNum;
@@ -594,7 +594,7 @@ TArray<int> ARoomControl::GetDoorUI()
 	return DoorArray;
 }
 
-bool ARoomControl::IsBlocked(int _monsterId)
+bool ALevelControl::IsBlocked(int _monsterId)
 {
     Door door;
     for (const TPair<int32, int32> &it : monsterLocations)
@@ -633,7 +633,7 @@ bool ARoomControl::IsBlocked(int _monsterId)
     }
 }
 
-URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
+URoom *ALevelControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
 {
     if (x < 0 || x >= maxHeight)
     {
@@ -649,18 +649,18 @@ URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int
     return GameMap[idx];
 }
 
-URoom *ARoomControl::FindRoomById(const int roomId)
+URoom *ALevelControl::FindRoomById(const int roomId)
 {
     return GameMap[roomId];
 }
 
-void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
+void ALevelControl::InsertMonster(MonsterType monsterType, int x, int y)
 {
     int roomId = x * maxWidth + y;
     InsertMonster(monsterType, roomId);
 }
 
-void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
+void ALevelControl::InsertMonster(MonsterType monsterType, int roomId)
 {
     int row = roomId / maxWidth;
     int col = roomId % maxWidth;
@@ -691,19 +691,19 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
     nextMonsterId++;
 }
 
-void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
+void ALevelControl::DeleteMonster(const unsigned int x, const unsigned int y)
 {
     URoom *room = FindRoomByLocation(x, y);
     room->DeleteMonster();
 }
 
-void ARoomControl::DeleteMonster(int roomId)
+void ALevelControl::DeleteMonster(int roomId)
 {
     URoom *room = FindRoomById(roomId);
     room->DeleteMonster();
 }
 
-bool ARoomControl::MoveMonster(int monsterId, Direction d)
+bool ALevelControl::MoveMonster(int monsterId, Direction d)
 {
     for (const TPair<int32, int32> &it : monsterLocations)
     {
@@ -747,7 +747,7 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
     return true;
 }
 
-AMonster *ARoomControl::FindMonsterById(const unsigned int id)
+AMonster *ALevelControl::FindMonsterById(const unsigned int id)
 {
 
     for (const TPair<int32, AMonster *> &it : monsters)
@@ -763,7 +763,7 @@ AMonster *ARoomControl::FindMonsterById(const unsigned int id)
     return NULL;
 }
 
-void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
+void ALevelControl::ZapCCTV(AActor *_CurrentZapPlane)
 {
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
@@ -781,12 +781,12 @@ void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
 }
 
-void ARoomControl::RestoreZap(AActor *CCTV)
+void ALevelControl::RestoreZap(AActor *CCTV)
 {
     CCTV->SetActorHiddenInGame(true);
 }
 
-void ARoomControl::SelectCCTV()
+void ALevelControl::SelectCCTV()
 {
     for (const TPair<int32, int32> &it : monsterLocations)
     {
@@ -801,7 +801,7 @@ void ARoomControl::SelectCCTV()
 }
 
 
-int ARoomControl::ResourceCheckByRobot(int RoomId, int Type)
+int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
 {
     if (Type == 1)
     {
@@ -818,18 +818,18 @@ int ARoomControl::ResourceCheckByRobot(int RoomId, int Type)
     return 0;
 }
 
-void ARoomControl::SetRoomResources(int RoomId, int food, int water, int electricity)
+void ALevelControl::SetRoomResources(int RoomId, int food, int water, int electricity)
 {
     GameMap[RoomId]->SetResources(food, water, electricity);
 }
 
-void ARoomControl::RobotCheck(int RoomId)
+void ALevelControl::RobotCheck(int RoomId)
 {
     GameMap[RoomId]->SetisKnown(true);
 }
 
 
-bool ARoomControl::IsRoomClosed(int roomNum, int direction) //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
+bool ALevelControl::IsRoomClosed(int roomNum, int direction) //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
 {
     
     Door door;
@@ -862,17 +862,17 @@ bool ARoomControl::IsRoomClosed(int roomNum, int direction) //For RobotControl U
 
 // Get functions
 
-TArray<int32> ARoomControl::GetCCTVRoomNum()
+TArray<int32> ALevelControl::GetCCTVRoomNum()
 {
 	return CCTVRoomNum;
 }
 
-int ARoomControl::GetMaxWidth()
+int ALevelControl::GetMaxWidth()
 {
 	return maxWidth;
 }
 
-int ARoomControl::GetMaxHeight()
+int ALevelControl::GetMaxHeight()
 {
 	return maxHeight;
 }

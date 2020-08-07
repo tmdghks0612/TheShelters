@@ -8,7 +8,7 @@
 #include "RobotAniminstance.h"
 #include "RobotActor.h"
 #include "RobotPawn.h"
-#include "RoomControl.h"
+#include "LevelControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
@@ -45,7 +45,7 @@ public:
 	bool isMoving = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	ARoomControl* RoomControl;
+	ALevelControl* LevelControl;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URobotAniminstance* Anim;
@@ -87,9 +87,9 @@ public:
 	UFUNCTION()
 	void ResourceSearch(int RoomId);
 
-	//survivor, monster, roomcontrol finder
+	//survivor, monster, LevelControl finder
 	UFUNCTION(BlueprintCallable)
-	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
+	void FindLevelControl(TArray<ALevelControl*> _LevelControl);
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
 	UFUNCTION(BlueprintCallable)
