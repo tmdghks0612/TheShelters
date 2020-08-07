@@ -10,7 +10,7 @@ void ALevelControl::PrintMap()
         for (unsigned int y = 0; y < maxWidth; y++)
         {
             int idx = x * maxWidth + y;
-            int32 monsterId = GameMap[idx]->MonsterId();
+            int32 monsterId = GameMap[idx]->RoomId();
             TArray<FStringFormatArg> args;
             args.Add(FStringFormatArg(monsterId));
             line += FString::Format(TEXT("{0} "), args);
@@ -47,7 +47,7 @@ void ALevelControl::TestScenario(FString _LevelString)
 
     InitGame(10, 10, _LevelString);
 
-    InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
+    InsertMonster(DefaultMonster, 0, 0); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
     result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;

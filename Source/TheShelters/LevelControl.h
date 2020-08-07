@@ -8,8 +8,8 @@
 #include "LevelControl.fwd.h"
 
 #include "Direction.h"
-#include "DoorActor.h"
 #include "Room.h"
+#include "Door.h"
 #include "RoomActor.h"
 #include "SurvivorStat.h"
 
@@ -115,7 +115,7 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<TSubclassOf<AMonster>> MonsterSpawn;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<TSubclassOf<ADoorActor>> DoorActor;
+    TArray<TSubclassOf<ADoor>> DoorActor;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomActor;
 

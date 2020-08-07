@@ -3,8 +3,7 @@
 #pragma once
 
 #include "Direction.h"
-#include "Door.fwd.h"
-#include "Room.fwd.h"
+#include "Door.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -98,7 +97,8 @@ class THESHELTERS_API URoom : public UObject
     int monsterId; // 0 means no monster
     RoomStatus roomStatus;
     bool isKnown;
-    TMap<Direction, ADoor *> doors;
+    UPROPERTY()
+    TArray<ADoor *> doors;
 
     // Resource properties
     int resourceThreshold = 5;

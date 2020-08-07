@@ -20,11 +20,15 @@ void URoom::InitRoom(int num)
     cctv = false;
     roomStatus = Peaceful;
 	isKnown = false;
-
-    doors.Add(Left, nullptr);
-    doors.Add(Right, nullptr);
-    doors.Add(Up, nullptr);
-    doors.Add(Down, nullptr);
+    /*ADoor* temp = nullptr;
+    ADoor* temp1 = nullptr;
+    ADoor* temp2 = nullptr;
+    ADoor* temp3 = nullptr;
+    */
+    doors.Add(nullptr);
+    doors.Add(nullptr);
+    doors.Add(nullptr);
+    doors.Add(nullptr);
 }
 
 // Getters and Setters
@@ -42,6 +46,10 @@ ADoor *URoom::GetDoor(const Direction d)
 }
 URoom *URoom::BeyondDoor(const Direction d)
 {
+    //FILE* f;
+    //f = fopen("D:\\trial.txt", "a+");
+    //fprintf(f, "RoomId: %d Direction: %d ", roomId, d);
+    //fclose(f);
     return doors[d]->GetBeyond(this);
 }
 
