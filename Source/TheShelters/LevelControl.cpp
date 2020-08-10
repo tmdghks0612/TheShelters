@@ -465,8 +465,14 @@ bool ALevelControl::CheckPanicRoom(int _monsterId)
 
 void ALevelControl::UseElectricity()
 {
-	URoom* panicRoom = GameMap[panicRoomId];
-	panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+	if (IsElectricityEnough()) {
+		URoom* panicRoom = GameMap[panicRoomId];
+		panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("not enough electricity!"))
+	}
+	
 	return;
 }
 
@@ -697,9 +703,11 @@ bool ALevelControl::MoveMonster(int monsterId, Direction d)
 bool ALevelControl::IsElectricityEnough()
 {
 	if (GameMap[panicRoomId]->GetResources().electricity > 0) {
+		UE_LOG(LogTemp, Warning, TEXT("enough with %f"), GameMap[panicRoomId]->GetResources().electricity)
 		return true;
 	}
 	else {
+		UE_LOG(LogTemp, Warning, TEXT("not enough with %f"), GameMap[panicRoomId]->GetResources().electricity)
 		return false;
 	}
 }

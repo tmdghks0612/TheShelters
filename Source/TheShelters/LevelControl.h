@@ -74,7 +74,7 @@ class THESHELTERS_API ALevelControl : public AActor
   void InitVisibleRoom();
   UFUNCTION(BlueprintCallable)
   bool CheckPanicRoom(int _monsterId);
-  // Use electricity if electricity is enough. does NOT check if electricity is enough! will be checked on blueprint
+  // Use electricity if electricity is enough.
   UFUNCTION(BlueprintCallable)
   void UseElectricity();
 
@@ -163,7 +163,7 @@ class THESHELTERS_API ALevelControl : public AActor
 
   // Electricity on panic room related variables
   int electricityUsage = 1;
-  float electricityDecreaseSpeed = 0.01f;
+  float electricityDecreaseSpeed = 1.0f;
 
 
   // Panic Room related values

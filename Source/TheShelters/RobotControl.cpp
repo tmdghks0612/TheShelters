@@ -313,7 +313,6 @@ void ARobotControl::PrintMap()
                 line += TEXT("1 ");
             }
         }
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
     }
     for (int i = 0; i < route.Num(); i++)
     {
@@ -321,7 +320,6 @@ void ARobotControl::PrintMap()
         args.Add(FStringFormatArg(route[i]));
         rou += FString::Format(TEXT("{0} "), args);
     }
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *rou);
 
 	PrintUI.Broadcast();
 }
