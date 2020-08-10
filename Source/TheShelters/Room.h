@@ -29,7 +29,7 @@ typedef struct
 {
     unsigned int food;
     unsigned int water;
-    unsigned int electricity;
+    float electricity;
 } Resource;
 
 typedef struct
@@ -80,7 +80,10 @@ class THESHELTERS_API URoom : public UObject
     void DeleteMonster();
 
 	Resource GetResources();
-    void SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity);
+    void SetResources(unsigned int _food, unsigned int _water, float _electricity);
+	void SetFood(unsigned int _food);
+	void SetWater(unsigned int _water);
+	void SetElectricity(float _electricity);
 	void InitResources(RoomType _roomType);
 	bool isDiscovered();
 

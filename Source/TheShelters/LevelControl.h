@@ -11,7 +11,6 @@
 #include "Room.h"
 #include "Door.h"
 #include "RoomActor.h"
-#include "SurvivorStat.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -75,6 +74,9 @@ class THESHELTERS_API ALevelControl : public AActor
   void InitVisibleRoom();
   UFUNCTION(BlueprintCallable)
   bool CheckPanicRoom(int _monsterId);
+  // Use electricity if electricity is enough. does NOT check if electricity is enough! will be checked on blueprint
+  UFUNCTION(BlueprintCallable)
+  void UseElectricity();
 
   UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
@@ -102,6 +104,9 @@ class THESHELTERS_API ALevelControl : public AActor
     void DeleteMonster(int roomId);
     // Move the given mosnter's location to the direction d.
     bool MoveMonster(int monsterId, Direction d);
+
+	// Check if electricity is enough to use on panic room. return true if enough, otherwise false
+	bool IsElectricityEnough();
 
     // cctv room number array and its zap planes accordingly
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -132,7 +137,6 @@ class THESHELTERS_API ALevelControl : public AActor
     void InitRooms();
     void InitMap(FString LevelString);
     void InitPanicRoom(); // Must call after InitRooms
-    void InitSurvivorStat();
 
     // spawn room mesh for visible rooms
     void SpawnRoomMesh(int roomNum);
@@ -157,6 +161,11 @@ class THESHELTERS_API ALevelControl : public AActor
   // Special room minimum distance
   int resourceRoomDistance = 5;
 
+  // Electricity on panic room related variables
+  int electricityUsage = 1;
+  float electricityDecreaseSpeed = 0.01f;
+
+
   // Panic Room related values
   int panicRoomId = 5;
 
@@ -174,9 +183,6 @@ class THESHELTERS_API ALevelControl : public AActor
     // Event flag
     TMap<FString, bool> eventFlag;
 
-    // Player related values
-    USurvivorStat *survivorStat;
-
   // For test and debugging
   TMap<bool, int32> testResult;
   void PrintMap();
@@ -190,7 +196,7 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION()
   int ResourceCheckByRobot(int RoomId, int Type);
   UFUNCTION()
-  void SetRoomResources(int RoomId, int food, int water, int electricity);
+  void SetRoomResources(int RoomId, int food, int water, float electricity);
   UFUNCTION()
   void RobotCheck(int RoomId);
 

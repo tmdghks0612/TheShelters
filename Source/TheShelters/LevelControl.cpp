@@ -122,26 +122,6 @@ void ALevelControl::EndTurn()
     {
         TMap<Direction, int32> weights = { {Left, 6}, {Right, 6}, {Up, 6}, {Down, 6}, {NoDirection, 1} };
 
-		/*UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT START"));
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Left %s"), weights[Left]);
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Right %s"), weights[Right]);
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Up %s"), weights[Up]);
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Down %s"), weights[Down]);
-
-		int32 currentKey = it.Key;
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [ID] %s"), currentKey);
-		AMonster *currentMonster = monsters[currentKey];
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [ID FROM MAP] %s"), currentMonster->MonsterId());
-		Direction prevDirection = currentMonster->PreviousDirection();
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [PREVDIRECTION] %s"), prevDirection);
-
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [BEFORE] %s"), weights[prevDirection]);
-		weights[prevDirection] = 1;
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [AFTER] %s"), weights[prevDirection]);
-
-		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT END"));*/
-
-
         bool success;
         do
         {
@@ -155,14 +135,13 @@ void ALevelControl::EndTurn()
         
     }
 
-    survivorStat->EndTurn();
-
+	/*
     int mentality = survivorStat->Mental();
     if (!eventFlag["DefaultEvent"] && mentality < 100)
     {
         eventFlag["DefaultEvent"] = true;
         UE_LOG(LogTemp, Warning, TEXT("************************EVENT CALL"));
-    }
+    }*/
 }
 
 void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
@@ -173,7 +152,6 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
     eventFlag.Add("DefaultEvent", false);
 
     this->InitRooms();
-    this->InitSurvivorStat();
     this->InitMap(_LevelString);
 }
 
@@ -310,12 +288,6 @@ void ALevelControl::InitDoorMesh()
     {
         SpawnDoorMesh(VisibleRoomNum[i]);
     }
-}
-
-void ALevelControl::InitSurvivorStat()
-{
-    this->survivorStat = NewObject<USurvivorStat>();
-    this->survivorStat->InitSurvivorStat(100, 100, 100, 100, 100, 50, 100);
 }
 
 void ALevelControl::SpawnRoomMesh(int roomNum)
@@ -489,6 +461,13 @@ bool ALevelControl::CheckPanicRoom(int _monsterId)
 		}
 	}
 	return false;
+}
+
+void ALevelControl::UseElectricity()
+{
+	URoom* panicRoom = GameMap[panicRoomId];
+	panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+	return;
 }
 
 // Returns resource type, resource size. resource type = 0 for not discovered or not known
@@ -715,6 +694,16 @@ bool ALevelControl::MoveMonster(int monsterId, Direction d)
     return true;
 }
 
+bool ALevelControl::IsElectricityEnough()
+{
+	if (GameMap[panicRoomId]->GetResources().electricity > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 AMonster *ALevelControl::FindMonsterById(const unsigned int id)
 {
 
@@ -786,7 +775,7 @@ int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
     return 0;
 }
 
-void ALevelControl::SetRoomResources(int RoomId, int food, int water, int electricity)
+void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)
 {
     GameMap[RoomId]->SetResources(food, water, electricity);
 }

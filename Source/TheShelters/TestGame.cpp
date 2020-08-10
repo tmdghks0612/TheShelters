@@ -70,7 +70,7 @@ void ALevelControl::TestScenario(FString _LevelString)
     result = GameMap[32]->GetDoor(Right)->Status() == DoorStatusClose;
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 
-    result = survivorStat->Food() == 100;
+    /*result = survivorStat->Food() == 100;
     PrintTestMessage(TEXT("InitSurvivorStat"), 1, result);
     result = survivorStat->Water() == 100;
     PrintTestMessage(TEXT("InitSurvivorStat"), 2, result);
@@ -99,7 +99,7 @@ void ALevelControl::TestScenario(FString _LevelString)
     result = survivorStat->Thirst() == 96;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 2, result);
     result = survivorStat->Mental() == 57.98;
-    PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);
+    PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);*/
 
     result = GameMap[77]->GetDoor(Right)->Status() == DoorStatusClose;
     PrintTestMessage(TEXT("LevelStringTest"), 2, result);
