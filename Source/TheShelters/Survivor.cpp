@@ -71,6 +71,33 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
     PlayerInputComponent->BindAction("MapUp", IE_Pressed, this, &ASurvivor::RobotMapUp);
     PlayerInputComponent->BindAction("MapDown", IE_Pressed, this, &ASurvivor::RobotMapDown);
     PlayerInputComponent->BindAction("Enter", IE_Pressed, this, &ASurvivor::RobotStart);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &ASurvivor::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ASurvivor::MoveRight);
+
+	PlayerInputComponent->BindAxis("LookUp", this, &ASurvivor::LookUp);
+	PlayerInputComponent->BindAxis("Turn", this, &ASurvivor::Turn);
+
+}
+
+void ASurvivor::MoveForward(float amount)
+{
+	AddMovementInput(GetActorForwardVector(), amount);
+}
+
+void ASurvivor::MoveRight(float amount)
+{
+	AddMovementInput(GetActorRightVector(), amount);
+}
+
+void ASurvivor::LookUp(float amount)
+{
+	AddControllerPitchInput(amount);
+}
+
+void ASurvivor::Turn(float amount)
+{
+	AddControllerYawInput(amount);
 }
 
 // resource managing functions

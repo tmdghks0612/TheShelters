@@ -10,7 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UStaticMeshComponent;
 
-/* << ASurvivor : AActor >>
+/* << ASurvivor : ACharacter >>
  * Constructor:
  * - Default Constructor
  * Initializer:
@@ -109,6 +109,11 @@ protected:
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+
+	void MoveForward(float amount);
+	void MoveRight(float amount);
+	void LookUp(float amount);
+	void Turn(float amount);
 
 private:
 	int max = 100;

@@ -12,7 +12,7 @@ ADoor::~ADoor()
 {
 }
 
-void ADoor::InitDoor(URoom *roomA, URoom *roomB, DoorStatus s)
+void ADoor::InitDoor(URoom *roomA, URoom *roomB, TEnumAsByte<DoorStatus> s)
 {
     if (connectedRooms.Num() != 0)
         throw "Door is not empty, Cannot initialize...";
@@ -63,7 +63,7 @@ const unsigned int ADoor::Id()
     return id;
 }
 
-const DoorStatus ADoor::Status() const
+const TEnumAsByte<DoorStatus> ADoor::Status() const
 {
     return status;
 }
