@@ -14,7 +14,7 @@
 #include "Monster.generated.h"
 
 // MonsterType determines MonsterProperty values and movement speed
-UENUM() enum class MonsterType { DefaultMonster };
+UENUM() enum class MonsterType { Ghoul, Grima };
 
 // MonsterProperty <radioactive, emp, armorpierce>
 typedef TTuple<bool, bool, bool> MonsterProperty;

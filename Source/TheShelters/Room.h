@@ -69,10 +69,10 @@ class THESHELTERS_API URoom : public UObject
     void InsertMonster(int newMonsterId);
     void DeleteMonster();
 
-	Resource GetResources();
+    Resource GetResources();
     void SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity);
-	void InitResources(RoomType _roomType);
-	bool isDiscovered();
+    void InitResources(RoomType _roomType);
+    bool isDiscovered();
 
     void SetisKnown(bool _check);
 
@@ -88,7 +88,7 @@ class THESHELTERS_API URoom : public UObject
     RoomStatus roomStatus;
     bool isKnown;
     UPROPERTY()
-    TArray<ADoor *> doors;
+    TMap<Direction, ADoor *> doors;
 
     // Resource properties
     int resourceThreshold = 5;
