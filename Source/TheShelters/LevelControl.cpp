@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "RoomControl.h"
+#include "LevelControl.h"
 #include "Monster.h"
 
 // Sets default values
-ARoomControl::ARoomControl()
+ALevelControl::ALevelControl()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
@@ -12,13 +12,13 @@ ARoomControl::ARoomControl()
 }
 
 // Called when the game starts or when spawned
-void ARoomControl::BeginPlay()
+void ALevelControl::BeginPlay()
 {
     Super::BeginPlay();
     UE_LOG(LogTemp, Warning, TEXT("1"));
 }
 
-bool ARoomControl::MyContains(int input_num)
+bool ALevelControl::MyContains(int input_num)
 {
     int row_count = 0;
     int col_count = 0;
@@ -52,7 +52,7 @@ bool ARoomControl::MyContains(int input_num)
     return false;
 }
 
-bool ARoomControl::IsNextPanicRoom(int roomNumber)
+bool ALevelControl::IsNextPanicRoom(int roomNumber)
 {
     if (roomNumber == panicRoomId - 1 || roomNumber == panicRoomId + 1 || roomNumber == panicRoomId + 10)
     {
@@ -62,7 +62,7 @@ bool ARoomControl::IsNextPanicRoom(int roomNumber)
     return false;
 }
 
-void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
+void ALevelControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
     for (int i = 0; i < 12; ++i)
@@ -88,7 +88,7 @@ void ARoomControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomA
     }
 }
 
-Direction ARoomControl::ChooseWeightedRandomDirection(TMap<Direction, int32> weights)
+Direction ALevelControl::ChooseWeightedRandomDirection(TMap<Direction, int32> weights)
 {
     // Calculate cumulative sum of weights
     int32 total = 0;
@@ -115,14 +115,32 @@ Direction ARoomControl::ChooseWeightedRandomDirection(TMap<Direction, int32> wei
     return NoDirection;
 }
 
-void ARoomControl::EndTurn()
+void ALevelControl::EndTurn()
 {
     // Move monsters in map
     for (const TPair<int32, int32> &it : monsterLocations)
     {
-        TMap<Direction, int32> weights = {{Left, 6}, {Right, 6}, {Up, 6}, {Down, 6}, {NoDirection, 1}};
+        TMap<Direction, int32> weights = { {Left, 6}, {Right, 6}, {Up, 6}, {Down, 6}, {NoDirection, 1} };
 
-        weights[monsters[it.Key]->PreviousDirection()] = 1;
+		/*UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT START"));
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Left %s"), weights[Left]);
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Right %s"), weights[Right]);
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Up %s"), weights[Up]);
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: Down %s"), weights[Down]);
+
+		int32 currentKey = it.Key;
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [ID] %s"), currentKey);
+		AMonster *currentMonster = monsters[currentKey];
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [ID FROM MAP] %s"), currentMonster->MonsterId());
+		Direction prevDirection = currentMonster->PreviousDirection();
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [PREVDIRECTION] %s"), prevDirection);
+
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [BEFORE] %s"), weights[prevDirection]);
+		weights[prevDirection] = 1;
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT: [AFTER] %s"), weights[prevDirection]);
+
+		UE_LOG(LogTemp, Warning, TEXT("@@@@@ DEBUG POINT END"));*/
+
 
         bool success;
         do
@@ -134,6 +152,7 @@ void ARoomControl::EndTurn()
                 weights[moveDirection] = 0;
             }
         } while (!success);
+        
     }
 
     survivorStat->EndTurn();
@@ -146,7 +165,7 @@ void ARoomControl::EndTurn()
     }
 }
 
-void ARoomControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
+void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
 {
     maxHeight = m;
     maxWidth = n;
@@ -158,7 +177,7 @@ void ARoomControl::InitGame(const unsigned int m, const unsigned int n, FString 
     this->InitMap(_LevelString);
 }
 
-void ARoomControl::InitRooms()
+void ALevelControl::InitRooms()
 {
     int size = maxHeight * maxWidth;
 
@@ -167,85 +186,74 @@ void ARoomControl::InitRooms()
         URoom *newRoom = NewObject<URoom>();
         newRoom->InitRoom(i);
         GameMap.Add(newRoom);
-
+    
+        // A idx is MaxWidth * x + y
         int x = i / maxWidth;
         int y = i % maxWidth;
 
         if (x != 0)
         {
-            URoom *connectedRoom = FindRoomByLocation(x - 1, y);
+            URoom* connectedRoom = FindRoomByLocation(x - 1, y);
 
-            ADoor *door = NewObject<ADoor>();
+            ADoor* door = NewObject<ADoor>();
             door->InitDoor(newRoom, connectedRoom, DoorStatusOpen);
 
             newRoom->SetDoor(Up, door);
             connectedRoom->SetDoor(Down, door);
+
+            
         }
 
         if (y != 0)
         {
-            URoom *connectedRoom = FindRoomByLocation(x, y - 1);
+            URoom* connectedRoom = FindRoomByLocation(x, y-1);
 
-            ADoor *door = NewObject<ADoor>();
+            ADoor* door = NewObject<ADoor>();
             door->InitDoor(newRoom, connectedRoom, DoorStatusOpen);
 
             newRoom->SetDoor(Left, door);
             connectedRoom->SetDoor(Right, door);
         }
+		GameMap[i]->InitResources(None);
     }
 
-    int maxRoomNum = maxWidth * maxHeight;
-    // Set random resources
-    for (int i = 0; i < maxFoodRoom; ++i)
-    {
-        int roomNum = rand() % maxRoomNum;
-        while (foodRoomNum.Contains(roomNum))
-        {
-            roomNum = rand() % maxRoomNum;
-        }
-        if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) +
-                abs((int)(roomNum % maxWidth - panicRoomId % maxWidth)) >=
-            resourceRoomDistance)
-        {
-            GameMap[roomNum]->InitResources(Food);
-            foodRoomNum.Add(roomNum);
-        }
-    }
+	int maxRoomNum = maxWidth * maxHeight;
+	// Set random resources
+	for (int i = 0; i < maxFoodRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Food);
+			foodRoomNum.Add(roomNum);
+		}
+	}
 
-    for (int i = 0; i < maxWaterRoom; ++i)
-    {
-        int roomNum = rand() % maxRoomNum;
-        while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum))
-        {
-            roomNum = rand() % maxRoomNum;
-        }
-        if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) +
-                abs((int)(roomNum % maxWidth - panicRoomId % maxWidth)) >=
-            resourceRoomDistance)
-        {
-            GameMap[roomNum]->InitResources(Water);
-            waterRoomNum.Add(roomNum);
-        }
-    }
+	for (int i = 0; i < maxWaterRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Water);
+			waterRoomNum.Add(roomNum);
+		}
+	}
 
-    for (int i = 0; i < maxElectricityRoom; ++i)
-    {
-        int roomNum = rand() % maxRoomNum;
-        while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum) || electricityRoomNum.Contains(roomNum))
-        {
-            roomNum = rand() % maxRoomNum;
-        }
-        if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) +
-                abs((int)(roomNum % maxWidth - panicRoomId % maxWidth)) >=
-            resourceRoomDistance)
-        {
-            GameMap[roomNum]->InitResources(Electricity);
-            electricityRoomNum.Add(roomNum);
-        }
-    }
+	for (int i = 0; i < maxElectricityRoom; ++i) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum) || electricityRoomNum.Contains(roomNum)) {
+			roomNum = rand() % maxRoomNum;
+		}
+		if (abs((int)(roomNum / maxWidth - panicRoomId / maxWidth)) + abs((int)(roomNum%maxWidth - panicRoomId % maxWidth)) >= resourceRoomDistance) {
+			GameMap[roomNum]->InitResources(Electricity);
+			electricityRoomNum.Add(roomNum);
+		}
+	}
 }
 
-void ARoomControl::InitMap(FString _LevelString)
+void ALevelControl::InitMap(FString _LevelString)
 {
     FString LevelString = FString(_LevelString);
     TArray<FString> ParsedLines;
@@ -262,6 +270,7 @@ void ARoomControl::InitMap(FString _LevelString)
             for (int i = 0; i < 10; ++i)
             {
                 int currentRoomId = (row / 2) * maxWidth + i;
+
                 // 1 means closed door
                 if (ParsedWords[i].Equals("1"))
                 {
@@ -277,6 +286,7 @@ void ARoomControl::InitMap(FString _LevelString)
                 // UE_LOG(LogTemp, Warning, TEXT("current pos: %s"), it[col])
 
                 int currentRoomId = (row / 2) * maxWidth + i;
+
                 // 1 means closed door
                 if (ParsedWords[i].Equals("1"))
                 {
@@ -288,7 +298,7 @@ void ARoomControl::InitMap(FString _LevelString)
     }
 }
 
-void ARoomControl::InitDoorMesh()
+void ALevelControl::InitDoorMesh()
 {
     for (int i = 0; i < 12; ++i)
     {
@@ -302,13 +312,13 @@ void ARoomControl::InitDoorMesh()
     }
 }
 
-void ARoomControl::InitSurvivorStat()
+void ALevelControl::InitSurvivorStat()
 {
     this->survivorStat = NewObject<USurvivorStat>();
     this->survivorStat->InitSurvivorStat(100, 100, 100, 100, 100, 50, 100);
 }
 
-void ARoomControl::SpawnRoomMesh(int roomNum)
+void ALevelControl::SpawnRoomMesh(int roomNum)
 {
     int row = roomNum / maxWidth;
     int col = roomNum % maxWidth;
@@ -322,7 +332,7 @@ void ARoomControl::SpawnRoomMesh(int roomNum)
     roomActor->RoomMeshRandomize();
 }
 
-void ARoomControl::SpawnDoorMesh(int roomNum)
+void ALevelControl::SpawnDoorMesh(int roomNum)
 {
     UWorld *world = GetWorld();
     int row = roomNum / maxWidth;
@@ -334,7 +344,8 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
     FRotator rotatorLeft(0.0f, 0.0f, 0.0f);
     FRotator rotatorUp(0.0f, 90.0f, 0.0f);
 
-    FVector spawnLocationUp(startX + col * interval, startY + row * interval - 375.0f, startZ);
+    FVector spawnLocationUp(startX + col * interval, startY + row * interval - 305.0f, startZ);
+    
     if (GameMap[roomNum]->GetDoor(Up) != nullptr && GameMap[roomNum]->GetDoor(Up)->Status() == DoorStatusOpen)
     {
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
@@ -344,7 +355,8 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
         world->SpawnActor<ADoor>(DoorActor[1], spawnLocationUp, rotatorUp, spawnParams);
     }
 
-    FVector spawnLocationLeft(startX + col * interval - 375.0f, startY + row * interval, startZ);
+    FVector spawnLocationLeft(startX + col * interval - 305.0f, startY + row * interval, startZ);
+    
     if (GameMap[roomNum]->GetDoor(Left) != nullptr && GameMap[roomNum]->GetDoor(Left)->Status() == DoorStatusOpen)
     {
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationLeft, rotatorLeft, spawnParams);
@@ -354,7 +366,8 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
         world->SpawnActor<ADoor>(DoorActor[1], spawnLocationLeft, rotatorLeft, spawnParams);
     }
 
-    FVector spawnLocationRight(startX + col * interval + 375.0f, startY + row * interval, startZ);
+    FVector spawnLocationRight(startX + col * interval + 305.0f, startY + row * interval, startZ);
+    
     if (GameMap[roomNum]->GetDoor(Right) != nullptr && GameMap[roomNum]->GetDoor(Right)->Status() == DoorStatusOpen)
     {
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationRight, rotatorLeft, spawnParams);
@@ -364,9 +377,11 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
         world->SpawnActor<ADoor>(DoorActor[1], spawnLocationRight, rotatorLeft, spawnParams);
     }
 
-    FVector spawnLocationDown(startX + col * interval, startY + row * interval + 375.0f, startZ);
+    FVector spawnLocationDown(startX + col * interval, startY + row * interval + 305.0f, startZ);
+    
     if (GameMap[roomNum]->GetDoor(Down) != nullptr && GameMap[roomNum]->GetDoor(Down)->Status() == DoorStatusOpen)
     {
+
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationDown, rotatorUp, spawnParams);
     }
     else
@@ -376,7 +391,7 @@ void ARoomControl::SpawnDoorMesh(int roomNum)
 }
 
 // calculate and add visible room numbers
-void ARoomControl::InitVisibleRoom()
+void ALevelControl::InitVisibleRoom()
 {
 
     // Left side visible rooms
@@ -455,100 +470,115 @@ void ARoomControl::InitVisibleRoom()
         currentRoomNum++;
     }
 }
-bool ARoomControl::CheckPanicRoom(int _monsterId)
+bool ALevelControl::CheckPanicRoom(int _monsterId)
 {
-    for (const TPair<int32, int32> &it : monsterLocations)
-    {
-        if (it.Key == _monsterId)
-        {
-            if (IsNextPanicRoom(it.Value))
-            {
-                UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
-                monsterActors[_monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth),
-                                                              startY + interval * (panicRoomId / maxWidth), startZ));
-                monsterActors[_monsterId - 1]->ChargePanicRoom();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-    return false;
+	for (const TPair<int32, int32> &it : monsterLocations)
+	{
+		if (it.Key == _monsterId)
+		{
+			if (IsNextPanicRoom(it.Value))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
+				monsterActors[_monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth), startY + interval * (panicRoomId / maxWidth), startZ));
+				monsterActors[_monsterId - 1]->ChargePanicRoom();
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+	return false;
 }
 
 // Returns resource type, resource size. resource type = 0 for not discovered or not known
-TArray<FResourceUI> ARoomControl::GetRoomResourceUI()
+TArray<FResourceUI> ALevelControl::GetRoomResourceUI()
 {
-    TArray<FResourceUI> resourceArray;
-    URoom *currentRoom;
+	TArray<FResourceUI> ResourceArray;
+	URoom* currentRoom;
+	
+	int maxRoomNum = maxWidth * maxHeight;
+	for (int i = 0; i < maxRoomNum; ++i) {
+		currentRoom = GameMap[i];
+		FResourceUI currentResourceUI;
 
-    int maxRoomNum = maxWidth * maxHeight;
-    for (int i = 0; i < maxRoomNum; ++i)
-    {
-        currentRoom = GameMap[i];
-        FResourceUI currentResourceUI;
+		if (currentRoom->isDiscovered()) {
 
-        if (currentRoom->isDiscovered())
-        {
-
-            // find maximum resource type and its size
-            Resource currentResource = currentRoom->GetResources();
-            if (currentResource.food >= currentResource.water)
-            {
-                if (currentResource.food >= currentResource.electricity)
-                {
-                    currentResourceUI.resourceType = 1;
-                    currentResourceUI.resourceSize = currentResource.food;
-                }
-                else
-                {
-                    currentResourceUI.resourceType = 3;
-                    currentResourceUI.resourceSize = currentResource.electricity;
-                }
-            }
-            else if (currentResource.water >= currentResource.electricity)
-            {
-                currentResourceUI.resourceType = 2;
-                currentResourceUI.resourceSize = currentResource.water;
-            }
-            else
-            {
-                currentResourceUI.resourceType = 3;
-                currentResourceUI.resourceSize = currentResource.electricity;
-            }
-        }
-        else
-        {
-            // undiscovered room
-            currentResourceUI.resourceType = 0;
-            currentResourceUI.resourceSize = 0;
-        }
-        resourceArray.Add(currentResourceUI);
-    }
-
-    return resourceArray;
+			// find maximum resource type and its size
+			Resource currentResource = currentRoom->GetResources();
+			if (currentResource.food >= currentResource.water) {
+				if (currentResource.food >= currentResource.electricity) {
+					currentResourceUI.resourceType = 1;
+					currentResourceUI.resourceSize = currentResource.food;
+				}
+				else {
+					currentResourceUI.resourceType = 3;
+					currentResourceUI.resourceSize = currentResource.electricity;
+				}
+			}
+			else if (currentResource.water >= currentResource.electricity) {
+				currentResourceUI.resourceType = 2;
+				currentResourceUI.resourceSize = currentResource.water;
+			}
+			else {
+				currentResourceUI.resourceType = 3;
+				currentResourceUI.resourceSize = currentResource.electricity;
+			}
+		}
+		else {
+			// undiscovered room
+			currentResourceUI.resourceType = 0;
+			currentResourceUI.resourceSize = 0;
+		}
+		ResourceArray.Add(currentResourceUI);
+	}
+	
+	return ResourceArray;
 }
 
-bool ARoomControl::IsBlocked(int _monsterId)
+TArray<int> ALevelControl::GetDoorUI()
+{
+	TArray<int> DoorArray;
+	int currentRoomNum;
+	for (unsigned int i = 0; i < maxHeight; ++i) {
+		for (unsigned int j = 0; j < maxWidth; ++j) {
+			currentRoomNum = i * maxWidth + j;
+			if (j == 0) {
+				DoorArray.Add(1);
+			}
+			else {
+				DoorArray.Add(GameMap[currentRoomNum]->GetDoor(Left)->Status());
+			}
+
+			if (i == 0) {
+				DoorArray.Add(1);
+			}
+			else {
+				DoorArray.Add(GameMap[currentRoomNum]->GetDoor(Up)->Status());
+			}
+		}
+	}
+	return DoorArray;
+}
+
+bool ALevelControl::IsBlocked(int _monsterId)
 {
     ADoor *door = nullptr;
     for (const TPair<int32, int32> &it : monsterLocations)
     {
         if (it.Key == _monsterId)
         {
-            int roomId = it.Value;
+            int roomNumber = it.Value;
 
-            if (roomId == panicRoomId - 1)
+            if (roomNumber == panicRoomId - 1)
             {
                 door = GameMap[panicRoomId]->GetDoor(Left);
             }
-            else if (roomId == panicRoomId + 1)
+            else if (roomNumber == panicRoomId + 1)
             {
                 door = GameMap[panicRoomId]->GetDoor(Right);
             }
-            else if (roomId == panicRoomId + 10)
+            else if (roomNumber == panicRoomId + 10)
             {
                 door = GameMap[panicRoomId]->GetDoor(Down);
             }
@@ -570,7 +600,7 @@ bool ARoomControl::IsBlocked(int _monsterId)
     }
 }
 
-URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
+URoom *ALevelControl::FindRoomByLocation(const unsigned int x, const unsigned int y)
 {
     if (x < 0 || x >= maxHeight)
     {
@@ -586,18 +616,18 @@ URoom *ARoomControl::FindRoomByLocation(const unsigned int x, const unsigned int
     return GameMap[idx];
 }
 
-URoom *ARoomControl::FindRoomById(const int roomId)
+URoom *ALevelControl::FindRoomById(const int roomId)
 {
     return GameMap[roomId];
 }
 
-void ARoomControl::InsertMonster(MonsterType monsterType, int x, int y)
+void ALevelControl::InsertMonster(MonsterType monsterType, int x, int y)
 {
     int roomId = x * maxWidth + y;
     InsertMonster(monsterType, roomId);
 }
 
-void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
+void ALevelControl::InsertMonster(MonsterType monsterType, int roomId)
 {
     int row = roomId / maxWidth;
     int col = roomId % maxWidth;
@@ -621,28 +651,28 @@ void ARoomControl::InsertMonster(MonsterType monsterType, int roomId)
             FRotator rotator(0.0f, 0.0f, 0.0f);
             FVector spawnLocation(startX + col * interval, startY + row * interval, startZ);
 
-            monsterActors.Add(
-                world->SpawnActor<AMonster>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
+            monsterActors.Add(world->SpawnActor<AMonster>(MonsterSpawn[monsterType], spawnLocation, rotator, spawnParams));
             monsterActors[nextMonsterId - 1]->InitMonsterActor(this, nextMonsterId, monsterType);
         }
     }
     nextMonsterId++;
 }
 
-void ARoomControl::DeleteMonster(const unsigned int x, const unsigned int y)
+void ALevelControl::DeleteMonster(const unsigned int x, const unsigned int y)
 {
     URoom *room = FindRoomByLocation(x, y);
     room->DeleteMonster();
 }
 
-void ARoomControl::DeleteMonster(int roomId)
+void ALevelControl::DeleteMonster(int roomId)
 {
     URoom *room = FindRoomById(roomId);
     room->DeleteMonster();
 }
 
-bool ARoomControl::MoveMonster(int monsterId, Direction d)
+bool ALevelControl::MoveMonster(int monsterId, Direction d)
 {
+    PrintMap();
     for (const TPair<int32, int32> &it : monsterLocations)
     {
         if (it.Key == monsterId)
@@ -658,10 +688,9 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             }
 
             ADoor *door = GameMap[it.Value]->GetDoor(d);
-
+            
             if (door == nullptr || door->Status() == DoorStatusClose ||
-                GameMap[it.Value]->BeyondDoor(d)->MonsterId() != 0 ||
-                GameMap[it.Value]->BeyondDoor(d)->RoomId() == panicRoomId)
+                GameMap[it.Value]->BeyondDoor(d)->MonsterId() != 0 || GameMap[it.Value]->BeyondDoor(d)->RoomId() == panicRoomId)
             {
                 return false;
             }
@@ -671,21 +700,12 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
             monsterLocations[it.Key] = GameMap[it.Value]->BeyondDoor(d)->RoomId();
             GameMap[it.Value]->InsertMonster(monsterId);
 
-            // move matching monster to next room
-            if (monsterActors[monsterId - 1])
-            {
-                // monsterActors[monsterId - 1]->SetActorLocation(FVector(startX + interval * (it.Value % maxWidth),
-                // startY + interval * (it.Value / maxWidth), startZ));
-                monsterActors[monsterId - 1]->MoveTo(FVector(startX + interval * (it.Value % maxWidth),
-                                                             startY + interval * (it.Value / maxWidth), startZ));
-            }
-            /*// if monster is next to panic room, charges to player
-            if (IsNextPanicRoom(it.Value))
-            {
-                UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
-                monsterActors[monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth), startY +
-            interval * (panicRoomId / maxWidth), startZ)); monsterActors[monsterId - 1]->ChargePanicRoom(); continue;
-            }*/
+			// move matching monster to next room
+			if (monsterActors[monsterId - 1])
+			{
+				//monsterActors[monsterId - 1]->SetActorLocation(FVector(startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
+				monsterActors[monsterId - 1]->MoveTo(FVector(startX + interval * (it.Value % maxWidth), startY + interval * (it.Value / maxWidth), startZ));
+			}
 
             Direction prev = static_cast<Direction>((d + 2) % 4);
             monsters[it.Key]->PreviousDirection(prev);
@@ -695,7 +715,7 @@ bool ARoomControl::MoveMonster(int monsterId, Direction d)
     return true;
 }
 
-AMonster *ARoomControl::FindMonsterById(const unsigned int id)
+AMonster *ALevelControl::FindMonsterById(const unsigned int id)
 {
 
     for (const TPair<int32, AMonster *> &it : monsters)
@@ -711,7 +731,7 @@ AMonster *ARoomControl::FindMonsterById(const unsigned int id)
     return NULL;
 }
 
-void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
+void ALevelControl::ZapCCTV(AActor *_CurrentZapPlane)
 {
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
@@ -729,12 +749,12 @@ void ARoomControl::ZapCCTV(AActor *_CurrentZapPlane)
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
 }
 
-void ARoomControl::RestoreZap(AActor *CCTV)
+void ALevelControl::RestoreZap(AActor *CCTV)
 {
     CCTV->SetActorHiddenInGame(true);
 }
 
-void ARoomControl::SelectCCTV()
+void ALevelControl::SelectCCTV()
 {
     for (const TPair<int32, int32> &it : monsterLocations)
     {
@@ -748,17 +768,38 @@ void ARoomControl::SelectCCTV()
     }
 }
 
-// Get functions
 
-TArray<int32> ARoomControl::GetCCTVRoomNum()
+int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
 {
-    return CCTVRoomNum;
+    if (Type == 1)
+    {
+        return GameMap[RoomId]->GetResources().food;
+    }
+    else if (Type == 2)
+    {
+        return GameMap[RoomId]->GetResources().water;
+    }
+    else if (Type == 3)
+    {
+        return GameMap[RoomId]->GetResources().electricity;
+    }
+    return 0;
 }
 
-bool ARoomControl::IsRoomClosed(int roomNum,
-                                int direction) // For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
+void ALevelControl::SetRoomResources(int RoomId, int food, int water, int electricity)
 {
+    GameMap[RoomId]->SetResources(food, water, electricity);
+}
 
+void ALevelControl::RobotCheck(int RoomId)
+{
+    GameMap[RoomId]->SetisKnown(true);
+}
+
+
+bool ALevelControl::IsRoomClosed(int roomNum, int direction) //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
+{
+    
     ADoor *door = nullptr;
     if (direction == 1)
     {
@@ -776,7 +817,7 @@ bool ARoomControl::IsRoomClosed(int roomNum,
     {
         door = GameMap[roomNum]->GetDoor(Left);
     }
-
+    
     if (door->Status() == DoorStatusClose)
     {
         return false;
@@ -785,4 +826,21 @@ bool ARoomControl::IsRoomClosed(int roomNum,
     {
         return true;
     }
+}
+
+// Get functions
+
+TArray<int32> ALevelControl::GetCCTVRoomNum()
+{
+	return CCTVRoomNum;
+}
+
+int ALevelControl::GetMaxWidth()
+{
+	return maxWidth;
+}
+
+int ALevelControl::GetMaxHeight()
+{
+	return maxHeight;
 }

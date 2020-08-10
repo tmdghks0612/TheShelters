@@ -31,6 +31,7 @@ ASurvivor::ASurvivor()
     MeshComp->SetupAttachment(RootComponent);
 
     BaseTurnRate = 45.0f;
+    RFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -70,8 +71,8 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 // Change Camera angle to infront of map + initiate flag for mapping
 void ASurvivor::InitiateMap()
 {
-
-    RFlag = true;
+    if(RFlag == false && RunFlag == false)
+        RFlag = true;
 }
 
 // finish deciding route.

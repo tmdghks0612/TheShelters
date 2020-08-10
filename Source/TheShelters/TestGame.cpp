@@ -1,7 +1,7 @@
 #include "Monster.h"
-#include "RoomControl.h"
+#include "LevelControl.h"
 
-void ARoomControl::PrintMap()
+void ALevelControl::PrintMap()
 {
     UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
     for (unsigned int x = 0; x < maxHeight; x++)
@@ -10,7 +10,7 @@ void ARoomControl::PrintMap()
         for (unsigned int y = 0; y < maxWidth; y++)
         {
             int idx = x * maxWidth + y;
-            int32 monsterId = GameMap[idx]->MonsterId();
+            int32 monsterId = GameMap[idx]->RoomId();
             TArray<FStringFormatArg> args;
             args.Add(FStringFormatArg(monsterId));
             line += FString::Format(TEXT("{0} "), args);
@@ -19,7 +19,7 @@ void ARoomControl::PrintMap()
     }
 }
 
-void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
+void ALevelControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
 {
     FString line = FString();
     TArray<FStringFormatArg> args;
@@ -39,7 +39,7 @@ void ARoomControl::PrintTestMessage(const TCHAR *testName, const int num, const 
 }
 
 
-void ARoomControl::TestScenario(FString _LevelString)
+void ALevelControl::TestScenario(FString _LevelString)
 {
     bool result;
     testResult.Add(true, 0);
@@ -47,7 +47,7 @@ void ARoomControl::TestScenario(FString _LevelString)
 
     InitGame(10, 10, _LevelString);
 
-    InsertMonster(DefaultMonster, 0, 4); // Monster 1: 0, 4
+    InsertMonster(DefaultMonster, 0, 0); // Monster 1: 0, 4
     InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
 
     result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;

@@ -1,13 +1,11 @@
 #pragma once
-
-#include "Door.fwd.h"
-#include "Room.fwd.h"
-
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
-
 #include "Door.generated.h"
 
+class URoom;
+
+UENUM()
 enum DoorStatus
 {
     DoorStatusOpen,
@@ -30,12 +28,14 @@ class THESHELTERS_API ADoor : public AStaticMeshActor
 
     URoom *GetBeyond(URoom *room);
 
-    const unsigned int Id() const;
+    const unsigned int Id();
     const DoorStatus Status() const;
 
   private:
+    UPROPERTY()
     TArray<URoom *> connectedRooms;
+
     DoorStatus status;
     unsigned int id;
-    unsigned int nextId = 1;
+    static unsigned int nextId;
 };

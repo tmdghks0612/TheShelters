@@ -61,6 +61,8 @@ protected:
 
 	void TurnView();
 
+	bool RunFlag = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	float BaseTurnRate;
 

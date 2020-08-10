@@ -8,9 +8,11 @@
 #include "RobotAniminstance.h"
 #include "RobotActor.h"
 #include "RobotPawn.h"
-#include "RoomControl.h"
+#include "LevelControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
+
+
 
 UCLASS()
 class THESHELTERS_API ARobotControl : public AActor
@@ -43,7 +45,7 @@ public:
 	bool isMoving = false;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	ARoomControl* RoomControl;
+	ALevelControl* LevelControl;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URobotAniminstance* Anim;
@@ -82,10 +84,12 @@ public:
 	void DetectMonster();
 	UFUNCTION(BlueprintCallable)
 	bool StartMoving();
+	UFUNCTION()
+	void ResourceSearch(int RoomId);
 
-	//survivor, monster, roomcontrol finder
+	//survivor, monster, LevelControl finder
 	UFUNCTION(BlueprintCallable)
-	void FindRoomControl(TArray<ARoomControl*> _RoomControl);
+	void FindLevelControl(TArray<ALevelControl*> _LevelControl);
 	UFUNCTION(BlueprintCallable)
     void GiveAddress(TArray<ASurvivor*> _List);
 	UFUNCTION(BlueprintCallable)
@@ -94,15 +98,19 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	int startLocation = 5;
+	int startLocation = 5; // panic room location
     int currentLocation;
 
+	Resource RoomResources;
+	Resource LoadedResources;
+	Resource PanicRoomResources;
+	TArray<int> SearchData;
 	TArray<int> route;
     TArray<int> visited;
 	float startX = 4000.0f;
 	float startY = 0.0f;
 	float startZ = 200.0f;
-	float interval = 1000.0f;
+	float interval = 1400.0f;
 	bool MonsterCheck;
 
 public:	
