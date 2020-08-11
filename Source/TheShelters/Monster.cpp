@@ -41,6 +41,7 @@ void AMonster::ChargePanicRoom()
 {
 	FTimerDelegate TimerDel;
 	FTimerHandle TimerHandle;
+	FTimerHandle TimerHandleRestore;
 	UE_LOG(LogTemp, Warning, TEXT("monster is angry!"));
 	chargeLocation = GetActorLocation();
 	UE_LOG(LogTemp, Warning, TEXT("saving on %f %f"), chargeLocation.X, chargeLocation.Y);
@@ -49,10 +50,8 @@ void AMonster::ChargePanicRoom()
 	IsMoving = false;
 	MonsterAnimInstance->SetMovement(false);
 
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::RestoreAngry, 5.0f, false);
+	GetWorldTimerManager().SetTimer(TimerHandleRestore, this, &AMonster::RestoreAngry, 10.0f, false);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::ActiveAngry, ChargeDelay, false);
-	/*TimerDel.BindUFunction(this, FName("RestoreAngry"));
-	GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);*/
 	return;
 }
 
@@ -62,7 +61,10 @@ void AMonster::RestoreAngry()
 	IsAngry = false;
 	IsCharge = false;
 	MonsterAnimInstance->SetAngry(false);
-	StopCharge();
+	
+	IsMoving = false;
+	MonsterAnimInstance->SetMovement(false);
+
 	SetActorLocation(chargeLocation);
 	UE_LOG(LogTemp, Warning, TEXT("restore to %f %f"), chargeLocation.X, chargeLocation.Y);
 
