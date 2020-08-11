@@ -224,6 +224,11 @@ void ASurvivor::InitRobots(ARobotControl *_Robot)
     Robot = _Robot;
 }
 
+void ASurvivor::FindLevelControl(ALevelControl * _LevelControl)
+{
+	LevelControl = _LevelControl;
+}
+
 void ASurvivor::RobotMapRight()
 {
     if (RFlag == true)

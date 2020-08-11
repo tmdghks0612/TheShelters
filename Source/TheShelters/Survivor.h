@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "LevelControl.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Survivor.generated.h"
@@ -51,6 +53,12 @@ public:
 	// robot control functions
 	UFUNCTION(BlueprintCallable)
 	void InitRobots(ARobotControl *_Robot);
+	UFUNCTION(BlueprintCallable)
+	void FindLevelControl(ALevelControl* _LevelControl);
+	UFUNCTION(BlueprintCallable)
+	void ConsumeFood();
+	UFUNCTION(BlueprintCallable)
+	void ConsumeWater();
 
 	UFUNCTION()
 
@@ -79,11 +87,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TArray<ARobotControl *> lists;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	ALevelControl* LevelControl;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool RFlag = false;
 
-	void ConsumeFood();
-	void ConsumeWater();
 
 	// Getters
 	const int Hunger() const;

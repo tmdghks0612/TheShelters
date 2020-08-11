@@ -92,9 +92,9 @@ public:
 
 	//survivor, monster, LevelControl finder
 	UFUNCTION(BlueprintCallable)
-	void FindLevelControl(TArray<ALevelControl*> _LevelControl);
+	void FindLevelControl(ALevelControl* _LevelControl);
 	UFUNCTION(BlueprintCallable)
-    void GiveAddress(TArray<ASurvivor*> _List);
+    void GiveAddress(ASurvivor* _Survivor);
 	UFUNCTION(BlueprintCallable)
 	void GetMonsters(TArray<AMonster*> _Monsters);
 	UFUNCTION(BlueprintCallable)

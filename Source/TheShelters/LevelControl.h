@@ -131,9 +131,7 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomActor;
 
-    // To show in blueprint
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-    TArray<URoom *> GameMap;
+    
 
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray <APanicRoomDoor*> PanicRoomDoorList;
@@ -143,6 +141,11 @@ class THESHELTERS_API ALevelControl : public AActor
     virtual void BeginPlay() override;
 
   private:
+
+	// To show in blueprint
+	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<URoom *> GameMap;
+
     // Initializers
     void InitRooms();
     void InitMap(FString LevelString);

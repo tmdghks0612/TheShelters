@@ -59,9 +59,9 @@ void ARobotControl::Tick(float DeltaTime)
     }
 }
 
-void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
+void ARobotControl::GiveAddress(ASurvivor* _Survivor)
 {
-    _List[0]->InitRobots(this);
+    _Survivor->InitRobots(this);
 }
 
 void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
@@ -324,9 +324,9 @@ void ARobotControl::PrintMap()
 	PrintUI.Broadcast();
 }
 
-void ARobotControl::FindLevelControl(TArray<ALevelControl*> _LevelControl)
+void ARobotControl::FindLevelControl(ALevelControl* _LevelControl)
 {
-    LevelControl = _LevelControl[0];
+    LevelControl = _LevelControl;
 }
 
 void ARobotControl::DetectMonster()
