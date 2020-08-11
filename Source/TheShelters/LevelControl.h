@@ -84,6 +84,16 @@ class THESHELTERS_API ALevelControl : public AActor
   void DoorSwitch(Direction d);
 
   UFUNCTION(BlueprintCallable)
+  int GetPanicRoomFood();
+  UFUNCTION(BlueprintCallable)
+  int GetPanicRoomWater();
+
+  UFUNCTION(BlueprintCallable)
+  void SetPanicRoomFood(int _value);
+  UFUNCTION(BlueprintCallable)
+  void SetPanicRoomWater(int _value);
+
+  UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
   UFUNCTION(BlueprintCallable)
   TArray<int> GetDoorUI();
@@ -131,8 +141,6 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomActor;
 
-    
-
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray <APanicRoomDoor*> PanicRoomDoorList;
 
@@ -143,7 +151,7 @@ class THESHELTERS_API ALevelControl : public AActor
   private:
 
 	// To show in blueprint
-	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY()
 	TArray<URoom *> GameMap;
 
     // Initializers

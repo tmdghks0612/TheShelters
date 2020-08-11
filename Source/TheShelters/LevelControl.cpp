@@ -504,6 +504,26 @@ void ALevelControl::DoorSwitch(Direction d)
     
 }
 
+int ALevelControl::GetPanicRoomFood()
+{
+	return GameMap[panicRoomId]->GetResources().food;
+}
+
+int ALevelControl::GetPanicRoomWater()
+{
+	return GameMap[panicRoomId]->GetResources().water;
+}
+
+void ALevelControl::SetPanicRoomFood(int _value)
+{
+	GameMap[panicRoomId]->SetFood(_value);
+}
+
+void ALevelControl::SetPanicRoomWater(int _value)
+{
+	GameMap[panicRoomId]->SetWater(_value);
+}
+
 // Returns resource type, resource size. resource type = 0 for not discovered or not known
 TArray<FResourceUI> ALevelControl::GetRoomResourceUI()
 {

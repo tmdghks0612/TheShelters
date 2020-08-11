@@ -56,9 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FindLevelControl(ALevelControl* _LevelControl);
 	UFUNCTION(BlueprintCallable)
-	void ConsumeFood();
+	bool ConsumeFood();
 	UFUNCTION(BlueprintCallable)
-	void ConsumeWater();
+	bool ConsumeWater();
 
 	UFUNCTION()
 

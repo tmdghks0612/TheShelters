@@ -103,15 +103,30 @@ void ASurvivor::Turn(float amount)
 // resource managing functions
 
 // restore hunger / thirst on consuming food / water
-void ASurvivor::ConsumeFood()
+bool ASurvivor::ConsumeFood()
 {
-	Hunger(hungerRestoreAmount);
-	return;
+	int current_food = LevelControl->GetPanicRoomFood();
+	if (current_food > 0) {
+		LevelControl->SetPanicRoomFood(current_food - 1);
+		Hunger(hungerRestoreAmount);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
-void ASurvivor::ConsumeWater()
+bool ASurvivor::ConsumeWater()
 {
-	Thirst(thirstRestoreAmount);
+	int current_water = LevelControl->GetPanicRoomWater();
+	if (current_water > 0) {
+		LevelControl->SetPanicRoomWater(current_water - 1);
+		Thirst(thirstRestoreAmount);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 // hunger, thirst intensify every turn
