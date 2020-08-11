@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "Monster.fwd.h"
-#include "LevelControl.fwd.h"
-
 #include "Direction.h"
 #include "MonsterAnimInstance.h"
 
@@ -12,6 +9,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Monster.generated.h"
+
+class ALevelControl;
 
 // MonsterType determines MonsterProperty values and movement speed
 UENUM() enum class MonsterType { Ghoul, Grima };
@@ -51,9 +50,9 @@ class THESHELTERS_API AMonster : public APawn
     AMonster();
 
     // Initializers
-	void InitMonster(MonsterType t, int _monsterId);
-	void InitMonsterActor(class ALevelControl* _LevelControl, int _monsterId, MonsterType _monsterType);
-	void MoveTo(FVector destination);
+    void InitMonster(MonsterType t, int _monsterId);
+    void InitMonsterActor(class ALevelControl *_LevelControl, int _monsterId, MonsterType _monsterType);
+    void MoveTo(FVector destination);
 
     // PanicRoom related methods
     UFUNCTION(BlueprintCallable)
