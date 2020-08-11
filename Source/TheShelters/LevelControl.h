@@ -10,7 +10,10 @@
 #include "Direction.h"
 #include "Room.h"
 #include "Door.h"
+#include "PanicRoomDoor.h"
+#include "DoorAnimInstance.h"
 #include "RoomActor.h"
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -77,6 +80,8 @@ class THESHELTERS_API ALevelControl : public AActor
   // Use electricity if electricity is enough.
   UFUNCTION(BlueprintCallable)
   void UseElectricity();
+  UFUNCTION(BlueprintCallable)
+  void DoorSwitch(Direction d);
 
   UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
@@ -122,11 +127,16 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<TSubclassOf<ADoor>> DoorActor;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<APanicRoomDoor> PanicRoomDoor;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomActor;
 
     // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<URoom *> GameMap;
+
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    TArray <APanicRoomDoor*> PanicRoomDoorList;
 
   protected:
     // Called when the game starts or when spawned
@@ -146,6 +156,7 @@ class THESHELTERS_API ALevelControl : public AActor
     MonsterList monsters;
     MonsterLocationList monsterLocations;
     int nextMonsterId = 1;
+    UPROPERTY()
     TArray<AMonster *> monsterActors;
     Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
 
@@ -154,8 +165,11 @@ class THESHELTERS_API ALevelControl : public AActor
   int maxWaterRoom = 3;
   int maxElectricityRoom = 3;
 
+  UPROPERTY()
   TArray<int> foodRoomNum;
+  UPROPERTY()
   TArray<int> waterRoomNum;
+  UPROPERTY()
   TArray<int> electricityRoomNum;
 
   // Special room minimum distance
@@ -181,9 +195,11 @@ class THESHELTERS_API ALevelControl : public AActor
     float interval = 1400.0f;
 
     // Event flag
+    UPROPERTY()
     TMap<FString, bool> eventFlag;
 
   // For test and debugging
+  UPROPERTY()
   TMap<bool, int32> testResult;
   void PrintMap();
   void PrintTestMessage(const TCHAR *testName, const int num, const bool success);

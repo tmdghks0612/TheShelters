@@ -21,12 +21,20 @@ class THESHELTERS_API ADoor : public AStaticMeshActor
     ADoor();
     ~ADoor();
 
+    UFUNCTION()
     void InitDoor(URoom *roomA, URoom *roomB, TEnumAsByte<DoorStatus> s);
 
+    UFUNCTION()
     void Open();
+
+    UFUNCTION()
     void Close();
 
+    UFUNCTION()
     URoom *GetBeyond(URoom *room);
+
+    UFUNCTION()
+    void SwitchStatus();
 
     const unsigned int Id();
     const TEnumAsByte<DoorStatus> Status() const;

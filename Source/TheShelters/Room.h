@@ -73,6 +73,7 @@ class THESHELTERS_API URoom : public UObject
     ADoor *GetDoor(const Direction d);
     URoom *BeyondDoor(const Direction d);
 
+    void SwitchDoor(const Direction d);
     void SetDoor(const Direction d, ADoor *door);
     void OpenDoor(const Direction d);
     void CloseDoor(const Direction d);

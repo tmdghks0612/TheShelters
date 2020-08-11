@@ -178,8 +178,6 @@ void ALevelControl::InitRooms()
 
             newRoom->SetDoor(Up, door);
             connectedRoom->SetDoor(Down, door);
-
-            
         }
 
         if (y != 0)
@@ -288,6 +286,7 @@ void ALevelControl::InitDoorMesh()
     {
         SpawnDoorMesh(VisibleRoomNum[i]);
     }
+    SpawnDoorMesh(panicRoomId);
 }
 
 void ALevelControl::SpawnRoomMesh(int roomNum)
@@ -316,20 +315,15 @@ void ALevelControl::SpawnDoorMesh(int roomNum)
     FRotator rotatorLeft(0.0f, 0.0f, 0.0f);
     FRotator rotatorUp(0.0f, 90.0f, 0.0f);
 
-    FVector spawnLocationUp(startX + col * interval, startY + row * interval - 305.0f, startZ);
     
-    if (GameMap[roomNum]->GetDoor(Up) != nullptr && GameMap[roomNum]->GetDoor(Up)->Status() == DoorStatusOpen)
-    {
-        world->SpawnActor<ADoor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
-    }
-    else
-    {
-        world->SpawnActor<ADoor>(DoorActor[1], spawnLocationUp, rotatorUp, spawnParams);
-    }
 
     FVector spawnLocationLeft(startX + col * interval - 305.0f, startY + row * interval, startZ);
-    
-    if (GameMap[roomNum]->GetDoor(Left) != nullptr && GameMap[roomNum]->GetDoor(Left)->Status() == DoorStatusOpen)
+    if (roomNum == panicRoomId)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attemp to generate Panic Room Door"));
+        PanicRoomDoorList.Add(world->SpawnActor<APanicRoomDoor>(PanicRoomDoor, spawnLocationLeft, rotatorLeft, spawnParams));
+    }
+    else if (GameMap[roomNum]->GetDoor(Left) != nullptr && GameMap[roomNum]->GetDoor(Left)->Status() == DoorStatusOpen)
     {
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationLeft, rotatorLeft, spawnParams);
     }
@@ -338,9 +332,30 @@ void ALevelControl::SpawnDoorMesh(int roomNum)
         world->SpawnActor<ADoor>(DoorActor[1], spawnLocationLeft, rotatorLeft, spawnParams);
     }
 
+    FVector spawnLocationUp(startX + col * interval, startY + row * interval - 305.0f, startZ);
+    if (roomNum == panicRoomId)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attemp to generate Panic Room Door"));
+        PanicRoomDoorList.Add(world->SpawnActor<APanicRoomDoor>(PanicRoomDoor, spawnLocationUp, rotatorUp, spawnParams));
+    }
+    else if (GameMap[roomNum]->GetDoor(Up) != nullptr && GameMap[roomNum]->GetDoor(Up)->Status() == DoorStatusOpen)
+    {
+        world->SpawnActor<ADoor>(DoorActor[0], spawnLocationUp, rotatorUp, spawnParams);
+    }
+    else
+    {
+        world->SpawnActor<ADoor>(DoorActor[1], spawnLocationUp, rotatorUp, spawnParams);
+    }
+
+
     FVector spawnLocationRight(startX + col * interval + 305.0f, startY + row * interval, startZ);
     
-    if (GameMap[roomNum]->GetDoor(Right) != nullptr && GameMap[roomNum]->GetDoor(Right)->Status() == DoorStatusOpen)
+    if (roomNum == panicRoomId)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attemp to generate Panic Room Door"));
+        PanicRoomDoorList.Add(world->SpawnActor<APanicRoomDoor>(PanicRoomDoor, spawnLocationRight, rotatorLeft, spawnParams));
+    }
+    else if (GameMap[roomNum]->GetDoor(Right) != nullptr && GameMap[roomNum]->GetDoor(Right)->Status() == DoorStatusOpen)
     {
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationRight, rotatorLeft, spawnParams);
     }
@@ -351,7 +366,12 @@ void ALevelControl::SpawnDoorMesh(int roomNum)
 
     FVector spawnLocationDown(startX + col * interval, startY + row * interval + 305.0f, startZ);
     
-    if (GameMap[roomNum]->GetDoor(Down) != nullptr && GameMap[roomNum]->GetDoor(Down)->Status() == DoorStatusOpen)
+    if (roomNum == panicRoomId)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attemp to generate Panic Room Door"));
+        PanicRoomDoorList.Add(world->SpawnActor<APanicRoomDoor>(PanicRoomDoor, spawnLocationDown, rotatorUp, spawnParams));
+    }
+    else if (GameMap[roomNum]->GetDoor(Down) != nullptr && GameMap[roomNum]->GetDoor(Down)->Status() == DoorStatusOpen)
     {
 
         world->SpawnActor<ADoor>(DoorActor[0], spawnLocationDown, rotatorUp, spawnParams);
@@ -474,6 +494,13 @@ void ALevelControl::UseElectricity()
 	}
 	
 	return;
+}
+
+void ALevelControl::DoorSwitch(Direction d)
+{
+    GameMap[panicRoomId]->SwitchDoor(d);
+    PanicRoomDoorList[d]->SetDoor();
+    
 }
 
 // Returns resource type, resource size. resource type = 0 for not discovered or not known

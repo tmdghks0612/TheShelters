@@ -68,6 +68,12 @@ void URoom::CloseDoor(const Direction d)
         doors[d]->Close();
 }
 
+void URoom::SwitchDoor(const Direction d)
+{
+    if (doors[d])
+        doors[d]->SwitchStatus();
+}
+
 void URoom::InsertMonster(int newMonsterId)
 {
     monsterId = newMonsterId;

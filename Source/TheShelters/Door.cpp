@@ -39,6 +39,21 @@ void ADoor::Close()
     status = DoorStatusClose;
 }
 
+
+void ADoor::SwitchStatus()
+{
+    
+    if (status == DoorStatusOpen)
+    {
+        status = DoorStatusClose;
+        UE_LOG(LogTemp, Warning, TEXT("closed"));
+    }
+    else if (status == DoorStatusClose)
+    {
+        status = DoorStatusOpen;
+    }
+}
+
 URoom *ADoor::GetBeyond(URoom *room)
 {
     
