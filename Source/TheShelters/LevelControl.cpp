@@ -843,7 +843,7 @@ bool ALevelControl::IsRoomClosed(int roomNum, int direction) //For RobotControl 
         door = GameMap[roomNum]->GetDoor(Left);
     }
     
-    if (door->Status() == DoorStatusClose)
+    if (door == nullptr || door->Status() == DoorStatusClose)
     {
         return false;
     }

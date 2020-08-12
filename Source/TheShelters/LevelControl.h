@@ -21,6 +21,7 @@
 
 class AMonster;
 
+
 // key = monsterId, value = roomNum of the room monster is in
 typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = AMonster class instance
@@ -143,7 +144,7 @@ class THESHELTERS_API ALevelControl : public AActor
   private:
 
 	// To show in blueprint
-	//UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY()
 	TArray<URoom *> GameMap;
 
     // Initializers
