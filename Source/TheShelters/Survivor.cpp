@@ -32,6 +32,9 @@ ASurvivor::ASurvivor()
     CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
     CameraComp->SetupAttachment(SpringArmComp);
 
+	SurvivorSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SurvivorSkeletalMeshComponent->SetupAttachment(RootComponent);
+
     MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
     MeshComp->SetupAttachment(RootComponent);
 
@@ -85,12 +88,12 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
 void ASurvivor::MoveForward(float amount)
 {
-	AddMovementInput(GetActorForwardVector(), amount);
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), amount);
 }
 
 void ASurvivor::MoveRight(float amount)
 {
-	AddMovementInput(GetActorRightVector(), amount);
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), amount);
 }
 
 void ASurvivor::LookUp(float amount)

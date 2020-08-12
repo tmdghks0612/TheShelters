@@ -97,6 +97,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ALevelControl* LevelControl;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* SurvivorSkeletalMeshComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool RFlag = false;
 
