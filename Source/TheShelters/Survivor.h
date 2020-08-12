@@ -46,8 +46,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InitiateMap();
 
-
 	// Methods for playing game
+	UFUNCTION(BlueprintCallable)
 	void EndTurn();
 
 	// robot control functions
@@ -59,6 +59,13 @@ public:
 	bool ConsumeFood();
 	UFUNCTION(BlueprintCallable)
 	bool ConsumeWater();
+	UFUNCTION(BlueprintCallable)
+	float GetHunger(); 
+	UFUNCTION(BlueprintCallable)
+	float GetThirst();
+	UFUNCTION(BlueprintCallable)
+	float GetMental();
+
 
 	UFUNCTION()
 
@@ -99,6 +106,7 @@ public:
 	const int Thirst() const;
 	const double Mental() const;
 
+
 	// Setters
 	const int Hunger(const int diff);
 	const int Thirst(const int diff);
@@ -125,7 +133,9 @@ public:
 	void Turn(float amount);
 
 private:
-	int max = 100;
+	int maxHunger = 100;
+	int maxThirst = 100;
+	int maxMental = 100;
 	
 	int hungerRestoreAmount = 5;
 	int thirstRestoreAmount = 5;

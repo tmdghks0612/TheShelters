@@ -80,6 +80,10 @@ class THESHELTERS_API ALevelControl : public AActor
   // Use electricity if electricity is enough.
   UFUNCTION(BlueprintCallable)
   void UseElectricity();
+
+  UFUNCTION(BlueprintCallable)
+  float GetElectricityPercent();
+
   UFUNCTION(BlueprintCallable)
   void DoorSwitch(Direction d);
 
@@ -188,8 +192,13 @@ class THESHELTERS_API ALevelControl : public AActor
 
   // Electricity on panic room related variables
   int electricityUsage = 1;
-  float electricityDecreaseSpeed = 1.0f;
+  float electricityDecreaseSpeed = 0.05f;
+  
 
+  // maximum resources capacity
+  int maxElectricity = 100;
+  int maxFood = 50;
+  int maxWater = 100;
 
   // Panic Room related values
   int panicRoomId = 5;

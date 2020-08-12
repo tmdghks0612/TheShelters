@@ -83,7 +83,7 @@ void AMonster::ActiveAngry()
 
 void AMonster::EnterPanicRoom()
 {
-    // UE_LOG(LogTemp, Warning, TEXT("monster entered panic room!"));
+    UE_LOG(LogTemp, Warning, TEXT("monster entered panic room! You DIED!"));
 	IsCharge = false;
 	IsMoving = false;
     return;

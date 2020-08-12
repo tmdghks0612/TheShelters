@@ -78,6 +78,9 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 	PlayerInputComponent->BindAxis("LookUp", this, &ASurvivor::LookUp);
 	PlayerInputComponent->BindAxis("Turn", this, &ASurvivor::Turn);
 
+	hunger = 50;
+	thirst = 50;
+	mental = 100;
 }
 
 void ASurvivor::MoveForward(float amount)
@@ -127,6 +130,21 @@ bool ASurvivor::ConsumeWater()
 	else {
 		return false;
 	}
+}
+
+float ASurvivor::GetHunger()
+{
+	return (float)hunger / maxHunger * 1.0f;;
+}
+
+float ASurvivor::GetThirst()
+{
+	return (float)thirst / maxThirst * 1.0f;
+}
+
+float ASurvivor::GetMental()
+{
+	return (float)mental / maxMental * 1.0f;
 }
 
 // hunger, thirst intensify every turn
@@ -201,13 +219,13 @@ const double ASurvivor::Mental() const
 // Setters
 const int ASurvivor::Hunger(const int diff)
 {
-	StatSetter(hunger, diff, max);
+	StatSetter(hunger, diff, maxHunger);
 	return hunger;
 }
 
 const int ASurvivor::Thirst(const int diff)
 {
-	StatSetter(thirst, diff, max);
+	StatSetter(thirst, diff, maxThirst);
 	return thirst;
 }
 
@@ -215,7 +233,7 @@ const double ASurvivor::Mental(const double diff)
 {
 	mental += diff;
 	mental = std::max(0.0, mental);
-	mental = std::min(mental, static_cast<double>(max));
+	mental = std::min(mental, static_cast<double>(maxMental));
 	return mental;
 }
 

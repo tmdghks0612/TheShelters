@@ -497,6 +497,11 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+float ALevelControl::GetElectricityPercent()
+{
+	return GameMap[panicRoomId]->GetResources().electricity / maxElectricity * 100;
+}
+
 void ALevelControl::DoorSwitch(Direction d)
 {
     GameMap[panicRoomId]->SwitchDoor(d);
@@ -833,6 +838,15 @@ int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
 
 void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)
 {
+	if (electricity > maxElectricity) {
+		electricity = maxElectricity;
+	}
+	if (food > maxFood) {
+		food = maxFood;
+	}
+	if (water > maxWater) {
+		water = maxWater;
+	}
     GameMap[RoomId]->SetResources(food, water, electricity);
 }
 
