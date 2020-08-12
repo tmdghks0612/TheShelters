@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "Survivor.h"
 #include "RobotAniminstance.h"
-#include "RobotActor.h"
 #include "RobotPawn.h"
 #include "LevelControl.h"
 #include "GameFramework/Actor.h"
