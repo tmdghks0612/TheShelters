@@ -9,5 +9,3 @@ enum class Direction
     Down,
     None
 };
-
-const Direction OppositeDirection(const Direction d);
