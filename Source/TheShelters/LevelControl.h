@@ -4,19 +4,18 @@
 
 #include <algorithm>
 
-#include "Monster.fwd.h"
-#include "LevelControl.fwd.h"
-
 #include "Direction.h"
-#include "Room.h"
 #include "Door.h"
 #include "PanicRoomDoor.h"
 #include "DoorAnimInstance.h"
+#include "Monster.h"
+#include "Room.h"
 #include "RoomActor.h"
 
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "LevelControl.generated.h"
 
 class AMonster;
@@ -27,15 +26,15 @@ typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = AMonster class instance
 typedef TMap<int32, AMonster *> MonsterList;
 
+USTRUCT(BlueprintType)
+struct FResourceUI
+{
+    GENERATED_USTRUCT_BODY()
 
-USTRUCT(BlueprintType) 
-struct FResourceUI {
-	GENERATED_USTRUCT_BODY()
-	
-	UPROPERTY(BlueprintReadOnly)
-	int32 resourceType;
-	UPROPERTY(BlueprintReadOnly)
-	int32 resourceSize;
+    UPROPERTY(BlueprintReadOnly)
+    int32 resourceType;
+    UPROPERTY(BlueprintReadOnly)
+    int32 resourceSize;
 };
 
 /* << ALevelControl : AActor >>
@@ -101,14 +100,14 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION(BlueprintCallable)
   TArray<FResourceUI> GetRoomResourceUI();
   UFUNCTION(BlueprintCallable)
-  TArray<int> GetDoorUI();
+  TArray<DoorStatus> GetDoorUI();
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
     // Check if monster can enter panic room
     bool IsBlocked(int _monsterId);
-    //Check if Robot tries to access blocked room
-    bool IsRoomClosed(int roomNum, int direction); //For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
+    // Check if Robot tries to access blocked room
+    bool IsRoomClosed(int roomNum, int direction); // For RobotControl Usage. 1 = up, 2 = right, 3 = down, 4 = left
 
     // Functions to find something in GameMap
     URoom *FindRoomByLocation(const unsigned int x, const unsigned int y);
@@ -176,10 +175,10 @@ class THESHELTERS_API ALevelControl : public AActor
     TArray<AMonster *> monsterActors;
     Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
 
-  // Resource Room numbers
-  int maxFoodRoom = 3;
-  int maxWaterRoom = 3;
-  int maxElectricityRoom = 3;
+    // Resource Room numbers
+    int maxFoodRoom = 3;
+    int maxWaterRoom = 3;
+    int maxElectricityRoom = 3;
 
   UPROPERTY()
   TArray<int> foodRoomNum;
@@ -188,8 +187,8 @@ class THESHELTERS_API ALevelControl : public AActor
   UPROPERTY()
   TArray<int> electricityRoomNum;
 
-  // Special room minimum distance
-  int resourceRoomDistance = 5;
+    // Special room minimum distance
+    int resourceRoomDistance = 5;
 
   // Electricity on panic room related variables
   int electricityUsage = 1;
@@ -242,4 +241,20 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION(BlueprintCallable)
   int GetMaxHeight();
 
+  public:
+    // Get/Set functions
+    UFUNCTION(BlueprintCallable)
+    TArray<int32> GetCCTVRoomNum();
+
+    UFUNCTION()
+    int ResourceCheckByRobot(int RoomId, int Type);
+    UFUNCTION()
+    void SetRoomResources(int RoomId, int food, int water, int electricity);
+    UFUNCTION()
+    void RobotCheck(int RoomId);
+
+    UFUNCTION(BlueprintCallable)
+    int GetMaxWidth();
+    UFUNCTION(BlueprintCallable)
+    int GetMaxHeight();
 };

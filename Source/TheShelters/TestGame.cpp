@@ -47,27 +47,27 @@ void ALevelControl::TestScenario(FString _LevelString)
 
     InitGame(10, 10, _LevelString);
 
-    InsertMonster(DefaultMonster, 0, 0); // Monster 1: 0, 4
-    InsertMonster(DefaultMonster, 1, 3); // Monster 2: 1, 3
+    InsertMonster(MonsterType::Ghoul, 0, 4); // Monster 1: 0, 4
+    InsertMonster(MonsterType::Ghoul, 1, 3); // Monster 2: 1, 3
 
     result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;
     PrintTestMessage(TEXT("InsertMonster"), 1, result);
 
-    MoveMonster(1, Left);  // Monster 1: 0, 3
-    MoveMonster(2, Right); // Monster 2: 1, 4
+    MoveMonster(1, Direction::Left);  // Monster 1: 0, 3
+    MoveMonster(2, Direction::Right); // Monster 2: 1, 4
 
-	/*MoveMonster(1, Left);  // Monster 1: 0, 3
-	MoveMonster(2, Right); // Monster 2: 1, 4*/
+    /*MoveMonster(1, Left);  // Monster 1: 0, 3
+    MoveMonster(2, Right); // Monster 2: 1, 4*/
 
     result = GameMap[13]->MonsterId() == 0 && GameMap[14]->MonsterId() == 2;
     PrintTestMessage(TEXT("MonsterMovement"), 2, result);
 
     URoom *room = FindRoomByLocation(3, 3);
-    room->CloseDoor(Left);
-    result = GameMap[33]->GetDoor(Left)->Status() == DoorStatusClose;
+    room->CloseDoor(Direction::Left);
+    result = GameMap[33]->GetDoor(Direction::Left)->Status() == DoorStatus::Close;
     PrintTestMessage(TEXT("CloseDoor"), 1, result);
 
-    result = GameMap[32]->GetDoor(Right)->Status() == DoorStatusClose;
+    result = GameMap[32]->GetDoor(Direction::Right)->Status() == DoorStatus::Close;
     PrintTestMessage(TEXT("CloseDoor"), 2, result);
 
     /*result = survivorStat->Food() == 100;
@@ -101,7 +101,7 @@ void ALevelControl::TestScenario(FString _LevelString)
     result = survivorStat->Mental() == 57.98;
     PrintTestMessage(TEXT("SurvivorStatSecondEndTurn"), 3, result);*/
 
-    result = GameMap[77]->GetDoor(Right)->Status() == DoorStatusClose;
+    result = GameMap[77]->GetDoor(Direction::Right)->Status() == DoorStatus::Close;
     PrintTestMessage(TEXT("LevelStringTest"), 2, result);
 
     UE_LOG(LogTemp, Warning, TEXT("***[SUCCESS: %d FAIL: %d]"), testResult[true], testResult[false])

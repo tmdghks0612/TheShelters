@@ -27,7 +27,7 @@ AMonster::AMonster()
     }
 	MonsterSkeletalMeshComponent->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
-	if (monsterType == DefaultMonster) {
+	if (monsterType == MonsterType::Ghoul) {
 		static ConstructorHelpers::FClassFinder<UAnimInstance> GHOUL_ANIM(TEXT("/Game/MonsterBP/GhoulAnimationBP.GhoulAnimationBP_C"));
 		if (GHOUL_ANIM.Succeeded())
 		{
@@ -146,7 +146,7 @@ void AMonster::InitMonster(MonsterType t, int _monsterId)
 {
     monsterId = _monsterId;
 
-    if (t == DefaultMonster)
+    if (t == MonsterType::Ghoul)
     {
         radioactive = false;
         emp = false;
@@ -154,7 +154,7 @@ void AMonster::InitMonster(MonsterType t, int _monsterId)
         speed = 1;
     }
 
-    prevDirection = NoDirection;
+    prevDirection = Direction::None;
 }
 
 const int AMonster::MonsterId() const

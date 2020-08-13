@@ -1,7 +1,5 @@
 #include "Door.h"
 #include "Room.h"
-#include "ctime"
-#include "stdio.h"
 
 unsigned int ADoor::nextId = 1;
 
@@ -31,12 +29,12 @@ void ADoor::InitDoor(URoom *roomA, URoom *roomB, TEnumAsByte<DoorStatus> s)
 
 void ADoor::Open()
 {
-    status = DoorStatusOpen;
+    status = DoorStatus::Open;
 }
 
 void ADoor::Close()
 {
-    status = DoorStatusClose;
+    status = DoorStatus::Close;
 }
 
 

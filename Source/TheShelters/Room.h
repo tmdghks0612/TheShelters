@@ -11,19 +11,9 @@
 #include "Room.generated.h"
 class URoom;
 
-enum RoomType
-{
-    None,
-    Food,
-    Water,
-    Electricity
-};
+UENUM() enum class RoomType { None, Food, Water, Electricity };
 
-enum RoomStatus
-{
-    Peaceful,
-    Dangerous
-};
+UENUM() enum class RoomStatus { Peaceful, Dangerous };
 
 typedef struct
 {
@@ -102,7 +92,7 @@ class THESHELTERS_API URoom : public UObject
     RoomStatus roomStatus;
     bool isKnown;
     UPROPERTY()
-    TArray<ADoor *> doors;
+    TMap<Direction, ADoor *> doors;
 
     // Resource properties
     int resourceThreshold = 5;

@@ -1,15 +1,17 @@
 #pragma once
+
 #include "CoreMinimal.h"
 #include "Engine/StaticMeshActor.h"
+
 #include "Door.generated.h"
 
 class URoom;
 
-UENUM()
-enum DoorStatus
+UENUM(BlueprintType)
+enum class DoorStatus : uint8
 {
-    DoorStatusOpen,
-    DoorStatusClose
+    Open,
+    Close
 };
 
 UCLASS()
