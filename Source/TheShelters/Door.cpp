@@ -41,14 +41,14 @@ void ADoor::Close()
 void ADoor::SwitchStatus()
 {
     
-    if (status == DoorStatusOpen)
+    if (status == DoorStatus::Open)
     {
-        status = DoorStatusClose;
+        status = DoorStatus::Close;
         UE_LOG(LogTemp, Warning, TEXT("closed"));
     }
-    else if (status == DoorStatusClose)
+    else if (status == DoorStatus::Close)
     {
-        status = DoorStatusOpen;
+        status = DoorStatus::Open;
     }
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM()
-enum class Direction
+enum class Direction:uint8
 {
     Left,
     Up,
