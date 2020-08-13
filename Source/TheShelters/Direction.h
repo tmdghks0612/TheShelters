@@ -1,11 +1,11 @@
 #pragma once
 
 UENUM()
-enum Direction
+enum class Direction
 {
-	Left,
-	Up,
-	Right,
-	Down,
-	NoDirection = 99
+    Left,
+    Up,
+    Right,
+    Down,
+    None
 };

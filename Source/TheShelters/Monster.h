@@ -2,22 +2,18 @@
 
 #pragma once
 
-#include "Monster.fwd.h"
-#include "LevelControl.fwd.h"
-
-#include "MonsterAnimInstance.h"
 #include "Direction.h"
+#include "MonsterAnimInstance.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Monster.generated.h"
 
+class ALevelControl;
+
 // MonsterType determines MonsterProperty values and movement speed
-enum MonsterType
-{
-    DefaultMonster
-};
+UENUM() enum class MonsterType { Ghoul, Grima };
 
 // MonsterProperty <radioactive, emp, armorpierce>
 typedef TTuple<bool, bool, bool> MonsterProperty;
@@ -54,25 +50,25 @@ class THESHELTERS_API AMonster : public APawn
     AMonster();
 
     // Initializers
-	void InitMonster(MonsterType t, int _monsterId);
-	void InitMonsterActor(class ALevelControl* _LevelControl, int _monsterId, MonsterType _monsterType);
-	void MoveTo(FVector destination);
+    void InitMonster(MonsterType t, int _monsterId);
+    void InitMonsterActor(class ALevelControl *_LevelControl, int _monsterId, MonsterType _monsterType);
+    void MoveTo(FVector destination);
 
     // PanicRoom related methods
-	UFUNCTION(BlueprintCallable)
-	void ChargePanicRoom();
+    UFUNCTION(BlueprintCallable)
+    void ChargePanicRoom();
 
-	void RestoreAngry();
-	void ActiveAngry();
+    void RestoreAngry();
+    void ActiveAngry();
 
-	UFUNCTION(BlueprintCallable)
-	void EnterPanicRoom();
+    UFUNCTION(BlueprintCallable)
+    void EnterPanicRoom();
 
-	UFUNCTION(BlueprintCallable)
-	bool IsDoorOpen();
+    UFUNCTION(BlueprintCallable)
+    bool IsDoorOpen();
 
-	UFUNCTION(BlueprintCallable)
-	void StopCharge();
+    UFUNCTION(BlueprintCallable)
+    void StopCharge();
 
     // Getters and Setters
     const int MonsterId() const;
@@ -91,32 +87,32 @@ class THESHELTERS_API AMonster : public APawn
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     USkeletalMeshComponent *MonsterSkeletalMeshComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMonsterAnimInstance* MonsterAnimInstance;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UMonsterAnimInstance *MonsterAnimInstance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsAngry = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsMoving = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsMoving = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsCharge = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsCharge = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float velocity = 20.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float velocity = 20.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ChargeDelay = 2.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float ChargeDelay = 2.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector chargeDirection;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector chargeDirection;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector destination;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector destination;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector chargeLocation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FVector chargeLocation;
 
   protected:
     // Called when the game starts or when spawned

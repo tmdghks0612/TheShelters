@@ -18,17 +18,13 @@ void URoom::InitRoom(int num)
     monsterId = 0;
     roomId = num;
     cctv = false;
-    roomStatus = Peaceful;
-	isKnown = false;
-    /*ADoor* temp = nullptr;
-    ADoor* temp1 = nullptr;
-    ADoor* temp2 = nullptr;
-    ADoor* temp3 = nullptr;
-    */
-    doors.Add(nullptr);
-    doors.Add(nullptr);
-    doors.Add(nullptr);
-    doors.Add(nullptr);
+    roomStatus = RoomStatus::Peaceful;
+    isKnown = false;
+
+    doors.Add(Direction::Left, nullptr);
+    doors.Add(Direction::Right, nullptr);
+    doors.Add(Direction::Up, nullptr);
+    doors.Add(Direction::Down, nullptr);
 }
 
 // Getters and Setters
@@ -46,10 +42,10 @@ ADoor *URoom::GetDoor(const Direction d)
 }
 URoom *URoom::BeyondDoor(const Direction d)
 {
-    //FILE* f;
-    //f = fopen("D:\\trial.txt", "a+");
-    //fprintf(f, "RoomId: %d Direction: %d ", roomId, d);
-    //fclose(f);
+    // FILE* f;
+    // f = fopen("D:\\trial.txt", "a+");
+    // fprintf(f, "RoomId: %d Direction: %d ", roomId, d);
+    // fclose(f);
     return doors[d]->GetBeyond(this);
 }
 
@@ -79,7 +75,7 @@ void URoom::DeleteMonster()
 
 Resource URoom::GetResources()
 {
-	return resources;
+    return resources;
 }
 
 void URoom::SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity)
@@ -92,34 +88,36 @@ void URoom::SetResources(unsigned int _food, unsigned int _water, unsigned int _
 
 void URoom::InitResources(RoomType _roomType)
 {
-	resources.food = rand() % resourceThreshold;
-	resources.water = rand() % resourceThreshold;
-	resources.electricity = rand() % resourceThreshold;
+    resources.food = rand() % resourceThreshold;
+    resources.water = rand() % resourceThreshold;
+    resources.electricity = rand() % resourceThreshold;
 
-/*
-	// test code
-	isKnown = Known;*/
-	if (_roomType == Food) {
-		// test code
-		isKnown = true;
-		resources.food += resourceThreshold;
-	}
-	else if (_roomType == Water) {
-		// test code
-		isKnown = true;
-		resources.water += resourceThreshold;
-
-	}
-	else if (_roomType == Electricity) {
-		// test code
-		isKnown = true;
-		resources.electricity += resourceThreshold;
-	}
+    /*
+        // test code
+        isKnown = Known;*/
+    if (_roomType == RoomType::Food)
+    {
+        // test code
+        isKnown = true;
+        resources.food += resourceThreshold;
+    }
+    else if (_roomType == RoomType::Water)
+    {
+        // test code
+        isKnown = true;
+        resources.water += resourceThreshold;
+    }
+    else if (_roomType == RoomType::Electricity)
+    {
+        // test code
+        isKnown = true;
+        resources.electricity += resourceThreshold;
+    }
 }
 
 bool URoom::isDiscovered()
 {
-	return isKnown;
+    return isKnown;
 }
 
 void URoom::SetisKnown(bool _check)
@@ -131,4 +129,3 @@ void URoom::Radiated()
 {
     UE_LOG(LogTemp, Warning, TEXT("radiated"));
 }
-
