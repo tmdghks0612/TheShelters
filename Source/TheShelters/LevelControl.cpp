@@ -373,7 +373,7 @@ void ALevelControl::SpawnDoorMesh(int roomNum)
     {
         UE_LOG(LogTemp, Warning, TEXT("Attemp to generate Panic Room Door"));
         PanicRoomDoorList.Add(world->SpawnActor<APanicRoomDoor>(PanicRoomDoor, spawnLocationRight, rotatorLeft, spawnParams));
-		DoorSwitch(Up);
+		DoorSwitch(Direction::Up);
     }
     else if (GameMap[roomNum]->GetDoor(Direction::Right) != nullptr &&
         GameMap[roomNum]->GetDoor(Direction::Right)->Status() == DoorStatus::Open)
@@ -527,7 +527,7 @@ float ALevelControl::GetElectricityPercent()
 void ALevelControl::DoorSwitch(Direction d)
 {
     GameMap[panicRoomId]->SwitchDoor(d);
-    PanicRoomDoorList[d]->SetDoor();
+    PanicRoomDoorList[(uint8)d]->SetDoor();
     
 }
 

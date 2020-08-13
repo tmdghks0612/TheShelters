@@ -240,21 +240,4 @@ class THESHELTERS_API ALevelControl : public AActor
   int GetMaxWidth();
   UFUNCTION(BlueprintCallable)
   int GetMaxHeight();
-
-  public:
-    // Get/Set functions
-    UFUNCTION(BlueprintCallable)
-    TArray<int32> GetCCTVRoomNum();
-
-    UFUNCTION()
-    int ResourceCheckByRobot(int RoomId, int Type);
-    UFUNCTION()
-    void SetRoomResources(int RoomId, int food, int water, int electricity);
-    UFUNCTION()
-    void RobotCheck(int RoomId);
-
-    UFUNCTION(BlueprintCallable)
-    int GetMaxWidth();
-    UFUNCTION(BlueprintCallable)
-    int GetMaxHeight();
 };
