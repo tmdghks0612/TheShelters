@@ -35,7 +35,7 @@ ARobotPawn::ARobotPawn()
 		//RobotSkeletalMeshComponent->SetAnimClass(ROBOT_ANIM.Class);
 	}
 	Destination = GetActorLocation();
-	speed = 8;
+	speed = 1000;
 	UpdateDestinationFlag = false;
 }
 
@@ -55,12 +55,12 @@ void ARobotPawn::Tick(float DeltaTime)
 	
 	Dir = Destination - GetActorLocation();
 	double len = sqrt(Dir.X * Dir.X + Dir.Y * Dir.Y + Dir.Z * Dir.Z);
-	if (len > 8)
+	if (len > 15)
 	{
 		UpdateDestinationFlag = false;
 		temp = Dir;
 		temp.Normalize();
-		temp = temp * speed + GetActorLocation();
+		temp = temp * speed * DeltaTime + GetActorLocation();
 		SetActorLocation(temp);
 		//SetActorRotation(temp.Rotation().Quaternion());
 	}

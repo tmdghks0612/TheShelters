@@ -6,10 +6,12 @@
 
 #include "Direction.h"
 #include "Door.h"
+#include "PanicRoomDoor.h"
+#include "DoorAnimInstance.h"
 #include "Monster.h"
 #include "Room.h"
 #include "RoomActor.h"
-#include "SurvivorStat.h"
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -17,6 +19,7 @@
 #include "LevelControl.generated.h"
 
 class AMonster;
+
 
 // key = monsterId, value = roomNum of the room monster is in
 typedef TMap<int32, int32> MonsterLocationList;
@@ -57,28 +60,47 @@ class THESHELTERS_API ALevelControl : public AActor
     ALevelControl();
     void InitGame(const unsigned int m, const unsigned int n, FString _LevelString);
 
-    // Blueprint Callable Functions
-    UFUNCTION(BlueprintCallable)
-    void TestScenario(FString _LevelString); // For test
-    UFUNCTION(BlueprintCallable)
-    void EndTurn();
-    UFUNCTION(BlueprintCallable)
-    void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
-    UFUNCTION(BlueprintCallable)
-    void SelectCCTV();
-    UFUNCTION(BlueprintCallable)
-    void RestoreZap(AActor *_ZapPlane);
-    UFUNCTION(BlueprintCallable)
-    void InitDoorMesh();
-    UFUNCTION(BlueprintCallable)
-    void InitVisibleRoom();
-    UFUNCTION(BlueprintCallable)
-    bool CheckPanicRoom(int _monsterId);
+  // Blueprint Callable Functions
+  UFUNCTION(BlueprintCallable)
+  void TestScenario(FString _LevelString); // For test
+  UFUNCTION(BlueprintCallable)
+  void EndTurn();
+  UFUNCTION(BlueprintCallable)
+  void InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors);
+  UFUNCTION(BlueprintCallable)
+  void SelectCCTV();
+  UFUNCTION(BlueprintCallable)
+  void RestoreZap(AActor *_ZapPlane);
+  UFUNCTION(BlueprintCallable)
+  void InitDoorMesh();
+  UFUNCTION(BlueprintCallable)
+  void InitVisibleRoom();
+  UFUNCTION(BlueprintCallable)
+  bool CheckPanicRoom(int _monsterId);
+  // Use electricity if electricity is enough.
+  UFUNCTION(BlueprintCallable)
+  void UseElectricity();
 
-    UFUNCTION(BlueprintCallable)
-    TArray<FResourceUI> GetRoomResourceUI();
-    UFUNCTION(BlueprintCallable)
-    TArray<DoorStatus> GetDoorUI();
+  UFUNCTION(BlueprintCallable)
+  float GetElectricityPercent();
+
+  UFUNCTION(BlueprintCallable)
+  void DoorSwitch(Direction d);
+
+  UFUNCTION(BlueprintCallable)
+  int GetPanicRoomFood();
+  UFUNCTION(BlueprintCallable)
+  int GetPanicRoomWater();
+
+  UFUNCTION(BlueprintCallable)
+  void SetPanicRoomFood(int _value);
+  UFUNCTION(BlueprintCallable)
+  void SetPanicRoomWater(int _value);
+
+  UFUNCTION(BlueprintCallable)
+  TArray<FResourceUI> GetRoomResourceUI();
+  UFUNCTION(BlueprintCallable)
+  TArray<DoorStatus> GetDoorUI();
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -102,6 +124,9 @@ class THESHELTERS_API ALevelControl : public AActor
     // Move the given mosnter's location to the direction d.
     bool MoveMonster(int monsterId, Direction d);
 
+	// Check if electricity is enough to use on panic room. return true if enough, otherwise false
+	bool IsElectricityEnough();
+
     // cctv room number array and its zap planes accordingly
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<int32> CCTVRoomNum;
@@ -116,22 +141,27 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<TSubclassOf<ADoor>> DoorActor;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<APanicRoomDoor> PanicRoomDoor;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomActor;
 
-    // To show in blueprint
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-    TArray<URoom *> GameMap;
+    TArray <APanicRoomDoor*> PanicRoomDoorList;
 
   protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
   private:
+
+	// To show in blueprint
+	UPROPERTY()
+	TArray<URoom *> GameMap;
+
     // Initializers
     void InitRooms();
     void InitMap(FString LevelString);
     void InitPanicRoom(); // Must call after InitRooms
-    void InitSurvivorStat();
 
     // spawn room mesh for visible rooms
     void SpawnRoomMesh(int roomNum);
@@ -141,6 +171,7 @@ class THESHELTERS_API ALevelControl : public AActor
     MonsterList monsters;
     MonsterLocationList monsterLocations;
     int nextMonsterId = 1;
+    UPROPERTY()
     TArray<AMonster *> monsterActors;
     Direction ChooseWeightedRandomDirection(TMap<Direction, int32> weights);
 
@@ -149,15 +180,28 @@ class THESHELTERS_API ALevelControl : public AActor
     int maxWaterRoom = 3;
     int maxElectricityRoom = 3;
 
-    TArray<int> foodRoomNum;
-    TArray<int> waterRoomNum;
-    TArray<int> electricityRoomNum;
+  UPROPERTY()
+  TArray<int> foodRoomNum;
+  UPROPERTY()
+  TArray<int> waterRoomNum;
+  UPROPERTY()
+  TArray<int> electricityRoomNum;
 
     // Special room minimum distance
     int resourceRoomDistance = 5;
 
-    // Panic Room related values
-    int panicRoomId = 5;
+  // Electricity on panic room related variables
+  int electricityUsage = 1;
+  float electricityDecreaseSpeed = 0.05f;
+  
+
+  // maximum resources capacity
+  int maxElectricity = 100;
+  int maxFood = 50;
+  int maxWater = 100;
+
+  // Panic Room related values
+  int panicRoomId = 5;
 
     bool MyContains(int input_num);
     bool IsNextPanicRoom(int roomNumber);
@@ -171,15 +215,31 @@ class THESHELTERS_API ALevelControl : public AActor
     float interval = 1400.0f;
 
     // Event flag
+    UPROPERTY()
     TMap<FString, bool> eventFlag;
 
-    // Player related values
-    USurvivorStat *survivorStat;
+  // For test and debugging
+  UPROPERTY()
+  TMap<bool, int32> testResult;
+  void PrintMap();
+  void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
 
-    // For test and debugging
-    TMap<bool, int32> testResult;
-    void PrintMap();
-    void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+ public:
+  // Get/Set functions
+  UFUNCTION(BlueprintCallable)
+  TArray<int32> GetCCTVRoomNum();
+
+  UFUNCTION()
+  int ResourceCheckByRobot(int RoomId, int Type);
+  UFUNCTION()
+  void SetRoomResources(int RoomId, int food, int water, float electricity);
+  UFUNCTION()
+  void RobotCheck(int RoomId);
+
+  UFUNCTION(BlueprintCallable)
+  int GetMaxWidth();
+  UFUNCTION(BlueprintCallable)
+  int GetMaxHeight();
 
   public:
     // Get/Set functions

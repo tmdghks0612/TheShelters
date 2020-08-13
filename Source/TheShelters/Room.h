@@ -19,7 +19,7 @@ typedef struct
 {
     unsigned int food;
     unsigned int water;
-    unsigned int electricity;
+    float electricity;
 } Resource;
 
 typedef struct
@@ -63,16 +63,20 @@ class THESHELTERS_API URoom : public UObject
     ADoor *GetDoor(const Direction d);
     URoom *BeyondDoor(const Direction d);
 
+    void SwitchDoor(const Direction d);
     void SetDoor(const Direction d, ADoor *door);
     void OpenDoor(const Direction d);
     void CloseDoor(const Direction d);
     void InsertMonster(int newMonsterId);
     void DeleteMonster();
 
-    Resource GetResources();
-    void SetResources(unsigned int _food, unsigned int _water, unsigned int _electricity);
-    void InitResources(RoomType _roomType);
-    bool isDiscovered();
+	Resource GetResources();
+    void SetResources(unsigned int _food, unsigned int _water, float _electricity);
+	void SetFood(unsigned int _food);
+	void SetWater(unsigned int _water);
+	void SetElectricity(float _electricity);
+	void InitResources(RoomType _roomType);
+	bool isDiscovered();
 
     void SetisKnown(bool _check);
 

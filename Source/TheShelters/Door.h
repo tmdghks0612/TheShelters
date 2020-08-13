@@ -23,21 +23,30 @@ class THESHELTERS_API ADoor : public AStaticMeshActor
     ADoor();
     ~ADoor();
 
-    void InitDoor(URoom *roomA, URoom *roomB, DoorStatus s);
+    UFUNCTION()
+    void InitDoor(URoom *roomA, URoom *roomB, TEnumAsByte<DoorStatus> s);
 
+    UFUNCTION()
     void Open();
+
+    UFUNCTION()
     void Close();
 
+    UFUNCTION()
     URoom *GetBeyond(URoom *room);
 
+    UFUNCTION()
+    void SwitchStatus();
+
     const unsigned int Id();
-    const DoorStatus Status() const;
+    const TEnumAsByte<DoorStatus> Status() const;
 
   private:
     UPROPERTY()
     TArray<URoom *> connectedRooms;
 
-    DoorStatus status;
+    UPROPERTY(EditAnywhere)
+    TEnumAsByte<DoorStatus> status;
     unsigned int id;
     static unsigned int nextId;
 };

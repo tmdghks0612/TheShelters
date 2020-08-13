@@ -60,7 +60,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotRoot")
 	USceneComponent* Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotActor")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RobotPawn")
 	USkeletalMesh* RobotSkeletalMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
