@@ -6,13 +6,12 @@
 #include "CoreMinimal.h"
 #include "Survivor.h"
 #include "RobotAniminstance.h"
-#include "RobotActor.h"
 #include "RobotPawn.h"
 #include "LevelControl.h"
 #include "GameFramework/Actor.h"
 #include "RobotControl.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPrintUIDelegate);
 
 UCLASS()
 class THESHELTERS_API ARobotControl : public AActor
@@ -47,12 +46,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	ALevelControl* LevelControl;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<int> visited;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URobotAniminstance* Anim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray <AMonster*> Monsters;
-
+		
 
 	//Get Input From survivor and make route for robot to move
 	UFUNCTION()
@@ -89,11 +91,16 @@ public:
 
 	//survivor, monster, LevelControl finder
 	UFUNCTION(BlueprintCallable)
-	void FindLevelControl(TArray<ALevelControl*> _LevelControl);
+	void FindLevelControl(ALevelControl* _LevelControl);
 	UFUNCTION(BlueprintCallable)
-    void GiveAddress(TArray<ASurvivor*> _List);
+    void GiveAddress(ASurvivor* _Survivor);
 	UFUNCTION(BlueprintCallable)
 	void GetMonsters(TArray<AMonster*> _Monsters);
+	UFUNCTION(BlueprintCallable)
+	TArray<int> GetVisited();
+	
+	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
+	FPrintUIDelegate PrintUI;
 
 protected:
 	// Called when the game starts or when spawned
@@ -106,7 +113,6 @@ protected:
 	Resource PanicRoomResources;
 	TArray<int> SearchData;
 	TArray<int> route;
-    TArray<int> visited;
 	float startX = 4000.0f;
 	float startY = 0.0f;
 	float startZ = 200.0f;

@@ -59,9 +59,9 @@ void ARobotControl::Tick(float DeltaTime)
     }
 }
 
-void ARobotControl::GiveAddress(TArray<ASurvivor*> _List)
+void ARobotControl::GiveAddress(ASurvivor* _Survivor)
 {
-    _List[0]->InitRobots(this);
+    _Survivor->InitRobots(this);
 }
 
 void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
@@ -71,6 +71,11 @@ void ARobotControl::GetMonsters(TArray<AMonster*> _Monsters)
     {
         Monsters.Add(_Monsters[i]);
     }
+}
+
+TArray<int> ARobotControl::GetVisited()
+{
+	return visited;
 }
 
 void ARobotControl::MapLeft()
@@ -308,7 +313,6 @@ void ARobotControl::PrintMap()
                 line += TEXT("1 ");
             }
         }
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
     }
     for (int i = 0; i < route.Num(); i++)
     {
@@ -316,12 +320,13 @@ void ARobotControl::PrintMap()
         args.Add(FStringFormatArg(route[i]));
         rou += FString::Format(TEXT("{0} "), args);
     }
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *rou);
+
+	PrintUI.Broadcast();
 }
 
-void ARobotControl::FindLevelControl(TArray<ALevelControl*> _LevelControl)
+void ARobotControl::FindLevelControl(ALevelControl* _LevelControl)
 {
-    LevelControl = _LevelControl[0];
+    LevelControl = _LevelControl;
 }
 
 void ARobotControl::DetectMonster()

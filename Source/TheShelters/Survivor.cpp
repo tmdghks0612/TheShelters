@@ -10,7 +10,12 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
-
+#define StatSetter(x, y, z)                                                                                            \
+    {                                                                                                                  \
+        (x) += (y);                                                                                                    \
+        (x) = std::max(0, (x));                                                                                        \
+        (x) = std::min((x), (z));                                                                                      \
+    }
 // Sets default values
 ASurvivor::ASurvivor()
 {
@@ -26,6 +31,9 @@ ASurvivor::ASurvivor()
 
     CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
     CameraComp->SetupAttachment(SpringArmComp);
+
+	SurvivorSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SurvivorSkeletalMeshComponent->SetupAttachment(RootComponent);
 
     MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
     MeshComp->SetupAttachment(RootComponent);
@@ -66,7 +74,172 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
     PlayerInputComponent->BindAction("MapUp", IE_Pressed, this, &ASurvivor::RobotMapUp);
     PlayerInputComponent->BindAction("MapDown", IE_Pressed, this, &ASurvivor::RobotMapDown);
     PlayerInputComponent->BindAction("Enter", IE_Pressed, this, &ASurvivor::RobotStart);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &ASurvivor::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ASurvivor::MoveRight);
+
+	PlayerInputComponent->BindAxis("LookUp", this, &ASurvivor::LookUp);
+	PlayerInputComponent->BindAxis("Turn", this, &ASurvivor::Turn);
+
+	hunger = 50;
+	thirst = 50;
+	mental = 100;
 }
+
+void ASurvivor::MoveForward(float amount)
+{
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::X), amount);
+}
+
+void ASurvivor::MoveRight(float amount)
+{
+	AddMovementInput(FRotationMatrix(GetControlRotation()).GetUnitAxis(EAxis::Y), amount);
+}
+
+void ASurvivor::LookUp(float amount)
+{
+	AddControllerPitchInput(amount);
+}
+
+void ASurvivor::Turn(float amount)
+{
+	AddControllerYawInput(amount);
+}
+
+// resource managing functions
+
+// restore hunger / thirst on consuming food / water
+bool ASurvivor::ConsumeFood()
+{
+	int current_food = LevelControl->GetPanicRoomFood();
+	if (current_food > 0) {
+		LevelControl->SetPanicRoomFood(current_food - 1);
+		Hunger(hungerRestoreAmount);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool ASurvivor::ConsumeWater()
+{
+	int current_water = LevelControl->GetPanicRoomWater();
+	if (current_water > 0) {
+		LevelControl->SetPanicRoomWater(current_water - 1);
+		Thirst(thirstRestoreAmount);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+float ASurvivor::GetHunger()
+{
+	return (float)hunger / maxHunger * 1.0f;;
+}
+
+float ASurvivor::GetThirst()
+{
+	return (float)thirst / maxThirst * 1.0f;
+}
+
+float ASurvivor::GetMental()
+{
+	return (float)mental / maxMental * 1.0f;
+}
+
+// hunger, thirst intensify every turn
+void ASurvivor::ResourceNeedPerTurn()
+{
+	Hunger(-hungerPerTurn);
+	Thirst(-thirstPerTurn);
+}
+
+// called on GameControl EndTurn to change survivor's stat every turn
+void ASurvivor::EndTurn()
+{
+	double mentalMultiplier = MentalMultiplier();
+	// Consume food and water
+	ResourceNeedPerTurn();
+
+	// Change mental
+	double mentalDiff = 1 * mentalMultiplier;
+	Mental(mentalDiff);
+}
+
+// calculates mental multiplier according to current hunger and thirst
+const double ASurvivor::MentalMultiplier() const
+{
+	double hungerMultiplier, thirstMultiplier;
+	if (this->hunger < 30)
+	{
+		hungerMultiplier = (std::log(this->hunger + 1) / std::log(31.0)) - 2;
+	}
+	else if (this->hunger > 60)
+	{
+		hungerMultiplier = std::log(this->hunger - 59) / std::log(41) + 1;
+	}
+	else
+	{
+		hungerMultiplier = (this->hunger / 15.0) - 3;
+	}
+
+	if (this->thirst < 30)
+	{
+		thirstMultiplier = (std::log(this->thirst + 1) / std::log(31.0)) - 2;
+	}
+	else if (this->thirst > 60)
+	{
+		thirstMultiplier = std::log(this->thirst - 59) / std::log(41) + 1;
+	}
+	else
+	{
+		thirstMultiplier = (this->thirst / 15.0) - 3;
+	}
+
+	return round((hungerMultiplier + thirstMultiplier) * 100.0) / 100.0;
+}
+
+// Getter
+const int ASurvivor::Hunger() const
+{
+	return this->hunger;
+}
+
+const int ASurvivor::Thirst() const
+{
+	return this->thirst;
+}
+
+const double ASurvivor::Mental() const
+{
+	return this->mental;
+}
+
+
+// Setters
+const int ASurvivor::Hunger(const int diff)
+{
+	StatSetter(hunger, diff, maxHunger);
+	return hunger;
+}
+
+const int ASurvivor::Thirst(const int diff)
+{
+	StatSetter(thirst, diff, maxThirst);
+	return thirst;
+}
+
+const double ASurvivor::Mental(const double diff)
+{
+	mental += diff;
+	mental = std::max(0.0, mental);
+	mental = std::min(mental, static_cast<double>(maxMental));
+	return mental;
+}
+
 
 // Change Camera angle to infront of map + initiate flag for mapping
 void ASurvivor::InitiateMap()
@@ -85,6 +258,11 @@ void ASurvivor::RobotStart()
 void ASurvivor::InitRobots(ARobotControl *_Robot)
 {
     Robot = _Robot;
+}
+
+void ASurvivor::FindLevelControl(ALevelControl * _LevelControl)
+{
+	LevelControl = _LevelControl;
 }
 
 void ASurvivor::RobotMapRight()

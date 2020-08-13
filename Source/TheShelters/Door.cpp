@@ -10,7 +10,7 @@ ADoor::~ADoor()
 {
 }
 
-void ADoor::InitDoor(URoom *roomA, URoom *roomB, DoorStatus s)
+void ADoor::InitDoor(URoom *roomA, URoom *roomB, TEnumAsByte<DoorStatus> s)
 {
     if (connectedRooms.Num() != 0)
         throw "Door is not empty, Cannot initialize...";
@@ -37,6 +37,21 @@ void ADoor::Close()
     status = DoorStatus::Close;
 }
 
+
+void ADoor::SwitchStatus()
+{
+    
+    if (status == DoorStatusOpen)
+    {
+        status = DoorStatusClose;
+        UE_LOG(LogTemp, Warning, TEXT("closed"));
+    }
+    else if (status == DoorStatusClose)
+    {
+        status = DoorStatusOpen;
+    }
+}
+
 URoom *ADoor::GetBeyond(URoom *room)
 {
     
@@ -61,7 +76,7 @@ const unsigned int ADoor::Id()
     return id;
 }
 
-const DoorStatus ADoor::Status() const
+const TEnumAsByte<DoorStatus> ADoor::Status() const
 {
     return status;
 }
