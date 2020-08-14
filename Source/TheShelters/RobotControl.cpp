@@ -78,9 +78,14 @@ TArray<int> ARobotControl::GetVisited()
 	return visited;
 }
 
+void ARobotControl::UIUpdate()
+{
+
+}
+
 void ARobotControl::MapLeft()
 {
-    if (LevelControl->IsRoomClosed(currentLocation, 2))
+    if (!isMoving && LevelControl->IsRoomClosed(currentLocation, 2))
     {
         if (currentLocation % 10 != 9)
         {
@@ -102,12 +107,12 @@ void ARobotControl::MapLeft()
             }
         }
     }
-    PrintMap();
+    PrintUI.Broadcast();
 }
 
 void ARobotControl::MapRight()
 {
-    if (LevelControl->IsRoomClosed(currentLocation, 4))
+    if (!isMoving && LevelControl->IsRoomClosed(currentLocation, 4))
     {
         if (currentLocation % 10 != 0)
         {
@@ -129,12 +134,12 @@ void ARobotControl::MapRight()
             }
         }
     }
-    PrintMap();
+    PrintUI.Broadcast();
 }
 
 void ARobotControl::MapDown()
 {
-    if (LevelControl->IsRoomClosed(currentLocation, 1))
+    if (!isMoving && LevelControl->IsRoomClosed(currentLocation, 1))
     {
         if (currentLocation / 10 != 0)
         {
@@ -156,12 +161,12 @@ void ARobotControl::MapDown()
             }
         }
     }
-    PrintMap();
+    PrintUI.Broadcast();
 }
 
 void ARobotControl::MapUp()
 {
-    if (LevelControl->IsRoomClosed(currentLocation, 3))
+    if (!isMoving && LevelControl->IsRoomClosed(currentLocation, 3))
     {
         if (currentLocation / 10 != 9)
         {
@@ -183,17 +188,21 @@ void ARobotControl::MapUp()
             }
         }
     }
-    PrintMap();
+    PrintUI.Broadcast();
 }
 
 void ARobotControl::SetMove()
 {
-    if (isMoving == false)
+    if (isMoving == false && route.Num() != 1)
     {
         isMoving = true;
         Robot->SetMovement(true);
         MonsterCheck = true;
         StartMoving();
+    }
+    else
+    {
+        initMap();
     }
 }
 
@@ -239,8 +248,8 @@ bool ARobotControl::StartMoving()
 
 void ARobotControl::ResourceSearch(int RoomId)
 {
-    RoomResources.food = LevelControl->ResourceCheckByRobot(RoomId,1);
-    RoomResources.water = LevelControl->ResourceCheckByRobot(RoomId, 2);
+    RoomResources.food = (int)LevelControl->ResourceCheckByRobot(RoomId,1);
+    RoomResources.water = (int)LevelControl->ResourceCheckByRobot(RoomId, 2);
     RoomResources.electricity = LevelControl->ResourceCheckByRobot(RoomId, 3);
 
 
@@ -263,7 +272,7 @@ void ARobotControl::ReachDestination()
     LoadedResources.food = RoomResources.food;
     LoadedResources.water = RoomResources.water;
     LoadedResources.electricity = RoomResources.electricity;
-    UE_LOG(LogTemp, Warning, TEXT("Reach Destination. Gain Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
+    UE_LOG(LogTemp, Warning, TEXT("Reach Destination. Gain Food: %d Water: %d Elect: %f"), RoomResources.food, RoomResources.water, RoomResources.electricity);
     LevelControl->SetRoomResources(route[CurrentIndex],0, 0, 0);
     Robot->SetArrival(true);
 }
@@ -271,14 +280,14 @@ void ARobotControl::ReachDestination()
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
-    PanicRoomResources.food = LevelControl->ResourceCheckByRobot(startLocation, 1);
-    PanicRoomResources.water = LevelControl->ResourceCheckByRobot(startLocation, 2);
+    PanicRoomResources.food = (int)LevelControl->ResourceCheckByRobot(startLocation, 1);
+    PanicRoomResources.water = (int)LevelControl->ResourceCheckByRobot(startLocation, 2);
     PanicRoomResources.electricity = LevelControl->ResourceCheckByRobot(startLocation, 3);
     PanicRoomResources.food += LoadedResources.food;
     PanicRoomResources.water += LoadedResources.water;
     PanicRoomResources.electricity += LoadedResources.electricity;
 
-    UE_LOG(LogTemp, Warning, TEXT("Resource status(Food: %d Water: %d Elect: %d"), PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
+    UE_LOG(LogTemp, Warning, TEXT("Resource status(Food: %d Water: %d Elect: %f)"), PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
 
     LevelControl->SetRoomResources(startLocation, PanicRoomResources.food, PanicRoomResources.water, PanicRoomResources.electricity);
 
@@ -293,6 +302,8 @@ void ARobotControl::EndMovement()
         LevelControl->RobotCheck(SearchData[i]);
     }
     SearchData.Empty();
+    PrintUI.Broadcast();
+    UpdateUI.Broadcast();
 }
 void ARobotControl::PrintMap()
 {
