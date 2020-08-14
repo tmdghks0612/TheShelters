@@ -521,7 +521,8 @@ void ALevelControl::UseElectricity()
 
 float ALevelControl::GetElectricityPercent()
 {
-	return GameMap[panicRoomId]->GetResources().electricity / maxElectricity * 100;
+    float p = GameMap[panicRoomId]->GetResources().electricity;
+    return p / (float)maxElectricity * 100.0f;
 }
 
 void ALevelControl::DoorSwitch(Direction d)
@@ -539,6 +540,21 @@ int ALevelControl::GetPanicRoomFood()
 int ALevelControl::GetPanicRoomWater()
 {
 	return GameMap[panicRoomId]->GetResources().water;
+}
+
+int ALevelControl::GetFoodComplete()
+{
+	return foodComplete;
+}
+
+int ALevelControl::GetWaterComplete()
+{
+	return waterComplete;
+}
+
+float ALevelControl::GetElectricityComplete()
+{
+	return electricityComplete;
 }
 
 void ALevelControl::SetPanicRoomFood(int _value)
@@ -859,7 +875,7 @@ void ALevelControl::SelectCCTV()
     }
 }
 
-int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
+float ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
 {
     if (Type == 1)
     {
@@ -878,6 +894,8 @@ int ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
 
 void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)
 {
+
+    UE_LOG(LogTemp, Warning, TEXT("elect before function is : %f"), electricity);
 	if (electricity > maxElectricity) {
 		electricity = maxElectricity;
 	}
@@ -888,6 +906,7 @@ void ALevelControl::SetRoomResources(int RoomId, int food, int water, float elec
 		water = maxWater;
 	}
     GameMap[RoomId]->SetResources(food, water, electricity);
+    UE_LOG(LogTemp, Warning, TEXT("elect after function is : %f"), electricity);
 }
 
 void ALevelControl::RobotCheck(int RoomId)

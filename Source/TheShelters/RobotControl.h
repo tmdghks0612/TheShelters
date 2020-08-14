@@ -12,6 +12,7 @@
 #include "RobotControl.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPrintUIDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateUIDelegate);
 
 UCLASS()
 class THESHELTERS_API ARobotControl : public AActor
@@ -98,9 +99,14 @@ public:
 	void GetMonsters(TArray<AMonster*> _Monsters);
 	UFUNCTION(BlueprintCallable)
 	TArray<int> GetVisited();
+	UFUNCTION(BlueprintCallable)
+	void UIUpdate();
 	
 	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
 	FPrintUIDelegate PrintUI;
+
+	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
+	FUpdateUIDelegate UpdateUI;
 
 protected:
 	// Called when the game starts or when spawned
@@ -111,7 +117,9 @@ protected:
 	Resource RoomResources;
 	Resource LoadedResources;
 	Resource PanicRoomResources;
+	UPROPERTY()
 	TArray<int> SearchData;
+	UPROPERTY()
 	TArray<int> route;
 	float startX = 4000.0f;
 	float startY = 0.0f;
