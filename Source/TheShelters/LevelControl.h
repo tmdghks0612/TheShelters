@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "GameControl.h"
 #include "Direction.h"
 #include "Door.h"
 #include "PanicRoomDoor.h"
@@ -109,6 +110,9 @@ class THESHELTERS_API ALevelControl : public AActor
   TArray<FResourceUI> GetRoomResourceUI();
   UFUNCTION(BlueprintCallable)
   TArray<DoorStatus> GetDoorUI();
+
+  UPROPERTY()
+  UGameControl* GameControl;
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
