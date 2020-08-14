@@ -230,7 +230,7 @@ class THESHELTERS_API ALevelControl : public AActor
   TArray<int32> GetCCTVRoomNum();
 
   UFUNCTION()
-  int ResourceCheckByRobot(int RoomId, int Type);
+  float ResourceCheckByRobot(int RoomId, int Type);
   UFUNCTION()
   void SetRoomResources(int RoomId, int food, int water, float electricity);
   UFUNCTION()
