@@ -42,10 +42,6 @@ ADoor *URoom::GetDoor(const Direction d)
 }
 URoom *URoom::BeyondDoor(const Direction d)
 {
-    // FILE* f;
-    // f = fopen("D:\\trial.txt", "a+");
-    // fprintf(f, "RoomId: %d Direction: %d ", roomId, d);
-    // fclose(f);
     return doors[d]->GetBeyond(this);
 }
 
@@ -134,6 +130,7 @@ void URoom::InitResources(RoomType _roomType)
         isKnown = true;
         resources.electricity += resourceThreshold;
     }
+    UE_LOG(LogTemp,Warning,TEXT("F: %d W: %d E: %d"))
 }
 
 bool URoom::isDiscovered()
