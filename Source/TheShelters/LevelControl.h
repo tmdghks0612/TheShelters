@@ -93,6 +93,14 @@ class THESHELTERS_API ALevelControl : public AActor
   int GetPanicRoomWater();
 
   UFUNCTION(BlueprintCallable)
+  int GetFoodComplete();
+  UFUNCTION(BlueprintCallable)
+  int GetWaterComplete();
+  UFUNCTION(BlueprintCallable)
+  float GetElectricityComplete();
+
+
+  UFUNCTION(BlueprintCallable)
   void SetPanicRoomFood(int _value);
   UFUNCTION(BlueprintCallable)
   void SetPanicRoomWater(int _value);
@@ -196,9 +204,14 @@ class THESHELTERS_API ALevelControl : public AActor
   
 
   // maximum resources capacity
-  int maxElectricity = 100;
+  float maxElectricity = 100.0f;
   int maxFood = 50;
   int maxWater = 100;
+
+  // resource complete amount
+  int foodComplete = 10;
+  int waterComplete = 10;
+  float electricityComplete = 50.0f;
 
   // Panic Room related values
   int panicRoomId = 5;

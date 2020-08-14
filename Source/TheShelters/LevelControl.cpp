@@ -542,6 +542,21 @@ int ALevelControl::GetPanicRoomWater()
 	return GameMap[panicRoomId]->GetResources().water;
 }
 
+int ALevelControl::GetFoodComplete()
+{
+	return foodComplete;
+}
+
+int ALevelControl::GetWaterComplete()
+{
+	return waterComplete;
+}
+
+float ALevelControl::GetElectricityComplete()
+{
+	return electricityComplete;
+}
+
 void ALevelControl::SetPanicRoomFood(int _value)
 {
 	GameMap[panicRoomId]->SetFood(_value);
