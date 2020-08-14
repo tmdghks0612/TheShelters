@@ -211,7 +211,7 @@ class THESHELTERS_API ALevelControl : public AActor
   // resource complete amount
   int foodComplete = 10;
   int waterComplete = 10;
-  float electricityComplete = 50.0f;
+  float electricityComplete = 10.0f;
 
   // Panic Room related values
   int panicRoomId = 5;
