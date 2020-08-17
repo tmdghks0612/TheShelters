@@ -10,6 +10,10 @@ UGameControl::UGameControl()
 	RoomData.SetNum(100);
 	CCTVData.SetNum(12);
 	CCTVData[0] = -1;
+
+	foodNeed = 1;
+	waterNeed = 1;
+	electNeed = 1;
 }
 
 

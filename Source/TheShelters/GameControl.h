@@ -41,5 +41,11 @@ private:
 	TArray<URoom*> RoomData;
 	UPROPERTY()
 	TArray<int32> CCTVData;
+	int foodNeed;
+	int waterNeed;
+	float electNeed;
+	int day;
+	double mental;
+		
 	bool isGenerated;
 };
