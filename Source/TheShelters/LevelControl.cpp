@@ -774,7 +774,7 @@ bool ALevelControl::MoveMonster(int monsterId, Direction d)
                 monsters[it.Key]->PreviousDirection(Direction::None);
                 return true;
             }
-            if (monsterActors[monsterId - 1]->IsAngry)
+			if (monsterActors[monsterId - 1]->IsAngry || !(monsterActors[monsterId - 1]->IsReadyToMove()))
             {
                 continue;
             }
