@@ -66,17 +66,31 @@ bool ALevelControl::IsNextPanicRoom(int roomNumber)
 void ALevelControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
-    for (int i = 0; i < 12; ++i)
+    if (GameControl->CheckCCTV() == false)
     {
-        ZapPlanes.Add(_ZapPlanes[i]);
-        int input_num = rand() % (maxWidth * maxHeight);
-
-        while (MyContains(input_num))
+        for (int i = 0; i < 12; ++i)
         {
-            input_num = rand() % (maxWidth * maxHeight);
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = rand() % (maxWidth * maxHeight);
+
+            while (MyContains(input_num))
+            {
+                input_num = rand() % (maxWidth * maxHeight);
+            }
+            CCTVRoomNum.Add(input_num);
+            GameControl->SetCCTVData(i, input_num);
         }
-        CCTVRoomNum.Add(input_num);
     }
+    else
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = GameControl->GetCCTVData(i);
+            CCTVRoomNum.Add(input_num);
+        }
+    }
+    
     for (int i = 0; i < 12; ++i)
     {
         ZapPlanes[i]->SetActorHiddenInGame(true);
@@ -567,6 +581,14 @@ int ALevelControl::GetWaterComplete()
 float ALevelControl::GetElectricityComplete()
 {
 	return electricityComplete;
+}
+
+void ALevelControl::EndLevelPreparation()
+{
+    GameMap[panicRoomId]->OpenDoor(Direction::Up);
+    GameMap[panicRoomId]->OpenDoor(Direction::Down);
+    GameMap[panicRoomId]->OpenDoor(Direction::Right);
+    GameMap[panicRoomId]->OpenDoor(Direction::Left);
 }
 
 void ALevelControl::SetPanicRoomFood(int _value)

@@ -29,9 +29,17 @@ public:
 	void SetGameMapData(int i, URoom* _GameMap);
 	UFUNCTION()
 	URoom* GetGameMapData(int i);
+	UFUNCTION()
+	bool CheckCCTV();
+	UFUNCTION()
+	void SetCCTVData(int i, int32 roomNum);
+	UFUNCTION()
+	int32 GetCCTVData(int i);
 
 private:
 	UPROPERTY()
 	TArray<URoom*> RoomData;
+	UPROPERTY()
+	TArray<int32> CCTVData;
 	bool isGenerated;
 };

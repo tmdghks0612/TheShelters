@@ -99,7 +99,8 @@ class THESHELTERS_API ALevelControl : public AActor
   int GetWaterComplete();
   UFUNCTION(BlueprintCallable)
   float GetElectricityComplete();
-
+  UFUNCTION(BlueprintCallable)
+  void EndLevelPreparation();
 
   UFUNCTION(BlueprintCallable)
   void SetPanicRoomFood(int _value);

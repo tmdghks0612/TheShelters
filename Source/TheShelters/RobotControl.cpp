@@ -49,7 +49,7 @@ void ARobotControl::Tick(float DeltaTime)
         {
             FVector diff = Robot->GetActorLocation() - Monsters[i]->GetActorLocation();
             float dist = sqrt(diff.X * diff.X + diff.Y * diff.Y + diff.Z * diff.Z);
-            if (dist < 1000 && ToDestination == true)
+            if (dist < 300 && ToDestination == true)
             {
                 UE_LOG(LogTemp, Warning, TEXT("moving back"));
                 ToDestination = false;
