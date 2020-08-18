@@ -545,6 +545,14 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+void ALevelControl::GameOver()
+{
+	UE_LOG(LogTemp, Warning, TEXT("GameOver"))
+	
+	GameOverEvent.Broadcast();
+	return;
+}
+
 float ALevelControl::GetElectricityPercent()
 {
     float p = GameMap[panicRoomId]->GetResources().electricity;
