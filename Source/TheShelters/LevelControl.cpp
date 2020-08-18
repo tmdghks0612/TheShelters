@@ -16,6 +16,7 @@ void ALevelControl::BeginPlay()
 {
     Super::BeginPlay();
     UE_LOG(LogTemp, Warning, TEXT("1"));
+    GameControl = Cast<UGameControl>(GetGameInstance());
 }
 
 bool ALevelControl::MyContains(int input_num)
@@ -65,17 +66,31 @@ bool ALevelControl::IsNextPanicRoom(int roomNumber)
 void ALevelControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
-    for (int i = 0; i < 12; ++i)
+    if (GameControl->CheckCCTV() == false)
     {
-        ZapPlanes.Add(_ZapPlanes[i]);
-        int input_num = rand() % (maxWidth * maxHeight);
-
-        while (MyContains(input_num))
+        for (int i = 0; i < 12; ++i)
         {
-            input_num = rand() % (maxWidth * maxHeight);
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = rand() % (maxWidth * maxHeight);
+
+            while (MyContains(input_num))
+            {
+                input_num = rand() % (maxWidth * maxHeight);
+            }
+            CCTVRoomNum.Add(input_num);
+            GameControl->SetCCTVData(i, input_num);
         }
-        CCTVRoomNum.Add(input_num);
     }
+    else
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = GameControl->GetCCTVData(i);
+            CCTVRoomNum.Add(input_num);
+        }
+    }
+    
     for (int i = 0; i < 12; ++i)
     {
         ZapPlanes[i]->SetActorHiddenInGame(true);
@@ -138,13 +153,6 @@ void ALevelControl::EndTurn()
         } while (!success);
     }
 
-	/*
-    int mentality = survivorStat->Mental();
-    if (!eventFlag["DefaultEvent"] && mentality < 100)
-    {
-        eventFlag["DefaultEvent"] = true;
-        UE_LOG(LogTemp, Warning, TEXT("************************EVENT CALL"));
-    }*/
 }
 
 void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
@@ -153,8 +161,26 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
     maxWidth = n;
 
     eventFlag.Add("DefaultEvent", false);
-
-    this->InitRooms();
+    if (GameControl->CheckGenerated() == false)
+    {
+        GameControl->SetIsGenerated(true);
+        UE_LOG(LogTemp, Warning, TEXT("There's nothing yet. Initiate Room Generate Procedure"));
+        this->InitRooms();
+        for (int i = 0; i < 100; i++)
+        {
+            GameControl->SetGameMapData(i, GameMap[i]);
+        }
+    }
+    else
+    {
+        GameMap.SetNum(100);
+        for (int i = 0; i < 100; i++)
+        {
+            GameMap[i] = GameControl->GetGameMapData(i);
+        }
+        UE_LOG(LogTemp, Warning, TEXT("RoomData Found."));
+    }
+    
     this->InitMap(_LevelString);
 }
 
@@ -557,6 +583,14 @@ float ALevelControl::GetElectricityComplete()
 	return electricityComplete;
 }
 
+void ALevelControl::EndLevelPreparation()
+{
+    GameMap[panicRoomId]->OpenDoor(Direction::Up);
+    GameMap[panicRoomId]->OpenDoor(Direction::Down);
+    GameMap[panicRoomId]->OpenDoor(Direction::Right);
+    GameMap[panicRoomId]->OpenDoor(Direction::Left);
+}
+
 void ALevelControl::SetPanicRoomFood(int _value)
 {
 	GameMap[panicRoomId]->SetFood(_value);
@@ -843,14 +877,6 @@ void ALevelControl::ZapCCTV(AActor *_CurrentZapPlane)
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
 
-    /*int zapped = rand() % 9;
-    UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
-
-    ZapPlanes[zapped]->SetActorHiddenInGame(false);
-
-    TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
-    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
-        */
     _CurrentZapPlane->SetActorHiddenInGame(false);
     TimerDel.BindUFunction(this, FName("RestoreZap"), _CurrentZapPlane);
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
