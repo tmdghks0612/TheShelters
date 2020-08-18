@@ -65,6 +65,7 @@ void AMonster::RestoreAngry()
 	IsMoving = false;
 	MonsterAnimInstance->SetMovement(false);
 
+	waitTime = actionFrequency;
 	SetActorLocation(chargeLocation);
 	UE_LOG(LogTemp, Warning, TEXT("restore to %f %f"), chargeLocation.X, chargeLocation.Y);
 
@@ -95,6 +96,18 @@ bool AMonster::IsDoorOpen()
 		//UE_LOG(LogTemp, Warning, TEXT("panic room is blocked!"));
 	}
 	return !(LevelControl->IsBlocked(monsterId));
+}
+
+bool AMonster::IsReadyToMove()
+{
+	waitTime++;
+	if (waitTime > actionFrequency) {
+		waitTime = 0;
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void AMonster::InitMonsterActor(ALevelControl *_LevelControl, int _monsterId, MonsterType _monsterType)

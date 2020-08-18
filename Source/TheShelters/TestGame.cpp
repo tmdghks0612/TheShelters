@@ -48,13 +48,13 @@ void ALevelControl::TestScenario(FString _LevelString)
     InitGame(10, 10, _LevelString);
 
     InsertMonster(MonsterType::Ghoul, 0, 4); // Monster 1: 0, 4
-    InsertMonster(MonsterType::Ghoul, 1, 3); // Monster 2: 1, 3
+    InsertMonster(MonsterType::Grima, 1, 3); // Monster 2: 1, 3
 
     result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;
     PrintTestMessage(TEXT("InsertMonster"), 1, result);
 
-    MoveMonster(1, Direction::Left);  // Monster 1: 0, 3
-    MoveMonster(2, Direction::Right); // Monster 2: 1, 4
+    /*MoveMonster(1, Direction::Left);  // Monster 1: 0, 3
+    MoveMonster(2, Direction::Right); // Monster 2: 1, 4*/
 
     /*MoveMonster(1, Left);  // Monster 1: 0, 3
     MoveMonster(2, Right); // Monster 2: 1, 4*/
