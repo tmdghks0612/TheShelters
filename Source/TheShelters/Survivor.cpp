@@ -237,6 +237,10 @@ const double ASurvivor::Mental(const double diff)
 	mental += diff;
 	mental = std::max(0.0, mental);
 	mental = std::min(mental, static_cast<double>(maxMental));
+
+	if (mental <= 0) {
+		LevelControl->GameOver();
+	}
 	return mental;
 }
 
