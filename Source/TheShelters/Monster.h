@@ -67,6 +67,9 @@ class THESHELTERS_API AMonster : public APawn
     UFUNCTION(BlueprintCallable)
     bool IsDoorOpen();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsReadyToMove();
+
     UFUNCTION(BlueprintCallable)
     void StopCharge();
 
@@ -105,6 +108,9 @@ class THESHELTERS_API AMonster : public APawn
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float ChargeDelay = 2.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int actionFrequency;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FVector chargeDirection;
 
@@ -122,6 +128,7 @@ class THESHELTERS_API AMonster : public APawn
     ALevelControl *LevelControl;
     // Default monster values
     int monsterId;
+	int waitTime = 0;
     MonsterType monsterType;
 
     // Monster properties
@@ -131,6 +138,7 @@ class THESHELTERS_API AMonster : public APawn
 
     // Monster movement speed
     int speed;
+
 
     Direction prevDirection;
 };
