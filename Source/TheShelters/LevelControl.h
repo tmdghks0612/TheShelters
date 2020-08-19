@@ -9,6 +9,8 @@
 #include "Door.h"
 #include "PanicRoomDoor.h"
 #include "DoorAnimInstance.h"
+#include "ShelterGameSave.h"
+#include "Kismet/GameplayStatics.h"
 #include "Monster.h"
 #include "Room.h"
 #include "RoomActor.h"
@@ -111,7 +113,10 @@ class THESHELTERS_API ALevelControl : public AActor
   TArray<FResourceUI> GetRoomResourceUI();
   UFUNCTION(BlueprintCallable)
   TArray<DoorStatus> GetDoorUI();
-
+  UFUNCTION(BlueprintCallable)
+  void SaveStatus();
+  
+  
   UPROPERTY()
   UGameControl* GameControl;
 

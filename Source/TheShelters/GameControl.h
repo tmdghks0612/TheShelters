@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ShelterGameSave.h"
+#include "Kismet/GameplayStatics.h"
 #include "Room.h"
 #include "Engine/GameInstance.h"
 #include "GameControl.generated.h"
 
+//class UShelterGameSave;
 /**
  * 
  */
@@ -35,6 +38,11 @@ public:
 	void SetCCTVData(int i, int32 roomNum);
 	UFUNCTION()
 	int32 GetCCTVData(int i);
+	UFUNCTION()
+	void LoadSaveData();
+	UFUNCTION()
+	bool CheckLoaded();
+	void SetisLoaded(bool _Loaded);
 
 private:
 	UPROPERTY()
@@ -47,5 +55,6 @@ private:
 	int day;
 	double mental;
 		
+	bool isLoaded;
 	bool isGenerated;
 };
