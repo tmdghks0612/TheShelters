@@ -15,7 +15,121 @@ ALevelControl::ALevelControl()
 void ALevelControl::BeginPlay()
 {
     Super::BeginPlay();
-    UE_LOG(LogTemp, Warning, TEXT("1"));
+    GameControl = Cast<UGameControl>(GetGameInstance());
+}
+
+
+void ALevelControl::SaveStatus()
+{
+    if (!(GameControl->CheckLoaded()))
+    {
+        if (UShelterGameSave* LoadedGame = Cast<UShelterGameSave>(UGameplayStatics::LoadGameFromSlot(TEXT("SAVE"), 0)))
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                GameMap[i]->SetFood(LoadedGame->GetFood(i));
+                GameMap[i]->SetWater(LoadedGame->GetWater(i));
+                GameMap[i]->SetElectricity(LoadedGame->GetElect(i));
+
+                if (LoadedGame->GetLeft(i) == true)
+                {
+                    GameMap[i]->OpenDoor(Direction::Left);
+                }
+                else
+                {
+                    GameMap[i]->CloseDoor(Direction::Left);
+                }
+
+                if (LoadedGame->GetRight(i) == true)
+                {
+                    GameMap[i]->OpenDoor(Direction::Right);
+                }
+                else
+                {
+                    GameMap[i]->CloseDoor(Direction::Right);
+                }
+
+                if (LoadedGame->GetUp(i) == true)
+                {
+                    GameMap[i]->OpenDoor(Direction::Up);
+                }
+                else
+                {
+                    GameMap[i]->CloseDoor(Direction::Up);
+                }
+
+                if (LoadedGame->GetDown(i) == true)
+                {
+                    GameMap[i]->OpenDoor(Direction::Down);
+                }
+                else
+                {
+                    GameMap[i]->CloseDoor(Direction::Down);
+                }
+
+                GameMap[i]->SetisKnown(LoadedGame->GetisKnown(i));
+            }
+
+            UE_LOG(LogTemp, Warning, TEXT("LOADED"));
+        }
+        GameControl->SetisLoaded(true);
+    }
+    UE_LOG(LogTemp, Warning, TEXT("TRYING TO SAVE"));
+    if (UShelterGameSave* SaveGameInstance = Cast<UShelterGameSave>(UGameplayStatics::CreateSaveGameObject(UShelterGameSave::StaticClass())))
+    {
+        // Set data on the savegame object.
+        for (int i = 0; i < 100; i++)
+        {
+            Resource check = GameMap[i]->GetResources();
+            bool _Left;
+            bool _Up;
+            bool _Right;
+            bool _Down;
+            if (GameMap[i]->GetDoor(Direction::Up) != nullptr && GameMap[i]->GetDoor(Direction::Up)->Status() == DoorStatus::Open)
+            {
+                _Up = true;
+            }
+            else
+            {
+                _Up = false;
+            }
+
+            if (GameMap[i]->GetDoor(Direction::Right) != nullptr && GameMap[i]->GetDoor(Direction::Right)->Status() == DoorStatus::Open)
+            {
+                _Right = true;
+            }
+            else
+            {
+                _Right = false;
+            }
+
+            if (GameMap[i]->GetDoor(Direction::Down) != nullptr && GameMap[i]->GetDoor(Direction::Down)->Status() == DoorStatus::Open)
+            {
+                _Down = true;
+            }
+            else
+            {
+                _Down = false;
+            }
+
+            if (GameMap[i]->GetDoor(Direction::Left) != nullptr && GameMap[i]->GetDoor(Direction::Left)->Status() == DoorStatus::Open)
+            {
+                _Left = true;
+            }
+            else
+            {
+                _Left = false;
+            }
+            SaveGameInstance->SetRoomData(i, check.food, check.water, check.electricity, _Left, _Right, _Up, _Down, GameMap[i]->isDiscovered());
+        }
+        for (int i = 0; i < 12; i++)
+        {
+            SaveGameInstance->SetCCTVData(i, CCTVRoomNum[i]);
+        }
+
+        // Start async save process.
+        UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, TEXT("SAVE"), 0);
+    }
 }
 
 bool ALevelControl::MyContains(int input_num)
@@ -65,17 +179,45 @@ bool ALevelControl::IsNextPanicRoom(int roomNumber)
 void ALevelControl::InitCCTV(TArray<AActor *> _ZapPlanes, TArray<AActor *> _RoomActors)
 {
     CCTVRoomNum.Empty();
-    for (int i = 0; i < 12; ++i)
+    UShelterGameSave* LoadedGame = Cast<UShelterGameSave>(UGameplayStatics::LoadGameFromSlot(TEXT("SAVE"), 0));
+    if (!(GameControl->CheckLoaded()) && LoadedGame != nullptr)
     {
-        ZapPlanes.Add(_ZapPlanes[i]);
-        int input_num = rand() % (maxWidth * maxHeight);
-
-        while (MyContains(input_num))
+        UE_LOG(LogTemp, Warning, TEXT("Load Sequence for CCTV Starts"));
+        for (int i = 0; i < 12; ++i)
         {
-            input_num = rand() % (maxWidth * maxHeight);
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = LoadedGame->GetCCTVData(i);
+            CCTVRoomNum.Add(input_num);
+            GameControl->SetCCTVData(i, input_num);
         }
-        CCTVRoomNum.Add(input_num);
     }
+    else if (GameControl->CheckCCTV() == false)
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = rand() % (maxWidth * maxHeight);
+
+            while (MyContains(input_num))
+            {
+                input_num = rand() % (maxWidth * maxHeight);
+            }
+            CCTVRoomNum.Add(input_num);
+            GameControl->SetCCTVData(i, input_num);
+        }
+    }
+    else
+    {
+        for (int i = 0; i < 12; ++i)
+        {
+            ZapPlanes.Add(_ZapPlanes[i]);
+            int32 input_num = GameControl->GetCCTVData(i);
+            CCTVRoomNum.Add(input_num);
+        }
+    }
+
+
+
     for (int i = 0; i < 12; ++i)
     {
         ZapPlanes[i]->SetActorHiddenInGame(true);
@@ -138,13 +280,6 @@ void ALevelControl::EndTurn()
         } while (!success);
     }
 
-	/*
-    int mentality = survivorStat->Mental();
-    if (!eventFlag["DefaultEvent"] && mentality < 100)
-    {
-        eventFlag["DefaultEvent"] = true;
-        UE_LOG(LogTemp, Warning, TEXT("************************EVENT CALL"));
-    }*/
 }
 
 void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString _LevelString)
@@ -153,8 +288,26 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
     maxWidth = n;
 
     eventFlag.Add("DefaultEvent", false);
-
-    this->InitRooms();
+    if (GameControl->CheckGenerated() == false)
+    {
+        GameControl->SetIsGenerated(true);
+        UE_LOG(LogTemp, Warning, TEXT("There's nothing yet. Initiate Room Generate Procedure"));
+        this->InitRooms();
+        for (int i = 0; i < 100; i++)
+        {
+            GameControl->SetGameMapData(i, GameMap[i]);
+        }
+    }
+    else
+    {
+        GameMap.SetNum(100);
+        for (int i = 0; i < 100; i++)
+        {
+            GameMap[i] = GameControl->GetGameMapData(i);
+        }
+        UE_LOG(LogTemp, Warning, TEXT("RoomData Found."));
+    }
+    
     this->InitMap(_LevelString);
 }
 
@@ -519,6 +672,14 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+void ALevelControl::GameOver()
+{
+	UE_LOG(LogTemp, Warning, TEXT("GameOver"))
+	
+	GameOverEvent.Broadcast();
+	return;
+}
+
 float ALevelControl::GetElectricityPercent()
 {
     float p = GameMap[panicRoomId]->GetResources().electricity;
@@ -555,6 +716,14 @@ int ALevelControl::GetWaterComplete()
 float ALevelControl::GetElectricityComplete()
 {
 	return electricityComplete;
+}
+
+void ALevelControl::EndLevelPreparation()
+{
+    GameMap[panicRoomId]->OpenDoor(Direction::Up);
+    GameMap[panicRoomId]->OpenDoor(Direction::Down);
+    GameMap[panicRoomId]->OpenDoor(Direction::Right);
+    GameMap[panicRoomId]->OpenDoor(Direction::Left);
 }
 
 void ALevelControl::SetPanicRoomFood(int _value)
@@ -774,7 +943,7 @@ bool ALevelControl::MoveMonster(int monsterId, Direction d)
                 monsters[it.Key]->PreviousDirection(Direction::None);
                 return true;
             }
-            if (monsterActors[monsterId - 1]->IsAngry)
+			if (monsterActors[monsterId - 1]->IsAngry || !(monsterActors[monsterId - 1]->IsReadyToMove()))
             {
                 continue;
             }
@@ -843,14 +1012,6 @@ void ALevelControl::ZapCCTV(AActor *_CurrentZapPlane)
     FTimerDelegate TimerDel;
     FTimerHandle TimerHandle;
 
-    /*int zapped = rand() % 9;
-    UE_LOG(LogTemp, Warning, TEXT("CCTV set visibility %d"), zapped);
-
-    ZapPlanes[zapped]->SetActorHiddenInGame(false);
-
-    TimerDel.BindUFunction(this, FName("RestoreZap"), ZapPlanes[zapped]);
-    GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);
-        */
     _CurrentZapPlane->SetActorHiddenInGame(false);
     TimerDel.BindUFunction(this, FName("RestoreZap"), _CurrentZapPlane);
     GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 0.2f, false);

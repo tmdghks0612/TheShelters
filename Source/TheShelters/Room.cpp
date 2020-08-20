@@ -56,7 +56,7 @@ void URoom::OpenDoor(const Direction d)
 }
 void URoom::CloseDoor(const Direction d)
 {
-    if (doors[d])
+    if (doors[d] != nullptr)
         doors[d]->Close();
 }
 
@@ -130,7 +130,6 @@ void URoom::InitResources(RoomType _roomType)
         isKnown = true;
         resources.electricity += resourceThreshold;
     }
-    UE_LOG(LogTemp,Warning,TEXT("F: %d W: %d E: %d"))
 }
 
 bool URoom::isDiscovered()

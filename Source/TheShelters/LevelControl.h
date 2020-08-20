@@ -4,10 +4,13 @@
 
 #include <algorithm>
 
+#include "GameControl.h"
 #include "Direction.h"
 #include "Door.h"
 #include "PanicRoomDoor.h"
 #include "DoorAnimInstance.h"
+#include "ShelterGameSave.h"
+#include "Kismet/GameplayStatics.h"
 #include "Monster.h"
 #include "Room.h"
 #include "RoomActor.h"
@@ -25,6 +28,8 @@ class AMonster;
 typedef TMap<int32, int32> MonsterLocationList;
 // key = monsterId, value = AMonster class instance
 typedef TMap<int32, AMonster *> MonsterList;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameOverDelegate);
 
 USTRUCT(BlueprintType)
 struct FResourceUI
@@ -80,6 +85,8 @@ class THESHELTERS_API ALevelControl : public AActor
   // Use electricity if electricity is enough.
   UFUNCTION(BlueprintCallable)
   void UseElectricity();
+  UFUNCTION(BlueprintCallable)
+  void GameOver();
 
   UFUNCTION(BlueprintCallable)
   float GetElectricityPercent();
@@ -98,7 +105,8 @@ class THESHELTERS_API ALevelControl : public AActor
   int GetWaterComplete();
   UFUNCTION(BlueprintCallable)
   float GetElectricityComplete();
-
+  UFUNCTION(BlueprintCallable)
+  void EndLevelPreparation();
 
   UFUNCTION(BlueprintCallable)
   void SetPanicRoomFood(int _value);
@@ -109,6 +117,12 @@ class THESHELTERS_API ALevelControl : public AActor
   TArray<FResourceUI> GetRoomResourceUI();
   UFUNCTION(BlueprintCallable)
   TArray<DoorStatus> GetDoorUI();
+  UFUNCTION(BlueprintCallable)
+  void SaveStatus();
+  
+  
+  UPROPERTY()
+  UGameControl* GameControl;
 
     void ZapCCTV(AActor *_CurrentZapPlane);
 
@@ -156,6 +170,8 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray <APanicRoomDoor*> PanicRoomDoorList;
 
+	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
+	FGameOverDelegate GameOverEvent;
   protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
