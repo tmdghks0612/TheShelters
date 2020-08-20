@@ -3,7 +3,8 @@
 
 void ALevelControl::PrintMap()
 {
-    UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
+    
+    //UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
     for (unsigned int x = 0; x < maxHeight; x++)
     {
         FString line = FString();
@@ -15,8 +16,9 @@ void ALevelControl::PrintMap()
             args.Add(FStringFormatArg(monsterId));
             line += FString::Format(TEXT("{0} "), args);
         }
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+    //    UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
     }
+    
 }
 
 void ALevelControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)

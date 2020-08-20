@@ -68,8 +68,11 @@ void ALevelControl::SaveStatus()
                 }
 
                 GameMap[i]->SetisKnown(LoadedGame->GetisKnown(i));
+                
             }
-
+            GameControl->SetDay(LoadedGame->GetDay());
+            UE_LOG(LogTemp, Warning, TEXT("Saved Day is :%d %d"),GameControl->GetDay(), LoadedGame->GetDay());
+            GameControl->SetProgress(LoadedGame->GetProgress());
             UE_LOG(LogTemp, Warning, TEXT("LOADED"));
         }
         GameControl->SetisLoaded(true);
@@ -125,6 +128,18 @@ void ALevelControl::SaveStatus()
         for (int i = 0; i < 12; i++)
         {
             SaveGameInstance->SetCCTVData(i, CCTVRoomNum[i]);
+        }
+        
+        UE_LOG(LogTemp, Warning, TEXT("Day was %d. Progress was %d"), GameControl->GetDay(), GameControl->GetProgress());
+        SaveGameInstance->SetDayProgress(GameControl->GetDay(), GameControl->GetProgress());
+
+        GameControl->SetDay(GameControl->GetDay() + 1);
+
+        UE_LOG(LogTemp, Warning, TEXT("Current Day is %d. Have a nice day"), GameControl->GetDay());
+        //this condition should be later changed to check if player get the progress item
+        if (true)
+        {
+            GameControl->SetProgress(GameControl->GetProgress() + 1);
         }
 
         // Start async save process.

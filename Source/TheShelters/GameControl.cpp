@@ -15,6 +15,8 @@ UGameControl::UGameControl()
 	foodNeed = 1;
 	waterNeed = 1;
 	electNeed = 1;
+	day = 0;
+	progress = 0;
 }
 
 
@@ -123,6 +125,28 @@ void UGameControl::SetisLoaded(bool _Loaded)
 {
 	isLoaded = _Loaded;
 }
+
+void UGameControl::SetDay(int _day)
+{
+	day = _day;
+}
+
+void UGameControl::SetProgress(int _progress)
+{
+	progress = _progress;
+}
+
+int UGameControl::GetDay()
+{
+	return day;
+}
+
+int UGameControl::GetProgress()
+{
+	return progress;
+}
+
+
 
 int32 UGameControl::GetCCTVData(int i)
 {

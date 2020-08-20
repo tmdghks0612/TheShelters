@@ -42,7 +42,18 @@ public:
 	void LoadSaveData();
 	UFUNCTION()
 	bool CheckLoaded();
+	UFUNCTION()
 	void SetisLoaded(bool _Loaded);
+	UFUNCTION()
+	void SetDay(int _day);
+	UFUNCTION()
+	void SetProgress(int _progress);
+
+	UFUNCTION()
+	int GetDay();
+	UFUNCTION()
+	int GetProgress();
+	
 
 private:
 	UPROPERTY()
@@ -57,4 +68,5 @@ private:
 		
 	bool isLoaded;
 	bool isGenerated;
+	int progress;
 };
