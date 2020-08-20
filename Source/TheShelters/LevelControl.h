@@ -118,6 +118,8 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION(BlueprintCallable)
   TArray<DoorStatus> GetDoorUI();
   UFUNCTION(BlueprintCallable)
+  int GetProgressUI();
+  UFUNCTION(BlueprintCallable)
   void SaveStatus();
   
   
@@ -229,6 +231,8 @@ class THESHELTERS_API ALevelControl : public AActor
   int waterComplete = 10;
   float electricityComplete = 10.0f;
 
+  int currentProgress = 0;
+
   // Panic Room related values
   int panicRoomId = 5;
 
@@ -260,6 +264,12 @@ class THESHELTERS_API ALevelControl : public AActor
 
   UFUNCTION()
   float ResourceCheckByRobot(int RoomId, int Type);
+  UFUNCTION()
+  bool CircuitCheckByRobot(int RoomId);
+  UFUNCTION()
+  void RemoveCircuit(int RoomId);
+  UFUNCTION()
+  void AddProgress();
   UFUNCTION()
   void SetRoomResources(int RoomId, int food, int water, float electricity);
   UFUNCTION()

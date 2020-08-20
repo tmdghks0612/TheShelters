@@ -103,12 +103,21 @@ void URoom::SetElectricity(float _electricity)
 	resources.electricity = _electricity;
 }
 
+void URoom::SetProgress(bool _progress)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Set Progress"));
+	if (_progress == false) {
+		UE_LOG(LogTemp, Warning, TEXT(" to FALSE!"));
+	}
+	resources.progress = _progress;
+}
+
 void URoom::InitResources(RoomType _roomType)
 {
     resources.food = rand() % resourceThreshold;
     resources.water = rand() % resourceThreshold;
     resources.electricity = rand() % resourceThreshold;
-
+	resources.progress = false;
     /*
         // test code
         isKnown = Known;*/
