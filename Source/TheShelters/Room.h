@@ -17,6 +17,7 @@ UENUM() enum class RoomStatus { Peaceful, Dangerous };
 
 typedef struct
 {
+	bool progress;
     unsigned int food;
     unsigned int water;
     float electricity;
@@ -75,6 +76,7 @@ class THESHELTERS_API URoom : public UObject
 	void SetFood(unsigned int _food);
 	void SetWater(unsigned int _water);
 	void SetElectricity(float _electricity);
+	void SetProgress(bool _progress);
 	void InitResources(RoomType _roomType);
 	bool isDiscovered();
 

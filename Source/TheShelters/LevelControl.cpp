@@ -293,15 +293,15 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
         GameControl->SetIsGenerated(true);
         UE_LOG(LogTemp, Warning, TEXT("There's nothing yet. Initiate Room Generate Procedure"));
         this->InitRooms();
-        for (int i = 0; i < 100; i++)
+        for (unsigned int i = 0; i < m*n; i++)
         {
             GameControl->SetGameMapData(i, GameMap[i]);
         }
     }
     else
     {
-        GameMap.SetNum(100);
-        for (int i = 0; i < 100; i++)
+        GameMap.SetNum(m*n);
+        for (unsigned int i = 0; i < m*n; i++)
         {
             GameMap[i] = GameControl->GetGameMapData(i);
         }
@@ -398,6 +398,24 @@ void ALevelControl::InitRooms()
             electricityRoomNum.Add(roomNum);
         }
     }
+	bool progressFlag = false;
+	for (unsigned int i = 0; i < maxHeight; ++i) {
+		for (unsigned int j = 0; j < maxWidth; ++j) {
+			if (!progressFlag && GameMap[i*maxWidth + j]->GetResources().progress) {
+				progressFlag = true;
+				break;
+			}
+		}
+	}
+
+	if (!progressFlag) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum) || electricityRoomNum.Contains(roomNum))
+		{
+			roomNum = rand() % maxRoomNum;
+		}
+		GameMap[roomNum]->SetProgress(true);
+	}
 }
 
 void ALevelControl::InitMap(FString _LevelString)
@@ -753,7 +771,11 @@ TArray<FResourceUI> ALevelControl::GetRoomResourceUI()
 
             // find maximum resource type and its size
             Resource currentResource = currentRoom->GetResources();
-            if (currentResource.food >= currentResource.water)
+			if (currentResource.progress) {
+				currentResourceUI.resourceType = 4;
+				currentResourceUI.resourceSize = 1;
+			}
+            else if (currentResource.food >= currentResource.water)
             {
                 if (currentResource.food >= currentResource.electricity)
                 {
@@ -818,6 +840,11 @@ TArray<DoorStatus> ALevelControl::GetDoorUI()
         }
     }
     return DoorArray;
+}
+
+int ALevelControl::GetProgressUI()
+{
+	return currentProgress;
 }
 
 bool ALevelControl::IsBlocked(int _monsterId)
@@ -1051,6 +1078,26 @@ float ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
         return GameMap[RoomId]->GetResources().electricity;
     }
     return 0;
+}
+
+bool ALevelControl::CircuitCheckByRobot(int RoomId)
+{
+	if (GameMap[RoomId]->GetResources().progress) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void ALevelControl::RemoveCircuit(int RoomId)
+{
+	GameMap[RoomId]->SetProgress(false);
+}
+
+void ALevelControl::AddProgress()
+{
+	currentProgress++;
 }
 
 void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)

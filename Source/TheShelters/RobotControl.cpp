@@ -171,6 +171,7 @@ void ARobotControl::MapUp()
         if (currentLocation / 10 != 9)
         {
             if (visited[currentLocation + 10] == 0)
+            if (visited[currentLocation + 10] == 0)
             {
                 currentLocation += 10;
                 visited[currentLocation] = 1;
@@ -251,7 +252,7 @@ void ARobotControl::ResourceSearch(int RoomId)
     RoomResources.food = (int)LevelControl->ResourceCheckByRobot(RoomId,1);
     RoomResources.water = (int)LevelControl->ResourceCheckByRobot(RoomId, 2);
     RoomResources.electricity = LevelControl->ResourceCheckByRobot(RoomId, 3);
-
+	RoomResources.progress = LevelControl->CircuitCheckByRobot(RoomId);
 
     UE_LOG(LogTemp, Warning, TEXT("Food: %d Water: %d Elect: %d"), RoomResources.food, RoomResources.water, RoomResources.electricity);
     SearchData.Add(RoomId);
@@ -272,7 +273,11 @@ void ARobotControl::ReachDestination()
     LoadedResources.food = RoomResources.food;
     LoadedResources.water = RoomResources.water;
     LoadedResources.electricity = RoomResources.electricity;
+	LoadedResources.progress = RoomResources.progress;
     UE_LOG(LogTemp, Warning, TEXT("Reach Destination. Gain Food: %d Water: %d Elect: %f"), RoomResources.food, RoomResources.water, RoomResources.electricity);
+	if (LoadedResources.progress) {
+		LevelControl->RemoveCircuit(route[CurrentIndex]);
+	}
     LevelControl->SetRoomResources(route[CurrentIndex],0, 0, 0);
     Robot->SetArrival(true);
 }
@@ -280,6 +285,10 @@ void ARobotControl::ReachDestination()
 //going back to panicRoom
 void ARobotControl::EndMovement()
 {
+	if (LoadedResources.progress) {
+		LevelControl->AddProgress();
+		PanicRoomResources.progress = true;
+	}
     PanicRoomResources.food = (int)LevelControl->ResourceCheckByRobot(startLocation, 1);
     PanicRoomResources.water = (int)LevelControl->ResourceCheckByRobot(startLocation, 2);
     PanicRoomResources.electricity = LevelControl->ResourceCheckByRobot(startLocation, 3);
