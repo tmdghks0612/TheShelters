@@ -120,6 +120,8 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION(BlueprintCallable)
   int GetProgressUI();
   UFUNCTION(BlueprintCallable)
+  int GetMaxProgressUI();
+  UFUNCTION(BlueprintCallable)
   void SaveStatus();
   
   
@@ -231,7 +233,7 @@ class THESHELTERS_API ALevelControl : public AActor
   int waterComplete = 10;
   float electricityComplete = 10.0f;
 
-  int currentProgress = 0;
+  int currentProgress = 0;  
 
   // Panic Room related values
   int panicRoomId = 5;
@@ -256,6 +258,7 @@ class THESHELTERS_API ALevelControl : public AActor
   TMap<bool, int32> testResult;
   void PrintMap();
   void PrintTestMessage(const TCHAR *testName, const int num, const bool success);
+  
 
  public:
   // Get/Set functions

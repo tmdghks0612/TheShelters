@@ -17,6 +17,7 @@ UGameControl::UGameControl()
 	electNeed = 1;
 	day = 0;
 	progress = 0;
+	MaxProgress = 10;
 }
 
 
@@ -144,6 +145,11 @@ int UGameControl::GetDay()
 int UGameControl::GetProgress()
 {
 	return progress;
+}
+
+int UGameControl::GetMaxProgress()
+{
+	return MaxProgress;
 }
 
 

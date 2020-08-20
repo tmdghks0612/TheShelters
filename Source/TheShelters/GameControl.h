@@ -53,6 +53,8 @@ public:
 	int GetDay();
 	UFUNCTION()
 	int GetProgress();
+	UFUNCTION()
+	int GetMaxProgress();
 	
 
 private:
@@ -69,4 +71,6 @@ private:
 	bool isLoaded;
 	bool isGenerated;
 	int progress;
+
+	int MaxProgress;
 };

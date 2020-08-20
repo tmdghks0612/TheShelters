@@ -73,6 +73,7 @@ void ALevelControl::SaveStatus()
             GameControl->SetDay(LoadedGame->GetDay());
             UE_LOG(LogTemp, Warning, TEXT("Saved Day is :%d %d"),GameControl->GetDay(), LoadedGame->GetDay());
             GameControl->SetProgress(LoadedGame->GetProgress());
+            currentProgress = GameControl->GetProgress();
             UE_LOG(LogTemp, Warning, TEXT("LOADED"));
         }
         GameControl->SetisLoaded(true);
@@ -131,16 +132,14 @@ void ALevelControl::SaveStatus()
         }
         
         UE_LOG(LogTemp, Warning, TEXT("Day was %d. Progress was %d"), GameControl->GetDay(), GameControl->GetProgress());
-        SaveGameInstance->SetDayProgress(GameControl->GetDay(), GameControl->GetProgress());
+        SaveGameInstance->SetDayProgress(GameControl->GetDay(), currentProgress);
 
         GameControl->SetDay(GameControl->GetDay() + 1);
 
         UE_LOG(LogTemp, Warning, TEXT("Current Day is %d. Have a nice day"), GameControl->GetDay());
         //this condition should be later changed to check if player get the progress item
-        if (true)
-        {
-            GameControl->SetProgress(GameControl->GetProgress() + 1);
-        }
+        GameControl->SetProgress(currentProgress);
+        
 
         // Start async save process.
         UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, TEXT("SAVE"), 0);
@@ -321,6 +320,7 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
             GameMap[i] = GameControl->GetGameMapData(i);
         }
         UE_LOG(LogTemp, Warning, TEXT("RoomData Found."));
+        currentProgress = GameControl->GetProgress();
     }
     
     this->InitMap(_LevelString);
@@ -862,6 +862,11 @@ int ALevelControl::GetProgressUI()
 	return currentProgress;
 }
 
+int ALevelControl::GetMaxProgressUI()
+{
+    return GameControl->GetMaxProgress();
+}
+
 bool ALevelControl::IsBlocked(int _monsterId)
 {
     ADoor *door = nullptr;
@@ -1113,6 +1118,7 @@ void ALevelControl::RemoveCircuit(int RoomId)
 void ALevelControl::AddProgress()
 {
 	currentProgress++;
+    GameControl->SetProgress(currentProgress);
 }
 
 void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)
