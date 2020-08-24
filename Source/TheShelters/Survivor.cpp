@@ -255,8 +255,10 @@ void ASurvivor::InitiateMap()
 // finish deciding route.
 void ASurvivor::RobotStart()
 {
-    RFlag = false;
-    Robot->SetMove();
+	if (LevelControl->UIShowFlag) {
+		RFlag = false;
+		Robot->SetMove();
+	}
 }
 
 void ASurvivor::InitRobots(ARobotControl *_Robot)
@@ -271,27 +273,27 @@ void ASurvivor::FindLevelControl(ALevelControl * _LevelControl)
 
 void ASurvivor::RobotMapRight()
 {
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapRight();
 }
 
 void ASurvivor::RobotMapLeft()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapLeft();
 }
 
 void ASurvivor::RobotMapUp()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapUp();
 }
 
 void ASurvivor::RobotMapDown()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapDown();
 }

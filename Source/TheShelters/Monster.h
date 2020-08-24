@@ -118,7 +118,7 @@ class THESHELTERS_API AMonster : public APawn
     float velocity = 20.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float ChargeDelay = 2.0f;
+    float ChargeDelay = 4.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int actionFrequency;

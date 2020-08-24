@@ -37,6 +37,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
+	void PlaySound(int soundNum);
+
+	UFUNCTION()
 	void SetDestination(FVector _Destination);
 
 	UPROPERTY()
@@ -71,4 +74,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ARobotControl* RobotControl;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* RobotDepartureSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* RobotCompleteSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAudioComponent *RobotAudioComponent;
 };

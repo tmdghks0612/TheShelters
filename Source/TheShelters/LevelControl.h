@@ -30,6 +30,7 @@ typedef TMap<int32, int32> MonsterLocationList;
 typedef TMap<int32, AMonster *> MonsterList;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameOverDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPowerDownDelegate);
 
 USTRUCT(BlueprintType)
 struct FResourceUI
@@ -95,6 +96,12 @@ class THESHELTERS_API ALevelControl : public AActor
   void DoorSwitch(Direction d);
 
   UFUNCTION(BlueprintCallable)
+  bool DoorSwitchByUser(Direction d);
+
+  UFUNCTION(BlueprintCallable)
+  void OpenAllPanicRoomDoors();
+
+  UFUNCTION(BlueprintCallable)
   int GetPanicRoomFood();
   UFUNCTION(BlueprintCallable)
   int GetPanicRoomWater();
@@ -153,6 +160,10 @@ class THESHELTERS_API ALevelControl : public AActor
 	// Check if electricity is enough to use on panic room. return true if enough, otherwise false
 	bool IsElectricityEnough();
 
+	// flag true if monitor UI is shown, false if not created or collapsed
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	bool UIShowFlag = false;
+
     // cctv room number array and its zap planes accordingly
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray<int32> CCTVRoomNum;
@@ -174,8 +185,11 @@ class THESHELTERS_API ALevelControl : public AActor
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
     TArray <APanicRoomDoor*> PanicRoomDoorList;
 
-	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
+	UPROPERTY(BlueprintAssignable, Category = "Game Over")
 	FGameOverDelegate GameOverEvent;
+
+	UPROPERTY(BlueprintAssignable, Category = "Power Down")
+	FPowerDownDelegate PowerDownEvent;
   protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
@@ -220,7 +234,10 @@ class THESHELTERS_API ALevelControl : public AActor
 
   // Electricity on panic room related variables
   int electricityUsage = 1;
+  int electricityDoorUsage = 1;
+  float electricityDoorInstantUsage = 0.2f;
   float electricityDecreaseSpeed = 0.05f;
+  
   
 
   // maximum resources capacity

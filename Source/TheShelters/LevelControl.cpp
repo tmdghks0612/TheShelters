@@ -697,6 +697,9 @@ void ALevelControl::UseElectricity()
 	if (IsElectricityEnough()) {
 		URoom* panicRoom = GameMap[panicRoomId];
 		panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+		if (panicRoom->GetResources().electricity == 0) {
+			PowerDownEvent.Broadcast();
+		}
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("not enough electricity!"))
@@ -721,9 +724,48 @@ float ALevelControl::GetElectricityPercent()
 
 void ALevelControl::DoorSwitch(Direction d)
 {
+	GameMap[panicRoomId]->SwitchDoor(d);
+	PanicRoomDoorList[(uint8)d]->SetDoor();
+
+	return;
+}
+
+bool ALevelControl::DoorSwitchByUser(Direction d)
+{
+	if (GameMap[panicRoomId]->GetResources().electricity < electricityDoorInstantUsage) {
+		return false;
+	}
+
     GameMap[panicRoomId]->SwitchDoor(d);
     PanicRoomDoorList[(uint8)d]->SetDoor();
-    
+
+	GameMap[panicRoomId]->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityDoorInstantUsage);
+	if (GameMap[panicRoomId]->GetResources().electricity == 0) {
+		PowerDownEvent.Broadcast();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(d)->Status() == DoorStatus::Close) {
+		electricityUsage += electricityDoorUsage;
+	}
+	return true;
+}
+
+void ALevelControl::OpenAllPanicRoomDoors()
+{
+	if (GameMap[panicRoomId]->GetDoor(Direction::Right)->Status() == DoorStatus::Open) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Right);
+		PanicRoomDoorList[(uint8)Direction::Right]->SetDoor();
+	}
+	
+	if (GameMap[panicRoomId]->GetDoor(Direction::Down)->Status() == DoorStatus::Open) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Down);
+		PanicRoomDoorList[(uint8)Direction::Down]->SetDoor();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(Direction::Left)->Status() == DoorStatus::Open) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Left);
+		PanicRoomDoorList[(uint8)Direction::Left]->SetDoor();
+	}
 }
 
 int ALevelControl::GetPanicRoomFood()

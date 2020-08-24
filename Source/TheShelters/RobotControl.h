@@ -3,6 +3,8 @@
 #pragma once
 #include "Monster.h"
 
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "CoreMinimal.h"
 #include "Survivor.h"
 #include "RobotAniminstance.h"
@@ -107,7 +109,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
 	FUpdateUIDelegate UpdateUI;
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
