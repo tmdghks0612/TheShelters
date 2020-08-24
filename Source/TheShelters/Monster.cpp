@@ -17,9 +17,14 @@ AMonster::AMonster()
         RootComponent = Root;
 
         MonsterSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MonsterSkeletalMesh"));
-        MonsterSkeletalMeshComponent->AttachTo(Root);
+        MonsterSkeletalMeshComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
 
         MonsterSkeletalMeshComponent->SetSkeletalMesh(MonsterSkeletalMesh, true);
+
+		MonsterAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MonsterAudio"));
+		MonsterAudioComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
+		// I want the sound to come from slighty in front of the pawn.
+		MonsterAudioComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     }
     else
     {
@@ -52,6 +57,9 @@ void AMonster::ChargePanicRoom()
 
 	GetWorldTimerManager().SetTimer(TimerHandleRestore, this, &AMonster::RestoreAngry, 10.0f, false);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::ActiveAngry, ChargeDelay, false);
+
+	MonsterAudioComponent->SetSound(MonsterAngrySound);
+	MonsterAudioComponent->Play();
 	return;
 }
 
@@ -129,6 +137,8 @@ void AMonster::MoveTo(FVector _destination)
 	if (!IsAngry) {
 		MonsterAnimInstance->SetMovement(true);
 	}
+	MonsterAudioComponent->SetSound(MonsterMovementSound);
+	MonsterAudioComponent->Play();
 }
 
 void AMonster::StopCharge()
