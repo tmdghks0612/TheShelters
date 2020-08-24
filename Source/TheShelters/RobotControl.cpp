@@ -317,7 +317,10 @@ void ARobotControl::EndMovement()
 
     SearchData.Empty();
     PrintUI.Broadcast();
-    UpdateUI.Broadcast();
+
+	if (PanicRoomResources.electricity > 0) {
+		RestoredEvent.Broadcast();
+	}
 }
 void ARobotControl::PrintMap()
 {

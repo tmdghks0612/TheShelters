@@ -752,17 +752,17 @@ bool ALevelControl::DoorSwitchByUser(Direction d)
 
 void ALevelControl::OpenAllPanicRoomDoors()
 {
-	if (GameMap[panicRoomId]->GetDoor(Direction::Right)->Status() == DoorStatus::Open) {
+	if (GameMap[panicRoomId]->GetDoor(Direction::Right)->Status() == DoorStatus::Close) {
 		GameMap[panicRoomId]->SwitchDoor(Direction::Right);
 		PanicRoomDoorList[(uint8)Direction::Right]->SetDoor();
 	}
 	
-	if (GameMap[panicRoomId]->GetDoor(Direction::Down)->Status() == DoorStatus::Open) {
+	if (GameMap[panicRoomId]->GetDoor(Direction::Down)->Status() == DoorStatus::Close) {
 		GameMap[panicRoomId]->SwitchDoor(Direction::Down);
 		PanicRoomDoorList[(uint8)Direction::Down]->SetDoor();
 	}
 
-	if (GameMap[panicRoomId]->GetDoor(Direction::Left)->Status() == DoorStatus::Open) {
+	if (GameMap[panicRoomId]->GetDoor(Direction::Left)->Status() == DoorStatus::Close) {
 		GameMap[panicRoomId]->SwitchDoor(Direction::Left);
 		PanicRoomDoorList[(uint8)Direction::Left]->SetDoor();
 	}
