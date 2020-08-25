@@ -65,7 +65,7 @@ class THESHELTERS_API AMonster : public APawn
     void ActiveAngry();
 
     UFUNCTION(BlueprintCallable)
-    void EnterPanicRoom();
+    bool EnterPanicRoom();
 
     UFUNCTION(BlueprintCallable)
     bool IsDoorOpen();
@@ -83,6 +83,7 @@ class THESHELTERS_API AMonster : public APawn
     const MonsterProperty Property() const;
     const Direction PreviousDirection() const;
     void PreviousDirection(Direction d);
+	
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterRoot")
     USceneComponent *Root;

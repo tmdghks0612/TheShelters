@@ -9,6 +9,9 @@ ALevelControl::ALevelControl()
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+
+	IsGameOver = false;
+	UIShowFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -697,7 +700,7 @@ void ALevelControl::UseElectricity()
 	if (IsElectricityEnough()) {
 		URoom* panicRoom = GameMap[panicRoomId];
 		panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
-		if (panicRoom->GetResources().electricity == 0) {
+		if (IsElectricityZero()) {
 			PowerDownEvent.Broadcast();
 		}
 	}
@@ -708,10 +711,19 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+bool ALevelControl::IsElectricityZero()
+{
+	if (GameMap[panicRoomId]->GetResources().electricity == 0) {
+		return true;
+	}
+	return false;
+}
+
 void ALevelControl::GameOver()
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameOver"))
 	
+	IsGameOver = true;
 	GameOverEvent.Broadcast();
 	return;
 }
@@ -740,7 +752,8 @@ bool ALevelControl::DoorSwitchByUser(Direction d)
     PanicRoomDoorList[(uint8)d]->SetDoor();
 
 	GameMap[panicRoomId]->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityDoorInstantUsage);
-	if (GameMap[panicRoomId]->GetResources().electricity == 0) {
+
+	if (IsElectricityZero()) {
 		PowerDownEvent.Broadcast();
 	}
 

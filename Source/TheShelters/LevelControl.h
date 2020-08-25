@@ -87,6 +87,8 @@ class THESHELTERS_API ALevelControl : public AActor
   UFUNCTION(BlueprintCallable)
   void UseElectricity();
   UFUNCTION(BlueprintCallable)
+  bool IsElectricityZero();
+  UFUNCTION(BlueprintCallable)
   void GameOver();
 
   UFUNCTION(BlueprintCallable)
@@ -135,6 +137,7 @@ class THESHELTERS_API ALevelControl : public AActor
   UPROPERTY()
   UGameControl* GameControl;
 
+
     void ZapCCTV(AActor *_CurrentZapPlane);
 
     // Check if monster can enter panic room
@@ -160,9 +163,11 @@ class THESHELTERS_API ALevelControl : public AActor
 	// Check if electricity is enough to use on panic room. return true if enough, otherwise false
 	bool IsElectricityEnough();
 
+	bool IsGameOver;
+
 	// flag true if monitor UI is shown, false if not created or collapsed
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-	bool UIShowFlag = false;
+	bool UIShowFlag;
 
     // cctv room number array and its zap planes accordingly
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
