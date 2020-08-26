@@ -1,1 +1,21 @@
-Test for if this file is working
+Welcome to The Shelter.
+We provides perfect safety to customer.
+However, we currently have ongoing issue.*********************
+/Due to severe damage, this shelter's function is limited.
+This shelter no longer provides long-time perfect protection from danger.
+Calculating damage taken, shelter can sustain for 40days with extreme limitation of functions****/
+During this period, functions in panic room will be active only. 
+You need to find essential resources (food, water, electricity) in shelter from panic room to survive.
+As Main gate function also broke down, you also need to be careful of monsters coming from outside.
+
+Luckly, there's a way to solve current problem.
+Materials to fix shelter is always saved in shelter and you just need to gather them to fix or evacuate from this shelter safely.
+
+And there's a robot to help you gather resources from hazardous area.
+When you click monitor, UI will pop up. Here, by clicking E and arrow, you can set the route for robot.
+When set upt is done, press enter to send robot.
+
+Beaware of location of monsters. If robot meets monster, it loses all resources it had, and immediately come back to panic room.
+Staying alone in small room brings problem. Make sure to stay in good condition. Lack of resources will severly damage you safety and mentality.
+
+Hope you a good luck!
