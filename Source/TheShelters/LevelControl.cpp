@@ -9,6 +9,9 @@ ALevelControl::ALevelControl()
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+
+	IsGameOver = false;
+	UIShowFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -697,6 +700,9 @@ void ALevelControl::UseElectricity()
 	if (IsElectricityEnough()) {
 		URoom* panicRoom = GameMap[panicRoomId];
 		panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+		if (IsElectricityZero()) {
+			PowerDownEvent.Broadcast();
+		}
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("not enough electricity!"))
@@ -705,10 +711,19 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+bool ALevelControl::IsElectricityZero()
+{
+	if (GameMap[panicRoomId]->GetResources().electricity == 0) {
+		return true;
+	}
+	return false;
+}
+
 void ALevelControl::GameOver()
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameOver"))
 	
+	IsGameOver = true;
 	GameOverEvent.Broadcast();
 	return;
 }
@@ -721,9 +736,49 @@ float ALevelControl::GetElectricityPercent()
 
 void ALevelControl::DoorSwitch(Direction d)
 {
+	GameMap[panicRoomId]->SwitchDoor(d);
+	PanicRoomDoorList[(uint8)d]->SetDoor();
+
+	return;
+}
+
+bool ALevelControl::DoorSwitchByUser(Direction d)
+{
+	if (GameMap[panicRoomId]->GetResources().electricity < electricityDoorInstantUsage) {
+		return false;
+	}
+
     GameMap[panicRoomId]->SwitchDoor(d);
     PanicRoomDoorList[(uint8)d]->SetDoor();
-    
+
+	GameMap[panicRoomId]->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityDoorInstantUsage);
+
+	if (IsElectricityZero()) {
+		PowerDownEvent.Broadcast();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(d)->Status() == DoorStatus::Close) {
+		electricityUsage += electricityDoorUsage;
+	}
+	return true;
+}
+
+void ALevelControl::OpenAllPanicRoomDoors()
+{
+	if (GameMap[panicRoomId]->GetDoor(Direction::Right)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Right);
+		PanicRoomDoorList[(uint8)Direction::Right]->SetDoor();
+	}
+	
+	if (GameMap[panicRoomId]->GetDoor(Direction::Down)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Down);
+		PanicRoomDoorList[(uint8)Direction::Down]->SetDoor();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(Direction::Left)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Left);
+		PanicRoomDoorList[(uint8)Direction::Left]->SetDoor();
+	}
 }
 
 int ALevelControl::GetPanicRoomFood()

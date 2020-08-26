@@ -200,6 +200,8 @@ void ARobotControl::SetMove()
         Robot->SetMovement(true);
         MonsterCheck = true;
         StartMoving();
+
+		Robot->PlaySound(0);
     }
     else
     {
@@ -310,9 +312,15 @@ void ARobotControl::EndMovement()
         UE_LOG(LogTemp, Warning, TEXT("SearchData from %d room"), SearchData[i]);
         LevelControl->RobotCheck(SearchData[i]);
     }
+
+	Robot->PlaySound(1);
+
     SearchData.Empty();
     PrintUI.Broadcast();
-    UpdateUI.Broadcast();
+
+	if (PanicRoomResources.electricity > 0) {
+		RestoredEvent.Broadcast();
+	}
 }
 void ARobotControl::PrintMap()
 {

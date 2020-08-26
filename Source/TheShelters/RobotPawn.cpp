@@ -20,6 +20,9 @@ ARobotPawn::ARobotPawn()
 
 		RobotSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RobotSkeletalMesh"));
 		RobotSkeletalMeshComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
+
+		RobotAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("RobotAudio"));
+		RobotAudioComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("No Assigned RobotSkeletalMesh"));
@@ -74,10 +77,28 @@ void ARobotPawn::Tick(float DeltaTime)
 	}
 }
 
+
 // Called to bind functionality to input
 void ARobotPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+// play sound for RobotPawn. 0 for departure, 1 for complete
+void ARobotPawn::PlaySound(int soundNum)
+{
+	switch (soundNum) {
+	case 0:
+
+		RobotAudioComponent->SetSound(RobotDepartureSound);
+		RobotAudioComponent->Play();
+		break;
+	case 1:
+
+		RobotAudioComponent->SetSound(RobotCompleteSound);
+		RobotAudioComponent->Play();
+		break;
+	}
 }
 
 void ARobotPawn::SetDestination(FVector _Destination)

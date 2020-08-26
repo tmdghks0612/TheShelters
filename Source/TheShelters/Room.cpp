@@ -100,7 +100,12 @@ void URoom::SetWater(unsigned int _water)
 
 void URoom::SetElectricity(float _electricity)
 {
-	resources.electricity = _electricity;
+	if (_electricity < 0) {
+		resources.electricity = 0;
+	}
+	else {
+		resources.electricity = _electricity;
+	}
 }
 
 void URoom::SetProgress(bool _progress)

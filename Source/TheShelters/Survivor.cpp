@@ -248,6 +248,13 @@ const double ASurvivor::Mental(const double diff)
 // Change Camera angle to infront of map + initiate flag for mapping
 void ASurvivor::InitiateMap()
 {
+	if (LevelControl->UIShowFlag) {
+		UE_LOG(LogTemp, Warning, TEXT("going in@@@@@@@@@@@@@@@@@@@@@@@@@@@"))
+	}
+
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("not going in@@@@@@@@@@@@@@@@@@@@@@@@@@@"))
+	}
     if(RFlag == false && RunFlag == false)
         RFlag = true;
 }
@@ -255,8 +262,8 @@ void ASurvivor::InitiateMap()
 // finish deciding route.
 void ASurvivor::RobotStart()
 {
-    RFlag = false;
-    Robot->SetMove();
+	RFlag = false;
+	Robot->SetMove();
 }
 
 void ASurvivor::InitRobots(ARobotControl *_Robot)
@@ -271,27 +278,27 @@ void ASurvivor::FindLevelControl(ALevelControl * _LevelControl)
 
 void ASurvivor::RobotMapRight()
 {
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapRight();
 }
 
 void ASurvivor::RobotMapLeft()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapLeft();
 }
 
 void ASurvivor::RobotMapUp()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapUp();
 }
 
 void ASurvivor::RobotMapDown()
 {
 
-    if (RFlag == true)
+    if (RFlag == true && LevelControl->UIShowFlag)
         Robot->MapDown();
 }

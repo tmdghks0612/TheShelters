@@ -25,6 +25,7 @@ AMonster::AMonster()
 		MonsterAudioComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
 		// I want the sound to come from slighty in front of the pawn.
 		MonsterAudioComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
     }
     else
     {
@@ -90,14 +91,22 @@ void AMonster::ActiveAngry()
 
 }
 
-void AMonster::EnterPanicRoom()
+bool AMonster::EnterPanicRoom()
 {
     UE_LOG(LogTemp, Warning, TEXT("monster entered panic room! You DIED!"));
 	IsCharge = false;
 	IsMoving = false;
 
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+
+	MonsterAnimInstance->SetAngry(true);
+	MonsterAnimInstance->SetMovement(false);
+
+	if (LevelControl->IsGameOver) {
+		return false;
+	}
 	LevelControl->GameOver();
-    return;
+    return true;
 }
 
 bool AMonster::IsDoorOpen()
