@@ -76,6 +76,9 @@ class THESHELTERS_API AMonster : public APawn
     UFUNCTION(BlueprintCallable)
     void StopCharge();
 
+	UFUNCTION(BlueprintCallable)
+	void Wait();
+
     // Getters and Setters
     const int MonsterId() const;
     const MonsterType Type() const;
@@ -105,6 +108,9 @@ class THESHELTERS_API AMonster : public APawn
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAudioComponent *MonsterAudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsNear = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsAngry = false;

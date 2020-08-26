@@ -103,6 +103,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool RFlag = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* HeartbeatSound1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* HeartbeatSound2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* HeartbeatSound3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAudioComponent *SurvivorAudioComponent;
 
 	// Getters
 	const int Hunger() const;
@@ -149,6 +160,10 @@ private:
 	int hunger;
 	int thirst;
 	double mental;
+
+	double mentalThreshold1 = 25;
+	double mentalThreshold2 = 50;
+	double mentalThreshold3 = 75;
 
 	int progress;
 

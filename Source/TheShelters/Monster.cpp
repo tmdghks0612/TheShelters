@@ -67,6 +67,7 @@ void AMonster::ChargePanicRoom()
 void AMonster::RestoreAngry()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
+	IsNear = false;
 	IsAngry = false;
 	IsCharge = false;
 	MonsterAnimInstance->SetAngry(false);
@@ -139,6 +140,7 @@ void AMonster::InitMonsterActor(ALevelControl *_LevelControl, int _monsterId, Mo
 
 void AMonster::MoveTo(FVector _destination)
 {
+	IsNear = false;
 	IsMoving = true;
 	destination = _destination;
 	chargeDirection = _destination - GetActorLocation();
@@ -158,8 +160,15 @@ void AMonster::StopCharge()
 	MonsterAnimInstance->SetMovement(false);
 
 	if (LevelControl->CheckPanicRoom(monsterId)) {
-		ChargePanicRoom();
+		IsNear = true;
 	}
+}
+
+void AMonster::Wait()
+{
+	IsMoving = false;
+	IsCharge = false;
+	MonsterAnimInstance->SetMovement(false);
 }
 
 // Called when the game starts or when spawned

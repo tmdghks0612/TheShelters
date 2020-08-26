@@ -38,6 +38,9 @@ ASurvivor::ASurvivor()
     MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
     MeshComp->SetupAttachment(RootComponent);
 
+	SurvivorAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("RobotAudio"));
+	SurvivorAudioComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+
     BaseTurnRate = 45.0f;
     RFlag = false;
 }
@@ -241,6 +244,21 @@ const double ASurvivor::Mental(const double diff)
 	if (mental <= 0) {
 		LevelControl->GameOver();
 	}
+	else if (mental <= mentalThreshold1) {
+		SurvivorAudioComponent->Stop();
+		SurvivorAudioComponent->SetSound(HeartbeatSound1);
+		SurvivorAudioComponent->Play();
+	}
+	else if (mental <= mentalThreshold2) {
+		SurvivorAudioComponent->Stop();
+		SurvivorAudioComponent->SetSound(HeartbeatSound2);
+		SurvivorAudioComponent->Play();
+	}
+	else if (mental <= mentalThreshold3) {
+		SurvivorAudioComponent->Stop();
+		SurvivorAudioComponent->SetSound(HeartbeatSound3);
+		SurvivorAudioComponent->Play();
+	}
 	return mental;
 }
 
@@ -248,14 +266,7 @@ const double ASurvivor::Mental(const double diff)
 // Change Camera angle to infront of map + initiate flag for mapping
 void ASurvivor::InitiateMap()
 {
-	if (LevelControl->UIShowFlag) {
-		UE_LOG(LogTemp, Warning, TEXT("going in@@@@@@@@@@@@@@@@@@@@@@@@@@@"))
-	}
-
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("not going in@@@@@@@@@@@@@@@@@@@@@@@@@@@"))
-	}
-    if(RFlag == false && RunFlag == false)
+    if(RFlag == false && RunFlag == false && LevelControl->UIShowFlag)
         RFlag = true;
 }
 

@@ -683,7 +683,6 @@ bool ALevelControl::CheckPanicRoom(int _monsterId)
                 UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
                 monsterActors[_monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth),
                                                               startY + interval * (panicRoomId / maxWidth), startZ));
-                monsterActors[_monsterId - 1]->ChargePanicRoom();
                 return true;
             }
             else
@@ -946,7 +945,7 @@ bool ALevelControl::IsBlocked(int _monsterId)
             else
             {
                 UE_LOG(LogTemp, Warning, TEXT("monster %d roomNumber error!"), _monsterId);
-                return false;
+                return true;
             }
             break;
         }
