@@ -43,6 +43,12 @@ ASurvivor::ASurvivor()
 
     BaseTurnRate = 45.0f;
     RFlag = false;
+
+	currentMentalState = MentalState::NORMAL;
+
+	hunger = 50;
+	thirst = 50;
+	mental = 100;
 }
 
 // Called when the game starts or when spawned
@@ -83,10 +89,6 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ASurvivor::LookUp);
 	PlayerInputComponent->BindAxis("Turn", this, &ASurvivor::Turn);
-
-	hunger = 50;
-	thirst = 50;
-	mental = 100;
 }
 
 void ASurvivor::MoveForward(float amount)
@@ -170,6 +172,39 @@ void ASurvivor::EndTurn()
 	// Change mental
 	double mentalDiff = 1 * mentalMultiplier;
 	Mental(mentalDiff);
+	UE_LOG(LogTemp, Warning, TEXT("mental : %f"), mental);
+	if (mental >= mentalThreshold3) {
+		if (currentMentalState != MentalState::NORMAL) {
+			SurvivorAudioComponent->Stop();
+			SurvivorAudioComponent->SetSound(HeartbeatSound3);
+			SurvivorAudioComponent->Play();
+			currentMentalState = MentalState::NORMAL;
+			ChangeMentalStateEvent.Broadcast((uint8)currentMentalState);
+		}
+	}
+	else if (mental >= mentalThreshold2) {
+		if (currentMentalState != MentalState::UNSTABLE) {
+			SurvivorAudioComponent->Stop();
+			SurvivorAudioComponent->SetSound(HeartbeatSound2);
+			SurvivorAudioComponent->Play();
+			currentMentalState = MentalState::UNSTABLE;
+			ChangeMentalStateEvent.Broadcast((uint8)currentMentalState);
+		}
+	}
+	else if (mental >= mentalThreshold1) {
+		if (currentMentalState != MentalState::DYING) {
+			SurvivorAudioComponent->Stop();
+			SurvivorAudioComponent->SetSound(HeartbeatSound1);
+			SurvivorAudioComponent->Play();
+			currentMentalState = MentalState::DYING;
+			ChangeMentalStateEvent.Broadcast((uint8)currentMentalState);
+		}
+	}
+	else if (mental <= 0) {
+		if (!LevelControl->IsGameOver) {
+			LevelControl->GameOver();
+		}
+	}
 }
 
 // calculates mental multiplier according to current hunger and thirst
@@ -240,25 +275,7 @@ const double ASurvivor::Mental(const double diff)
 	mental += diff;
 	mental = std::max(0.0, mental);
 	mental = std::min(mental, static_cast<double>(maxMental));
-
-	if (mental <= 0) {
-		LevelControl->GameOver();
-	}
-	else if (mental <= mentalThreshold1) {
-		SurvivorAudioComponent->Stop();
-		SurvivorAudioComponent->SetSound(HeartbeatSound1);
-		SurvivorAudioComponent->Play();
-	}
-	else if (mental <= mentalThreshold2) {
-		SurvivorAudioComponent->Stop();
-		SurvivorAudioComponent->SetSound(HeartbeatSound2);
-		SurvivorAudioComponent->Play();
-	}
-	else if (mental <= mentalThreshold3) {
-		SurvivorAudioComponent->Stop();
-		SurvivorAudioComponent->SetSound(HeartbeatSound3);
-		SurvivorAudioComponent->Play();
-	}
+	
 	return mental;
 }
 
