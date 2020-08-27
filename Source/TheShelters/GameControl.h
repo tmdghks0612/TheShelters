@@ -40,10 +40,12 @@ public:
 	int32 GetCCTVData(int i);
 	UFUNCTION()
 	void LoadSaveData();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool CheckLoaded();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetisLoaded(bool _Loaded);
+	UFUNCTION(BlueprintCallable)
+	bool CheckSaveFile();
 	UFUNCTION()
 	void SetDay(int _day);
 	UFUNCTION()
@@ -55,6 +57,7 @@ public:
 	int GetProgress();
 	UFUNCTION()
 	int GetMaxProgress();
+
 	
 
 private:

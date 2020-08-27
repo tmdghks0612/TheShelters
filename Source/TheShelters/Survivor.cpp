@@ -43,6 +43,9 @@ ASurvivor::ASurvivor()
 
     BaseTurnRate = 45.0f;
     RFlag = false;
+	hunger = 50;
+	thirst = 50;
+	mental = 100;
 }
 
 // Called when the game starts or when spawned
@@ -83,10 +86,6 @@ void ASurvivor::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis("LookUp", this, &ASurvivor::LookUp);
 	PlayerInputComponent->BindAxis("Turn", this, &ASurvivor::Turn);
-
-	hunger = 50;
-	thirst = 50;
-	mental = 100;
 }
 
 void ASurvivor::MoveForward(float amount)

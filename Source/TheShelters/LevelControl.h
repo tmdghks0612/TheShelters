@@ -226,6 +226,8 @@ class THESHELTERS_API ALevelControl : public AActor
     int maxFoodRoom = 3;
     int maxWaterRoom = 3;
     int maxElectricityRoom = 3;
+    
+    int ResourcesUsed = 7;
 
   UPROPERTY()
   TArray<int> foodRoomNum;

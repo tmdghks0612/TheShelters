@@ -807,6 +807,12 @@ float ALevelControl::GetElectricityComplete()
 
 void ALevelControl::EndLevelPreparation()
 {
+    //resources used during day
+    Resource panicRoomLeft = GameMap[panicRoomId]->GetResources();
+    GameMap[panicRoomId]->SetFood(panicRoomLeft.food - ResourcesUsed);
+    GameMap[panicRoomId]->SetWater(panicRoomLeft.water - ResourcesUsed);
+    GameMap[panicRoomId]->SetElectricity(panicRoomLeft.electricity - (float)ResourcesUsed);
+
     GameMap[panicRoomId]->OpenDoor(Direction::Up);
     GameMap[panicRoomId]->OpenDoor(Direction::Down);
     GameMap[panicRoomId]->OpenDoor(Direction::Right);

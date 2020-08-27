@@ -12,9 +12,9 @@ UGameControl::UGameControl()
 	CCTVData.SetNum(12);
 	CCTVData[0] = -1;
 
-	foodNeed = 1;
-	waterNeed = 1;
-	electNeed = 1;
+	foodNeed = 7;
+	waterNeed = 7;
+	electNeed = 7;
 	day = 0;
 	progress = 0;
 	MaxProgress = 10;
@@ -125,6 +125,14 @@ bool UGameControl::CheckLoaded()
 void UGameControl::SetisLoaded(bool _Loaded)
 {
 	isLoaded = _Loaded;
+}
+
+bool UGameControl::CheckSaveFile()
+{
+	if (UShelterGameSave* LoadedGame = Cast<UShelterGameSave>(UGameplayStatics::LoadGameFromSlot(TEXT("SAVE"), 0)))
+		return true;
+	else
+		return false;
 }
 
 void UGameControl::SetDay(int _day)
