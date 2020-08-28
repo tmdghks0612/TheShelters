@@ -12,9 +12,12 @@ UGameControl::UGameControl()
 	CCTVData.SetNum(12);
 	CCTVData[0] = -1;
 
-	foodNeed = 1;
-	waterNeed = 1;
-	electNeed = 1;
+	foodNeed = 7;
+	waterNeed = 7;
+	electNeed = 7;
+	day = 0;
+	progress = 0;
+	MaxProgress = 10;
 }
 
 
@@ -123,6 +126,59 @@ void UGameControl::SetisLoaded(bool _Loaded)
 {
 	isLoaded = _Loaded;
 }
+
+bool UGameControl::CheckSaveFile()
+{
+	if (UShelterGameSave* LoadedGame = Cast<UShelterGameSave>(UGameplayStatics::LoadGameFromSlot(TEXT("SAVE"), 0)))
+		return true;
+	else
+		return false;
+}
+
+void UGameControl::SetDay(int _day)
+{
+	day = _day;
+}
+
+void UGameControl::SetProgress(int _progress)
+{
+	progress = _progress;
+}
+
+void UGameControl::ResetGameControl()
+{
+	RoomData.Empty();
+	CCTVData.Empty();
+	isGenerated = false;
+	isLoaded = false;
+	RoomData.SetNum(100);
+	CCTVData.SetNum(12);
+	CCTVData[0] = -1;
+
+	foodNeed = 7;
+	waterNeed = 7;
+	electNeed = 7;
+	day = 0;
+	progress = 0;
+	MaxProgress = 10;
+}
+
+int UGameControl::GetDay()
+{
+	return day;
+}
+
+int UGameControl::GetProgress()
+{
+	return progress;
+}
+
+int UGameControl::GetMaxProgress()
+{
+	return MaxProgress;
+}
+
+
 
 int32 UGameControl::GetCCTVData(int i)
 {

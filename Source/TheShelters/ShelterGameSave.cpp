@@ -93,3 +93,20 @@ void UShelterGameSave::SetCCTVData(int index, int32 Number)
 		CCTVData[index] = Number;
 	}
 }
+
+void UShelterGameSave::SetDayProgress(int _day, int _progress)
+{
+	day = _day;
+	progress = _progress;
+	UE_LOG(LogTemp, Warning, TEXT("Day is %d Progress is %d in save data"), day, progress);
+}
+
+int UShelterGameSave::GetDay()
+{
+	return day;
+}
+
+int UShelterGameSave::GetProgress()
+{
+	return progress;
+}

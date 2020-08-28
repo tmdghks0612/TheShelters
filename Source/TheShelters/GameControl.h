@@ -40,9 +40,27 @@ public:
 	int32 GetCCTVData(int i);
 	UFUNCTION()
 	void LoadSaveData();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool CheckLoaded();
+	UFUNCTION(BlueprintCallable)
 	void SetisLoaded(bool _Loaded);
+	UFUNCTION(BlueprintCallable)
+	bool CheckSaveFile();
+	UFUNCTION()
+	void SetDay(int _day);
+	UFUNCTION()
+	void SetProgress(int _progress);
+	UFUNCTION(BlueprintCallable)
+	void ResetGameControl();
+
+	UFUNCTION()
+	int GetDay();
+	UFUNCTION()
+	int GetProgress();
+	UFUNCTION()
+	int GetMaxProgress();
+
+	
 
 private:
 	UPROPERTY()
@@ -57,4 +75,7 @@ private:
 		
 	bool isLoaded;
 	bool isGenerated;
+	int progress;
+
+	int MaxProgress;
 };

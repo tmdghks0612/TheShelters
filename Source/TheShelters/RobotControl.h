@@ -3,6 +3,8 @@
 #pragma once
 #include "Monster.h"
 
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "CoreMinimal.h"
 #include "Survivor.h"
 #include "RobotAniminstance.h"
@@ -12,7 +14,7 @@
 #include "RobotControl.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPrintUIDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateUIDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRestoredDelegate);
 
 UCLASS()
 class THESHELTERS_API ARobotControl : public AActor
@@ -106,8 +108,8 @@ public:
 	FPrintUIDelegate PrintUI;
 
 	UPROPERTY(BlueprintAssignable, Category = "RobotUI")
-	FUpdateUIDelegate UpdateUI;
-
+	FRestoredDelegate RestoredEvent;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

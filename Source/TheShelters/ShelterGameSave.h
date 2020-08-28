@@ -16,10 +16,13 @@ class THESHELTERS_API UShelterGameSave : public USaveGame
 
 public:
 	UShelterGameSave();
+	UPROPERTY()
 	int foodNeed;
+	UPROPERTY()
 	int waterNeed;
+	UPROPERTY()
 	float electNeed;
-	int day;
+	UPROPERTY()
 	double mental;
 
 	UFUNCTION()
@@ -45,6 +48,12 @@ public:
 	void SetRoomData(int index, int _food, int _water, float _elect, bool _Left, bool _Right, bool _Up, bool _Down, bool isKnown);
 	UFUNCTION()
 	void SetCCTVData(int index, int32 Number);
+	UFUNCTION()
+	void SetDayProgress(int _day, int _progress);
+	UFUNCTION()
+	int GetDay();
+	UFUNCTION()
+	int GetProgress();
 
 private:
 
@@ -66,8 +75,11 @@ private:
 	TArray<bool> DownDoor;
 	UPROPERTY()
 	TArray<bool> isKnown;
-	
-
+	UPROPERTY()
+	int day;
+	UPROPERTY()
+	int progress;
+	UPROPERTY()
 	bool isGenerated;
 	
 };

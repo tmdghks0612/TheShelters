@@ -5,7 +5,10 @@
 #include "Direction.h"
 #include "MonsterAnimInstance.h"
 
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Monster.generated.h"
@@ -62,7 +65,7 @@ class THESHELTERS_API AMonster : public APawn
     void ActiveAngry();
 
     UFUNCTION(BlueprintCallable)
-    void EnterPanicRoom();
+    bool EnterPanicRoom();
 
     UFUNCTION(BlueprintCallable)
     bool IsDoorOpen();
@@ -73,6 +76,9 @@ class THESHELTERS_API AMonster : public APawn
     UFUNCTION(BlueprintCallable)
     void StopCharge();
 
+	UFUNCTION(BlueprintCallable)
+	void Wait();
+
     // Getters and Setters
     const int MonsterId() const;
     const MonsterType Type() const;
@@ -80,6 +86,7 @@ class THESHELTERS_API AMonster : public APawn
     const MonsterProperty Property() const;
     const Direction PreviousDirection() const;
     void PreviousDirection(Direction d);
+	
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MonsterRoot")
     USceneComponent *Root;
@@ -92,6 +99,18 @@ class THESHELTERS_API AMonster : public APawn
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UMonsterAnimInstance *MonsterAnimInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* MonsterAngrySound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundCue* MonsterMovementSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UAudioComponent *MonsterAudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsNear = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsAngry = false;
@@ -106,7 +125,7 @@ class THESHELTERS_API AMonster : public APawn
     float velocity = 20.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float ChargeDelay = 2.0f;
+    float ChargeDelay = 4.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int actionFrequency;

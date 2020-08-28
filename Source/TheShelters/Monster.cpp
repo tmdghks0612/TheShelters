@@ -17,9 +17,15 @@ AMonster::AMonster()
         RootComponent = Root;
 
         MonsterSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MonsterSkeletalMesh"));
-        MonsterSkeletalMeshComponent->AttachTo(Root);
+        MonsterSkeletalMeshComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
 
         MonsterSkeletalMeshComponent->SetSkeletalMesh(MonsterSkeletalMesh, true);
+
+		MonsterAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MonsterAudio"));
+		MonsterAudioComponent->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
+		// I want the sound to come from slighty in front of the pawn.
+		MonsterAudioComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
     }
     else
     {
@@ -52,12 +58,16 @@ void AMonster::ChargePanicRoom()
 
 	GetWorldTimerManager().SetTimer(TimerHandleRestore, this, &AMonster::RestoreAngry, 10.0f, false);
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AMonster::ActiveAngry, ChargeDelay, false);
+
+	MonsterAudioComponent->SetSound(MonsterAngrySound);
+	MonsterAudioComponent->Play();
 	return;
 }
 
 void AMonster::RestoreAngry()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("monster is happy!"));
+	IsNear = false;
 	IsAngry = false;
 	IsCharge = false;
 	MonsterAnimInstance->SetAngry(false);
@@ -82,14 +92,22 @@ void AMonster::ActiveAngry()
 
 }
 
-void AMonster::EnterPanicRoom()
+bool AMonster::EnterPanicRoom()
 {
     UE_LOG(LogTemp, Warning, TEXT("monster entered panic room! You DIED!"));
 	IsCharge = false;
 	IsMoving = false;
 
+	GetWorldTimerManager().ClearAllTimersForObject(this);
+
+	MonsterAnimInstance->SetAngry(true);
+	MonsterAnimInstance->SetMovement(false);
+
+	if (LevelControl->IsGameOver) {
+		return false;
+	}
 	LevelControl->GameOver();
-    return;
+    return true;
 }
 
 bool AMonster::IsDoorOpen()
@@ -122,6 +140,7 @@ void AMonster::InitMonsterActor(ALevelControl *_LevelControl, int _monsterId, Mo
 
 void AMonster::MoveTo(FVector _destination)
 {
+	IsNear = false;
 	IsMoving = true;
 	destination = _destination;
 	chargeDirection = _destination - GetActorLocation();
@@ -129,6 +148,8 @@ void AMonster::MoveTo(FVector _destination)
 	if (!IsAngry) {
 		MonsterAnimInstance->SetMovement(true);
 	}
+	MonsterAudioComponent->SetSound(MonsterMovementSound);
+	MonsterAudioComponent->Play();
 }
 
 void AMonster::StopCharge()
@@ -139,8 +160,15 @@ void AMonster::StopCharge()
 	MonsterAnimInstance->SetMovement(false);
 
 	if (LevelControl->CheckPanicRoom(monsterId)) {
-		ChargePanicRoom();
+		IsNear = true;
 	}
+}
+
+void AMonster::Wait()
+{
+	IsMoving = false;
+	IsCharge = false;
+	MonsterAnimInstance->SetMovement(false);
 }
 
 // Called when the game starts or when spawned

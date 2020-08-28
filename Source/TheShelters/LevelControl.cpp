@@ -9,6 +9,9 @@ ALevelControl::ALevelControl()
     // Set this actor to call Tick() every frame.  You can turn this off to
     // improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+
+	IsGameOver = false;
+	UIShowFlag = false;
 }
 
 // Called when the game starts or when spawned
@@ -68,8 +71,12 @@ void ALevelControl::SaveStatus()
                 }
 
                 GameMap[i]->SetisKnown(LoadedGame->GetisKnown(i));
+                
             }
-
+            GameControl->SetDay(LoadedGame->GetDay());
+            UE_LOG(LogTemp, Warning, TEXT("Saved Day is :%d %d"),GameControl->GetDay(), LoadedGame->GetDay());
+            GameControl->SetProgress(LoadedGame->GetProgress());
+            currentProgress = GameControl->GetProgress();
             UE_LOG(LogTemp, Warning, TEXT("LOADED"));
         }
         GameControl->SetisLoaded(true);
@@ -126,6 +133,16 @@ void ALevelControl::SaveStatus()
         {
             SaveGameInstance->SetCCTVData(i, CCTVRoomNum[i]);
         }
+        
+        UE_LOG(LogTemp, Warning, TEXT("Day was %d. Progress was %d"), GameControl->GetDay(), GameControl->GetProgress());
+        SaveGameInstance->SetDayProgress(GameControl->GetDay(), currentProgress);
+
+        GameControl->SetDay(GameControl->GetDay() + 1);
+
+        UE_LOG(LogTemp, Warning, TEXT("Current Day is %d. Have a nice day"), GameControl->GetDay());
+        //this condition should be later changed to check if player get the progress item
+        GameControl->SetProgress(currentProgress);
+        
 
         // Start async save process.
         UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, TEXT("SAVE"), 0);
@@ -293,19 +310,20 @@ void ALevelControl::InitGame(const unsigned int m, const unsigned int n, FString
         GameControl->SetIsGenerated(true);
         UE_LOG(LogTemp, Warning, TEXT("There's nothing yet. Initiate Room Generate Procedure"));
         this->InitRooms();
-        for (int i = 0; i < 100; i++)
+        for (unsigned int i = 0; i < m*n; i++)
         {
             GameControl->SetGameMapData(i, GameMap[i]);
         }
     }
     else
     {
-        GameMap.SetNum(100);
-        for (int i = 0; i < 100; i++)
+        GameMap.SetNum(m*n);
+        for (unsigned int i = 0; i < m*n; i++)
         {
             GameMap[i] = GameControl->GetGameMapData(i);
         }
         UE_LOG(LogTemp, Warning, TEXT("RoomData Found."));
+        currentProgress = GameControl->GetProgress();
     }
     
     this->InitMap(_LevelString);
@@ -398,6 +416,24 @@ void ALevelControl::InitRooms()
             electricityRoomNum.Add(roomNum);
         }
     }
+	bool progressFlag = false;
+	for (unsigned int i = 0; i < maxHeight; ++i) {
+		for (unsigned int j = 0; j < maxWidth; ++j) {
+			if (!progressFlag && GameMap[i*maxWidth + j]->GetResources().progress) {
+				progressFlag = true;
+				break;
+			}
+		}
+	}
+
+	if (!progressFlag) {
+		int roomNum = rand() % maxRoomNum;
+		while (foodRoomNum.Contains(roomNum) || waterRoomNum.Contains(roomNum) || electricityRoomNum.Contains(roomNum))
+		{
+			roomNum = rand() % maxRoomNum;
+		}
+		GameMap[roomNum]->SetProgress(true);
+	}
 }
 
 void ALevelControl::InitMap(FString _LevelString)
@@ -647,7 +683,6 @@ bool ALevelControl::CheckPanicRoom(int _monsterId)
                 UE_LOG(LogTemp, Warning, TEXT("next to room %d"), panicRoomId);
                 monsterActors[_monsterId - 1]->MoveTo(FVector(startX + interval * (panicRoomId % maxWidth),
                                                               startY + interval * (panicRoomId / maxWidth), startZ));
-                monsterActors[_monsterId - 1]->ChargePanicRoom();
                 return true;
             }
             else
@@ -664,6 +699,9 @@ void ALevelControl::UseElectricity()
 	if (IsElectricityEnough()) {
 		URoom* panicRoom = GameMap[panicRoomId];
 		panicRoom->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityUsage * electricityDecreaseSpeed);
+		if (IsElectricityZero()) {
+			PowerDownEvent.Broadcast();
+		}
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("not enough electricity!"))
@@ -672,10 +710,19 @@ void ALevelControl::UseElectricity()
 	return;
 }
 
+bool ALevelControl::IsElectricityZero()
+{
+	if (GameMap[panicRoomId]->GetResources().electricity == 0) {
+		return true;
+	}
+	return false;
+}
+
 void ALevelControl::GameOver()
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameOver"))
 	
+	IsGameOver = true;
 	GameOverEvent.Broadcast();
 	return;
 }
@@ -688,9 +735,49 @@ float ALevelControl::GetElectricityPercent()
 
 void ALevelControl::DoorSwitch(Direction d)
 {
+	GameMap[panicRoomId]->SwitchDoor(d);
+	PanicRoomDoorList[(uint8)d]->SetDoor();
+
+	return;
+}
+
+bool ALevelControl::DoorSwitchByUser(Direction d)
+{
+	if (GameMap[panicRoomId]->GetResources().electricity < electricityDoorInstantUsage) {
+		return false;
+	}
+
     GameMap[panicRoomId]->SwitchDoor(d);
     PanicRoomDoorList[(uint8)d]->SetDoor();
-    
+
+	GameMap[panicRoomId]->SetElectricity(GameMap[panicRoomId]->GetResources().electricity - electricityDoorInstantUsage);
+
+	if (IsElectricityZero()) {
+		PowerDownEvent.Broadcast();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(d)->Status() == DoorStatus::Close) {
+		electricityUsage += electricityDoorUsage;
+	}
+	return true;
+}
+
+void ALevelControl::OpenAllPanicRoomDoors()
+{
+	if (GameMap[panicRoomId]->GetDoor(Direction::Right)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Right);
+		PanicRoomDoorList[(uint8)Direction::Right]->SetDoor();
+	}
+	
+	if (GameMap[panicRoomId]->GetDoor(Direction::Down)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Down);
+		PanicRoomDoorList[(uint8)Direction::Down]->SetDoor();
+	}
+
+	if (GameMap[panicRoomId]->GetDoor(Direction::Left)->Status() == DoorStatus::Close) {
+		GameMap[panicRoomId]->SwitchDoor(Direction::Left);
+		PanicRoomDoorList[(uint8)Direction::Left]->SetDoor();
+	}
 }
 
 int ALevelControl::GetPanicRoomFood()
@@ -720,6 +807,12 @@ float ALevelControl::GetElectricityComplete()
 
 void ALevelControl::EndLevelPreparation()
 {
+    //resources used during day
+    Resource panicRoomLeft = GameMap[panicRoomId]->GetResources();
+    GameMap[panicRoomId]->SetFood(panicRoomLeft.food - ResourcesUsed);
+    GameMap[panicRoomId]->SetWater(panicRoomLeft.water - ResourcesUsed);
+    GameMap[panicRoomId]->SetElectricity(panicRoomLeft.electricity - (float)ResourcesUsed);
+
     GameMap[panicRoomId]->OpenDoor(Direction::Up);
     GameMap[panicRoomId]->OpenDoor(Direction::Down);
     GameMap[panicRoomId]->OpenDoor(Direction::Right);
@@ -753,7 +846,11 @@ TArray<FResourceUI> ALevelControl::GetRoomResourceUI()
 
             // find maximum resource type and its size
             Resource currentResource = currentRoom->GetResources();
-            if (currentResource.food >= currentResource.water)
+			if (currentResource.progress) {
+				currentResourceUI.resourceType = 4;
+				currentResourceUI.resourceSize = 1;
+			}
+            else if (currentResource.food >= currentResource.water)
             {
                 if (currentResource.food >= currentResource.electricity)
                 {
@@ -820,6 +917,16 @@ TArray<DoorStatus> ALevelControl::GetDoorUI()
     return DoorArray;
 }
 
+int ALevelControl::GetProgressUI()
+{
+	return currentProgress;
+}
+
+int ALevelControl::GetMaxProgressUI()
+{
+    return GameControl->GetMaxProgress();
+}
+
 bool ALevelControl::IsBlocked(int _monsterId)
 {
     ADoor *door = nullptr;
@@ -844,7 +951,7 @@ bool ALevelControl::IsBlocked(int _monsterId)
             else
             {
                 UE_LOG(LogTemp, Warning, TEXT("monster %d roomNumber error!"), _monsterId);
-                return false;
+                return true;
             }
             break;
         }
@@ -1051,6 +1158,27 @@ float ALevelControl::ResourceCheckByRobot(int RoomId, int Type)
         return GameMap[RoomId]->GetResources().electricity;
     }
     return 0;
+}
+
+bool ALevelControl::CircuitCheckByRobot(int RoomId)
+{
+	if (GameMap[RoomId]->GetResources().progress) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void ALevelControl::RemoveCircuit(int RoomId)
+{
+	GameMap[RoomId]->SetProgress(false);
+}
+
+void ALevelControl::AddProgress()
+{
+	currentProgress++;
+    GameControl->SetProgress(currentProgress);
 }
 
 void ALevelControl::SetRoomResources(int RoomId, int food, int water, float electricity)

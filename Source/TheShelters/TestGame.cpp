@@ -3,7 +3,8 @@
 
 void ALevelControl::PrintMap()
 {
-    UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
+    
+    //UE_LOG(LogTemp, Warning, TEXT("<<<<< MAP >>>>>"));
     for (unsigned int x = 0; x < maxHeight; x++)
     {
         FString line = FString();
@@ -15,8 +16,9 @@ void ALevelControl::PrintMap()
             args.Add(FStringFormatArg(monsterId));
             line += FString::Format(TEXT("{0} "), args);
         }
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
+    //    UE_LOG(LogTemp, Warning, TEXT("%s"), *line);
     }
+    
 }
 
 void ALevelControl::PrintTestMessage(const TCHAR *testName, const int num, const bool success)
@@ -47,7 +49,7 @@ void ALevelControl::TestScenario(FString _LevelString)
 
     InitGame(10, 10, _LevelString);
 
-    InsertMonster(MonsterType::Ghoul, 0, 4); // Monster 1: 0, 4
+    InsertMonster(MonsterType::Ghoul, 1, 4); // Monster 1: 0, 4
     InsertMonster(MonsterType::Grima, 1, 3); // Monster 2: 1, 3
 
     result = GameMap[4]->MonsterId() == 1 && GameMap[13]->MonsterId() == 2;
