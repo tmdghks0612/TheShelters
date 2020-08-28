@@ -145,6 +145,24 @@ void UGameControl::SetProgress(int _progress)
 	progress = _progress;
 }
 
+void UGameControl::ResetGameControl()
+{
+	RoomData.Empty();
+	CCTVData.Empty();
+	isGenerated = false;
+	isLoaded = false;
+	RoomData.SetNum(100);
+	CCTVData.SetNum(12);
+	CCTVData[0] = -1;
+
+	foodNeed = 7;
+	waterNeed = 7;
+	electNeed = 7;
+	day = 0;
+	progress = 0;
+	MaxProgress = 10;
+}
+
 int UGameControl::GetDay()
 {
 	return day;

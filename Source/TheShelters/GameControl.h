@@ -50,6 +50,8 @@ public:
 	void SetDay(int _day);
 	UFUNCTION()
 	void SetProgress(int _progress);
+	UFUNCTION(BlueprintCallable)
+	void ResetGameControl();
 
 	UFUNCTION()
 	int GetDay();
